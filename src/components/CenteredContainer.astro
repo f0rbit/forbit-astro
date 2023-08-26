@@ -1,9 +1,10 @@
 ---
 interface Props {
-    tag: string
+    tag?: string,
+    class?: string
 }
-const { tag: Element } = Astro.props;
+const { tag: Element = "main", class: styles = "" } = Astro.props;
 ---
-<Element class="px-2 lg:px-16 xl:px-32 2xl:px-48">
+<Element class={ styles + " px-2 lg:px-16 xl:px-32 2xl:px-48"}>
     <slot />
 </Element>
