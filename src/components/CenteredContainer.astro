@@ -1,0 +1,9 @@
+---
+interface Props {
+    tag: string
+}
+const { tag: Element } = Astro.props;
+---
+<Element class="px-2 lg:px-16 xl:px-32 2xl:px-48">
+    <slot />
+</Element>
