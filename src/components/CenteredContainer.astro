@@ -5,6 +5,6 @@ interface Props {
 }
 const { tag: Element = "main", class: styles = "" } = Astro.props;
 ---
-<Element class={ styles + " px-2 lg:px-16 xl:px-32 2xl:px-48"}>
+<Element class={ styles + " px-2 sm:px-8 lg:px-32 xl:px-48 2xl:px-72"}>
     <slot />
 </Element>

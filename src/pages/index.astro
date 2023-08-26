@@ -1,12 +1,14 @@
 ---
 import Home from '../layouts/Home.astro'
 import CenteredContainer from '../components/CenteredContainer.astro';
+import Navigation from '../components/Navigation.astro';
 ---
 <Home>
     <header class="w-full h-screen flex justify-center items-center flex-col gap-2">
         <h1 class="text-[4vw] font-bold">forbit</h1>
         <p>I am a Computer Scientist.</p>
     </header>
+    <Navigation />
     <CenteredContainer class="flex flex-col gap-2" tag="main">
         <section id="about-me" class="bg-red-600">
             <h2>About Me</h2>

@@ -1,9 +1,11 @@
 ---
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Page from '../layouts/Page.astro'
+import Navigation from '../components/Navigation.astro';
 ---
 
 <Page title="About Me" description="About me page">
+    <Navigation />
     <CenteredContainer tag="main" class="flex flex-col gap-2">
         <section id="info">Information About me!!!</section>
         <section id="experience">Current Experience</section>
