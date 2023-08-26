@@ -2,6 +2,8 @@
 import CenteredContainer from "../components/CenteredContainer.astro";
 import Page from "../layouts/Page.astro";
 import Navigation from "../components/Navigation.astro";
+
+const projects = await (await fetch(import.meta.env.PROJECT_URL)).json() as { success: true, data: any, error: null } | { success: false, data: null, error: string };
 ---
 
 <Page title="Projects" description="A list of all my projects">
@@ -11,7 +13,9 @@ import Navigation from "../components/Navigation.astro";
             Sorting Options...
         </header>
         <main>
-            A list of projects
+            {!projects.success ? <div>Fetch Error: {projects.error}</div> : <>
+                <pre>{JSON.stringify(projects.data, null, 2)}</pre>
+            </>}
         </main>
     </CenteredContainer>
 </Page>

@@ -15,5 +15,8 @@
     "astro": "^2.10.14",
     "astro-navbar": "^2.0.1",
     "tailwindcss": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.6"
   }
 }
