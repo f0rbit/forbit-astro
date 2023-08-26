@@ -1,0 +1,16 @@
+---
+import type { Project } from '../env';
+
+interface Props {
+    project: Project
+}
+
+const { project } = Astro.props;
+---
+
+<div id={project.project_id}>
+    <h2>{project.name}</h2>
+    <p>{project.description}</p>
+    <div>{project.status}</div>
+</div>
+
