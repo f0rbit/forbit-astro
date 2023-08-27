@@ -1,0 +1,36 @@
+---
+import { Hammer, MonitorX, Pause, Radio, Rocket, Trash2, Zap } from 'lucide-astro'
+import type { PROJECT_STATUS } from '../../env'
+interface Props {
+    status: PROJECT_STATUS
+}
+const { status } = Astro.props
+---
+<div class="flex flex-row gap-2 border rounded-sm w-max px-2 py-1">
+    <span>
+        {
+            [status].map((s: PROJECT_STATUS) => {
+                switch (s) {
+                    case 'DEVELOPMENT':
+                        return <Hammer />
+                    case 'LIVE':
+                        return <Radio />
+                    case 'PAUSED':
+                        return <Pause />
+                    case 'STOPPED':
+                        return <MonitorX />
+                    case 'RELEASED':
+                        return <Rocket />
+                    case 'ABANDONED':
+                        return <Trash2 />
+                    case "FINISHED":
+                        return <Zap />
+                }
+                return <div>N/A</div>
+            })
+        }
+    </span>
+    <span>
+        {status}
+    </span>
+</div>

@@ -1,7 +1,6 @@
 /// <reference types="astro/client" />
-//
 
-export const PROJECT_STATUS: {
+export const PROJECT_STATUS = {
     DEVELOPMENT: "DEVELOPMENT",
     RELEASED: "RELEASED",
     STOPPED: "STOPPED",
@@ -23,7 +22,7 @@ export type Project = {
     specification: string | null,
     repo_url: string | null,
     icon_url: string | null,
-    status: "DEVELOPMENT" | "FINISHED",
+    status: PROJECT_STATUS,
     deleted: boolean,
     link_url: string | null,
     link_text: string | null,

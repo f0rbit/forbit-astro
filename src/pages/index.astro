@@ -2,6 +2,7 @@
 import Home from '../layouts/Home.astro'
 import CenteredContainer from '../components/CenteredContainer.astro';
 import Navigation from '../components/Navigation.astro';
+import RecentProjects from "../components/projects/RecentProjects.astro";
 ---
 <Home>
     <header class="w-full h-screen flex justify-center items-center flex-col gap-2">
@@ -21,9 +22,9 @@ import Navigation from '../components/Navigation.astro';
             </div>
             <a href="/about">More Information</a>
         </section>
-        <section id="projects" class="bg-green-600">
-            <h2>Projects</h2>
-            <div class="h-[300px]">List of Projects</div>
+        <section id="projects">
+            <h2 class="text-2xl font-bold">Recent Projects</h2>
+            <div class="grid gap-2 p-2 grid-cols-1 xl:grid-cols-3"><RecentProjects /></div>
         </section>
         <div class="bg-yellow-500 flex gap-2">
             <div class="bg-teal-600 basis-3/4">
