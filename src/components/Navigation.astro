@@ -2,7 +2,7 @@
 import { Astronav, MenuItems, MenuIcon, Dropdown, DropdownItems } from 'astro-navbar'
 ---
 
-<div class="lg:flex p-5 gap-5 justify-center">
+<div id="navbar" class="lg:flex p-5 gap-5 justify-center">
     <Astronav>
         <div class="flex w-full lg:w-max justify-between">
             <a>Your Logo</a>
@@ -22,4 +22,10 @@ import { Astronav, MenuItems, MenuIcon, Dropdown, DropdownItems } from 'astro-na
         </MenuItems>
     </Astronav>
 </div>
+
+<style scoped>
+#navbar a {
+    @apply text-white
+}
+</style>
 

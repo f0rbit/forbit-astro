@@ -1,0 +1,24 @@
+---
+import { Laptop2, GraduationCap, Camera, Fish } from 'lucide-astro'
+---
+
+<div class="flex flex-row gap-4">
+    <div class="w-max flex items-center justify-center">
+        {/*Image would go here*/}
+        <div class="h-16 w-16 bg-gray-800 rounded-[30%]"></div>
+    </div>
+    <ul class="w-max whitespace-nowrap px-2 py-1 border rounded-sm">
+        <li class="flex flex-row gap-2"><Laptop2 />Software Engineer</li>
+        <li class="flex flex-row gap-2"><GraduationCap />University of Adelaide</li>
+        <li class="flex flex-row gap-2"><Camera />Hobbyist Photographer</li>
+        <li class="flex flex-row gap-2"><Fish /><span>Avid <a href="https://www.instagram.com/ninding.femo/">Snorkeller</a></span></li>
+    </ul>
+    <div>
+        <p>
+            I am currently studying Computer Science, and making projects in my free time. Feel free to contact me about anything. My main
+            project is gm-server, an open-source framework for interfacing between Java servers and Gamemaker: Studio game clients.
+            Currently working on experimenting with different web-dev technologies.
+        </p>
+        <a href="/about">More Information</a>
+    </div>
+</div>
