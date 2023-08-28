@@ -2,14 +2,34 @@
 import { experience } from '../../assets/experience'
 import type { Experience } from '../../assets/experience'
 interface Props {
-    types: Experience['type']
+    types: readonly Experience['type'][],
+    sort: "latest" | "earliest" | "position" | "reverse_position"
 }
 
-const { types } = Astro.props;
+const { types, sort } = Astro.props;
 
 const experiences = Object.entries(experience).map(([id, data]) => ({ id, ...data })).filter((exp) => types.includes(exp.type));
+
+// based on the sort prop, sort by latest or earliest
+if (sort == "latest") {
+    // sort by the latest end time, if null (present), sort by start date (latest first)
+    experiences.sort((a,b) => {
+        if (a.end_date == null && b.end_date == null) return b.start_date.getTime() - a.start_date.getTime();
+        if (a.end_date == null) return -1;
+        if (b.end_date == null) return 1;
+        return b.end_date.getTime() - a.end_date.getTime();
+    });
+} else if (sort == "earliest") {
+    experiences.sort((a,b) => {
+        return a.start_date.getTime() - b.start_date.getTime();
+    });
+} else if (sort == "position") {
+    experiences.sort((a,b) => a.position - b.position);
+} else if (sort == "reverse_position") {
+    experiences.sort((a,b) => b.position - a.position);
+}
 ---
 
-<pre>
+<p>
     {JSON.stringify(experiences, null, 2)}
-</pre>
+</p>

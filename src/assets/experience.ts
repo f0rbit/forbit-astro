@@ -20,9 +20,9 @@ const uni_end = new Date("2024-11-20T00:00:00.000+09:30");
 const webdev_start = new Date("2021-06-04T00:00:00.000+09:30");
 const db_engineer_start = new Date("2021-11-01T00:00:00.000+09:30");
 const db_engineer_finish = new Date("2022-04-11T00:00:00.000+09:30");
-const first_job_start = db_engineer_finish;
+const first_job_start = new Date("2022-06-08T00:00:00.000+09:30");
 const maccas_start = new Date("2019-02-28T00:00:00.000+09:30");
-const maccas_finish = first_job_start;
+const maccas_finish = new Date("2022-07-12T00:00:00.000+09:30");
 const badminton_coach_start = new Date("2021-01-28T00:00:00.000+09:30");
 const badminton_coach_finish = new Date("2022-12-05T00:00:00.000+09:30");
 

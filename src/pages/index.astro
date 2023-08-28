@@ -28,9 +28,7 @@ import Experience from '../components/about/Experience.astro';
             <div class="bg-teal-600 basis-3/4">
                 <section id="experience" class="bg-sky-500">
                     <h2>Experience</h2>
-                    <div class="h-96">
-                        <Experience types={["professional"]} />
-                    </div>
+                    <Experience types={["professional"]} sort={"reverse_position"}/>
                 </section>
                 <section id="recent-blogs" class="bg-orange-500">
                     <h2>Recent Blogs</h2>
