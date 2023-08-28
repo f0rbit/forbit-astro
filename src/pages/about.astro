@@ -2,13 +2,20 @@
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro';
+import AboutMe from '../components/about/AboutMe.astro';
+import Experience from "../components/about/Experience.astro"
 ---
 
 <Page title="About Me" description="About me page">
     <Navigation />
     <CenteredContainer tag="main" class="flex flex-col gap-2">
-        <section id="info">Information About me!!!</section>
-        <section id="experience">Current Experience</section>
+        <section id="info">
+            <h2>About Me</h2>
+            <AboutMe />
+        </section>
+        <section id="experience">
+            <Experience types={["learning", "hobby", "professional"]} />
+        </section>
         <section id="working-on">What I'm working on</section>
         <section id="hobbies">Hobbies</section>
         <section id="skillset">Skill Set</section>
