@@ -1,5 +1,4 @@
-
-type Experience = {
+export type Experience = {
     start_date: Date,
     end_date: Date | null,
     title: string,
@@ -7,8 +6,6 @@ type Experience = {
     type: "learning" | "hobby" | "professional",
     position: number,
 }
-
-type ExperienceListItem = Experience;
 
 const scratch_start = new Date("2011-10-10T00:00:00.000+09:30");
 const scratch_end = new Date("2016-04-01T00:00:00.000+09:30");
@@ -29,7 +26,7 @@ const maccas_finish = first_job_start;
 const badminton_coach_start = new Date("2021-01-28T00:00:00.000+09:30");
 const badminton_coach_finish = new Date("2022-12-05T00:00:00.000+09:30");
 
-const experience: { [id: string]: ExperienceListItem } = {
+export const experience: { [id: string]: Experience } = {
     "scratch": {
         title: "Scratch",
         description: "My first baby steps into the programming world was with Scratch. This software was installed on every computer at my school, and one of my friends had stumbled upon it randomly, and I was instantly obsessed.",
@@ -119,5 +116,3 @@ const experience: { [id: string]: ExperienceListItem } = {
         type: "professional"
     }
 };
-
-export default experience;

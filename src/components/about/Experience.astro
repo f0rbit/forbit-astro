@@ -1,7 +1,15 @@
 ---
-import experience from "../../assets/experience";
+import { experience } from '../../assets/experience'
+import type { Experience } from '../../assets/experience'
+interface Props {
+    types: Experience['type']
+}
+
+const { types } = Astro.props;
+
+const experiences = Object.entries(experience).map(([id, data]) => ({ id, ...data })).filter((exp) => types.includes(exp.type));
 ---
 
 <pre>
-    {JSON.stringify(experience, null, 2)}
+    {JSON.stringify(experiences, null, 2)}
 </pre>
