@@ -1,0 +1,46 @@
+---
+interface Props {
+    text: string,
+    id: string,
+}
+
+const { text, id } = Astro.props
+---
+
+<input type="checkbox" id={id} class="state hidden" />
+<p class="clamp-text">{text}</p>
+<label for={id} class="read-more-button"></label>
+
+<style scoped define:vars={{id}}>
+    .clamp-text {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .state:checked ~ .clamp-text {
+        -webkit-line-clamp: unset; /* Display full text when checked */
+        max-height: unset;
+        line-height: unset;
+    }
+
+    .read-more-button {
+        display: none;
+        cursor: pointer;
+    }
+
+    .state:checked ~ .read-more-button::before {
+        content: 'Read Less';
+    }
+
+    .state:not(:checked) ~ .read-more-button::before {
+        content: 'Read More';
+    }
+
+    /* Style the label to look like a button */
+    .read-more-button {
+        display: inline-block;
+        @apply text-blue-400 hover:text-blue-500
+    }
+</style>
