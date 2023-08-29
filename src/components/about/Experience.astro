@@ -58,7 +58,7 @@ moment.locale('en-au')
                         </div>
                         <div class="pl-4 flex flex-col gap-2">
                             <p>{experience.description}</p>
-                            <div class="flex flex-row gap-3 items-center">
+                            <div class="flex flex-row gap-3 items-center flex-wrap">
                                 <span class="-mr-1">Skills: </span>
                                 {experience.skills.map((event) => (
                                     <SkillEvents event={event} />
@@ -70,39 +70,70 @@ moment.locale('en-au')
             })}
         </div>
     ) : (
-        <div class="relative flex flex-col gap-5 w-full h-[142rem]">
-            <div class="absolute left-[49.99%] h-[calc(100%-15px)] w-[1px] bg-gray-50 mt-[10px]" />
-            {experiences.map((experience, index) => {
-                const date_string = `${moment(experience.start_date).calendar()} - ${experience.end_date ? moment(experience.end_date).calendar() : 'Present'}`
-                const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : null
-                const title = experience.title
-                const side = index % 2 ? 'right' : 'left'
-                const opposite_side = index % 2 ? 'left' : 'right'
-                const height = (index / 2) * 390 // height in pixels;
-                return (
-                    <div class="flex flex-col gap-1" style={{ position: 'absolute', [side]: '0', top: height + 'px', width: 'calc(50% - 16px)' }}>
-                        <div class="relative">
-                            <div class="w-2 h-2 rounded-full absolute top-[6px] bg-gray-50" style={{ [opposite_side]: '-20px' }} />
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="text-sm -mb-1">
-                                <span>{date_string}</span>
-                                {duration && <span> ({formatDuration(duration)})</span>}
-                            </label>
-                            <h3>{title}</h3>
-                        </div>
-                        <div class="pl-4 flex flex-col gap-2">
-                            <p>{experience.description}</p>
-                            <div class="flex flex-row gap-3 items-center">
-                                <span class="-mr-1">Skills: </span>
-                                {experience.skills.map((event) => (
-                                    <SkillEvents event={event} />
-                                ))}
+        <div class="relative grid gap-5 w-full" style={{gridTemplateColumns: "minmax(0, 1fr) 1px minmax(0,1fr)"}}>
+            <div id="timeline-left" class="flex flex-grow flex-col gap-16 w-full">
+                {experiences.map((experience, index) => {
+                    if (index % 2 == 1) return
+                    const date_string = `${moment(experience.start_date).calendar()} - ${
+                        experience.end_date ? moment(experience.end_date).calendar() : 'Present'
+                    }`
+                    const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : null
+                    const title = experience.title
+                    return (
+                        <div class="flex flex-col gap-1 relative items-end text-right min-h-[20rem]">
+                            <div class="w-2 h-2 rounded-full absolute top-[6px] bg-gray-50 -right-[24px]" />
+                            <div class="flex flex-col">
+                                <label class="text-sm -mb-1">
+                                    <span>{date_string}</span>
+                                    {duration && <span> ({formatDuration(duration)})</span>}
+                                </label>
+                                <h3>{title}</h3>
+                            </div>
+                            <div class="pl-4 flex flex-col gap-2">
+                                <p>{experience.description}</p>
+                                <div class="flex flex-row gap-3 items-center flex-wrap justify-end">
+                                    <span class="-mr-1">Skills: </span>
+                                    {experience.skills.map((event) => (
+                                        <SkillEvents event={event} />
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )
-            })}
+                    )
+                })}
+            </div>
+            <div class="min-h-full min-w-[1px] w-[1px] bg-gray-50 mt-[10px]" />
+            <div id="timeline-right" class="mt-[10rem] flex-grow flex flex-col gap-16 w-full">
+                {experiences.map((experience, index) => {
+                    if (index % 2 == 0) return
+                    const date_string = `${moment(experience.start_date).calendar()} - ${
+                        experience.end_date ? moment(experience.end_date).calendar() : 'Present'
+                    }`
+                    const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : null
+                    const title = experience.title
+                    return (
+                        <div class="flex flex-col gap-1 relative min-h-[20rem]">
+                            <div class="w-2 h-2 rounded-full absolute top-[6px] bg-gray-50 -left-[24px]" />
+                            <div class="flex flex-col">
+                                <label class="text-sm -mb-1">
+                                    <span>{date_string}</span>
+                                    {duration && <span> ({formatDuration(duration)})</span>}
+                                </label>
+                                <h3>{title}</h3>
+                            </div>
+                            <div class="pl-4 flex flex-col gap-2">
+                                <p>{experience.description}</p>
+                                <div class="flex flex-row gap-3 items-center flex-wrap">
+                                    <span class="-mr-1">Skills: </span>
+                                    {experience.skills.map((event) => (
+                                        <SkillEvents event={event} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
         </div>
     )
 }

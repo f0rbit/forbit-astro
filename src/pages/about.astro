@@ -1,9 +1,9 @@
 ---
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Page from '../layouts/Page.astro'
-import Navigation from '../components/Navigation.astro';
-import AboutMe from '../components/about/AboutMe.astro';
-import Experience from "../components/about/Experience.astro"
+import Navigation from '../components/Navigation.astro'
+import AboutMe from '../components/about/AboutMe.astro'
+import Experience from '../components/about/Experience.astro'
 ---
 
 <Page title="About Me" description="About me page">
@@ -16,10 +16,10 @@ import Experience from "../components/about/Experience.astro"
         <section id="experience">
             <h2>My Journey</h2>
             <div class="hidden lg:block">
-            <Experience types={["learning", "hobby", "professional"]} sort={"earliest"} mode={"middle"}/>
+                <Experience types={['learning', 'hobby', 'professional']} sort={'earliest'} mode={'middle'} />
             </div>
             <div class="block lg:hidden">
-            <Experience types={["learning", "hobby", "professional"]} sort={"earliest"} mode={"left"}/>
+                <Experience types={['learning', 'hobby', 'professional']} sort={'earliest'} mode={'left'} />
             </div>
         </section>
         <section id="working-on">What I'm working on</section>
