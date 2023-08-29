@@ -11,3 +11,4 @@ export function formatDuration(duration: Duration) {
         return `${Math.ceil(duration.asHours())} hours`;
     }
 }
+

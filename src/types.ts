@@ -48,6 +48,14 @@ export const SKILL_EVENT_TYPE = {
     MASTER: "MASTER"
 }
 
+export function sortSkillEvent(a: SkillEventType, b: SkillEventType) {
+    if (a == SKILL_EVENT_TYPE.BEGIN) return -1;
+    if (a == SKILL_EVENT_TYPE.MASTER) return 1;
+    if (b == SKILL_EVENT_TYPE.BEGIN) return 1;
+    if (b == SKILL_EVENT_TYPE.MASTER) return -1;
+    return 0;
+}
+
 export type Skill = (typeof SKILL)[keyof typeof SKILL]
 
 export type SkillEventType = (typeof SKILL_EVENT_TYPE)[keyof typeof SKILL_EVENT_TYPE];
