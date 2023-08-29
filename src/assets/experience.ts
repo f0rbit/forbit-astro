@@ -1,3 +1,6 @@
+import { SKILL, SKILL_EVENT_TYPE } from "../types";
+import type { SkillEvent } from "../types";
+
 export type Experience = {
     start_date: Date,
     end_date: Date | null,
@@ -5,6 +8,7 @@ export type Experience = {
     description: string,
     type: "learning" | "hobby" | "professional",
     position: number,
+    skills: SkillEvent[]
 }
 
 const scratch_start = new Date("2011-10-10T00:00:00.000+09:30");
@@ -33,7 +37,8 @@ export const experience: { [id: string]: Experience } = {
         start_date: scratch_start,
         end_date: scratch_end,
         position: 0,
-        type: "learning"
+        type: "learning",
+        skills: [{ skill: SKILL.SCRATCH, events: [SKILL_EVENT_TYPE.MASTER] }]
     },
     "game-maker": {
         title: "GameMaker",
@@ -41,7 +46,8 @@ export const experience: { [id: string]: Experience } = {
         start_date: scratch_end,
         end_date: gamemaker_end,
         position: 1,
-        type: "learning"
+        type: "learning",
+        skills: [{ skill: SKILL.GAMEMAKER, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }]
     },
     "minecraft-dev": {
         title: "Minecraft",
@@ -49,7 +55,9 @@ export const experience: { [id: string]: Experience } = {
         start_date: minecraft_start,
         end_date: minecraft_end,
         position: 2,
-        type: "learning"
+        type: "learning",
+        skills: [{ skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.BEGIN] }, { skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.BEGIN] }]
+
     },
     "game-dev": {
         title: "Game Development",
@@ -57,7 +65,8 @@ export const experience: { [id: string]: Experience } = {
         start_date: gamemaker_end,
         end_date: gamedev_end,
         position: 3,
-        type: "hobby"
+        type: "hobby",
+        skills: [{ skill: SKILL.GAMEMAKER, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.LEARN] }]
     },
     "intense-java": {
         title: "Mastering Java",
@@ -65,7 +74,8 @@ export const experience: { [id: string]: Experience } = {
         start_date: java_start,
         end_date: java_end,
         position: 4,
-        type: "hobby"
+        type: "hobby",
+        skills: [{ skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.LEARN] }]
     },
     "mcdonalds": {
         title: "McDonald's",
@@ -73,7 +83,8 @@ export const experience: { [id: string]: Experience } = {
         start_date: maccas_start,
         end_date: maccas_finish,
         position: 5,
-        type: "professional"
+        type: "professional",
+        skills: [{ skill: SKILL.LEADERSHIP, events: [SKILL_EVENT_TYPE.BEGIN] }]
     },
     "university": {
         title: "University",
@@ -82,6 +93,7 @@ export const experience: { [id: string]: Experience } = {
         end_date: uni_end,
         position: 6,
         type: "learning",
+        skills: []
     },
     "badminton-coach": {
         title: "Badminton Coach",
@@ -89,7 +101,8 @@ export const experience: { [id: string]: Experience } = {
         start_date: badminton_coach_start,
         end_date: badminton_coach_finish,
         position: 7,
-        type: "professional"
+        type: "professional",
+        skills: [{ skill: SKILL.LEADERSHIP, events: [SKILL_EVENT_TYPE.LEARN] }]
     },
     "web-development": {
         title: "Web Development",
@@ -98,6 +111,7 @@ export const experience: { [id: string]: Experience } = {
         end_date: null,
         position: 8,
         type: "hobby",
+        skills: [{ skill: SKILL.HTML, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }, { skill: SKILL.CSS, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }]
     },
     "database-engineer": {
         title: "Database Engineer",
@@ -105,7 +119,8 @@ export const experience: { [id: string]: Experience } = {
         start_date: db_engineer_start,
         end_date: db_engineer_finish,
         position: 9,
-        type: "professional"
+        type: "professional",
+        skills: [{ skill: SKILL.SQL, events: [SKILL_EVENT_TYPE.BEGIN] }]
     },
     "software-developer": {
         title: "Software Developer",
@@ -113,6 +128,7 @@ export const experience: { [id: string]: Experience } = {
         start_date: first_job_start,
         end_date: null,
         position: 10,
-        type: "professional"
+        type: "professional",
+        skills: [{ skill: SKILL.PHP, events: [SKILL_EVENT_TYPE.LEARN, SKILL_EVENT_TYPE.BEGIN] }, { skill: SKILL.HTML, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.CSS, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.SQL, events: [SKILL_EVENT_TYPE.LEARN] }, { skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.JAVASCIPRT, events: [SKILL_EVENT_TYPE.MASTER] }]
     }
 };
