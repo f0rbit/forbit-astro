@@ -17,15 +17,15 @@ import Experience from '../components/about/Experience.astro';
         <section id="about-me">
             <h2>About Me</h2>
             <div class="p-2">
-                <AboutMe />
+                <AboutMe more={true} />
             </div>
         </section>
         <section id="projects">
             <h2>Recent Projects</h2>
             <div class="grid gap-2 p-2 grid-cols-1 xl:grid-cols-3"><RecentProjects /></div>
         </section>
-        <div class="bg-yellow-500 flex gap-2">
-            <div class="bg-teal-600 basis-3/4">
+        <div class="flex gap-2">
+            <div class="basis-3/4">
                 <section id="experience">
                     <h2>Experience</h2>
                     <Experience types={["professional"]} sort={"reverse_position"}/>

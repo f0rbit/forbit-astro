@@ -1,5 +1,10 @@
 ---
 import { Laptop2, GraduationCap, Camera, Fish } from 'lucide-astro'
+interface Props {
+    more: boolean
+}
+
+const { more } = Astro.props;
 ---
 
 <div class="flex flex-row gap-4">
@@ -19,6 +24,6 @@ import { Laptop2, GraduationCap, Camera, Fish } from 'lucide-astro'
             project is gm-server, an open-source framework for interfacing between Java servers and Gamemaker: Studio game clients.
             Currently working on experimenting with different web-dev technologies.
         </p>
-        <a href="/about">More Information</a>
+        {more && <a href="/about">More Information</a>}
     </div>
 </div>
