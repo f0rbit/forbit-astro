@@ -53,3 +53,16 @@ export type Skill = (typeof SKILL)[keyof typeof SKILL]
 export type SkillEventType = (typeof SKILL_EVENT_TYPE)[keyof typeof SKILL_EVENT_TYPE];
 
 export type SkillEvent = { skill: Skill, events: SkillEventType[] };
+
+export const AWARD_TYPE = {
+    CERTIFICATE: "Certifcation",
+    EDUCATION: "Education",
+    AWARD: "Award"
+}
+
+export type AwardType = (typeof AWARD_TYPE)[keyof typeof AWARD_TYPE];
+
+export type Award = { type: AwardType, title: string, description?: string };
+
+
+

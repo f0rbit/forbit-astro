@@ -1,5 +1,5 @@
-import { SKILL, SKILL_EVENT_TYPE } from "../types";
-import type { SkillEvent } from "../types";
+import { SKILL, SKILL_EVENT_TYPE, AWARD_TYPE } from "../types";
+import type { Award, SkillEvent } from "../types";
 
 export type Experience = {
     start_date: Date,
@@ -8,7 +8,8 @@ export type Experience = {
     description: string,
     type: "learning" | "hobby" | "professional",
     position: number,
-    skills: SkillEvent[]
+    skills: SkillEvent[],
+    awards: Award[]
 }
 
 const scratch_start = new Date("2011-10-10T00:00:00.000+09:30");
@@ -38,7 +39,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: scratch_end,
         position: 0,
         type: "learning",
-        skills: [{ skill: SKILL.SCRATCH, events: [SKILL_EVENT_TYPE.MASTER] }]
+        skills: [{ skill: SKILL.SCRATCH, events: [SKILL_EVENT_TYPE.MASTER] }],
+        awards: []
     },
     "game-maker": {
         title: "GameMaker",
@@ -47,7 +49,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: gamemaker_end,
         position: 1,
         type: "learning",
-        skills: [{ skill: SKILL.GAMEMAKER, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }]
+        skills: [{ skill: SKILL.GAMEMAKER, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }],
+        awards: []
     },
     "minecraft-dev": {
         title: "Minecraft",
@@ -56,7 +59,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: minecraft_end,
         position: 2,
         type: "learning",
-        skills: [{ skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.BEGIN] }, { skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.BEGIN] }]
+        skills: [{ skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.BEGIN] }, { skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.BEGIN] }],
+        awards: []
 
     },
     "game-dev": {
@@ -66,7 +70,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: gamedev_end,
         position: 3,
         type: "hobby",
-        skills: [{ skill: SKILL.GAMEMAKER, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.LEARN] }]
+        skills: [{ skill: SKILL.GAMEMAKER, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.LEARN] }],
+        awards: [{ type: AWARD_TYPE.CERTIFICATE, title: "Introduction to Game Development", description: "Completion of a 3-day bootcamp at Flinders University" }, { type: AWARD_TYPE.EDUCATION, title: "Cert III in Programming", description: "Certificate III in C++ Programming, by the Adelaide Institute of Entertainment" }],
     },
     "intense-java": {
         title: "Mastering Java",
@@ -75,7 +80,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: java_end,
         position: 4,
         type: "hobby",
-        skills: [{ skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.LEARN] }]
+        skills: [{ skill: SKILL.JAVA, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.LEARN] }],
+        awards: []
     },
     "mcdonalds": {
         title: "McDonald's",
@@ -84,7 +90,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: maccas_finish,
         position: 5,
         type: "professional",
-        skills: [{ skill: SKILL.LEADERSHIP, events: [SKILL_EVENT_TYPE.BEGIN] }]
+        skills: [{ skill: SKILL.LEADERSHIP, events: [SKILL_EVENT_TYPE.BEGIN] }],
+        awards: [{ type: AWARD_TYPE.AWARD, title: "Grill Master", description: "Awarded to the top performing staff member in kitchen over 3 months" }]
     },
     "university": {
         title: "University",
@@ -93,7 +100,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: uni_end,
         position: 6,
         type: "learning",
-        skills: []
+        skills: [],
+        awards: [{ type: AWARD_TYPE.EDUCATION, title: "Bachelor of Computer Science", description: "Will achieve in 2024, from the University of Adelaide" }],
     },
     "badminton-coach": {
         title: "Badminton Coach",
@@ -102,7 +110,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: badminton_coach_finish,
         position: 7,
         type: "professional",
-        skills: [{ skill: SKILL.LEADERSHIP, events: [SKILL_EVENT_TYPE.LEARN] }]
+        skills: [{ skill: SKILL.LEADERSHIP, events: [SKILL_EVENT_TYPE.LEARN] }],
+        awards: []
     },
     "web-development": {
         title: "Web Development",
@@ -111,7 +120,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: null,
         position: 8,
         type: "hobby",
-        skills: [{ skill: SKILL.HTML, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }, { skill: SKILL.CSS, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }]
+        skills: [{ skill: SKILL.HTML, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }, { skill: SKILL.CSS, events: [SKILL_EVENT_TYPE.BEGIN, SKILL_EVENT_TYPE.LEARN] }],
+        awards: []
     },
     "database-engineer": {
         title: "Database Engineer",
@@ -120,7 +130,8 @@ export const experience: { [id: string]: Experience } = {
         end_date: db_engineer_finish,
         position: 9,
         type: "professional",
-        skills: [{ skill: SKILL.SQL, events: [SKILL_EVENT_TYPE.BEGIN] }]
+        skills: [{ skill: SKILL.SQL, events: [SKILL_EVENT_TYPE.BEGIN] }],
+        awards: [],
     },
     "software-developer": {
         title: "Software Developer",
@@ -129,6 +140,7 @@ export const experience: { [id: string]: Experience } = {
         end_date: null,
         position: 10,
         type: "professional",
-        skills: [{ skill: SKILL.PHP, events: [SKILL_EVENT_TYPE.LEARN, SKILL_EVENT_TYPE.BEGIN] }, { skill: SKILL.HTML, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.CSS, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.SQL, events: [SKILL_EVENT_TYPE.LEARN] }, { skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.JAVASCIPRT, events: [SKILL_EVENT_TYPE.MASTER] }]
+        skills: [{ skill: SKILL.PHP, events: [SKILL_EVENT_TYPE.LEARN, SKILL_EVENT_TYPE.BEGIN] }, { skill: SKILL.HTML, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.CSS, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.SQL, events: [SKILL_EVENT_TYPE.LEARN] }, { skill: SKILL.DEPLOYMENT, events: [SKILL_EVENT_TYPE.MASTER] }, { skill: SKILL.JAVASCIPRT, events: [SKILL_EVENT_TYPE.MASTER] }],
+        awards: [],
     }
 };

@@ -1,26 +1,26 @@
 ---
-import { SKILL_EVENT_TYPE, type SkillEventType } from '../../types';
-import { Flag, Hammer, Trophy } from 'lucide-astro';
+import { SKILL_EVENT_TYPE, type SkillEventType } from '../../types'
+import { Flag, Hammer, Trophy } from 'lucide-astro'
 
 interface Props {
-    type: SkillEventType,
+    type: SkillEventType
     size: number
 }
 
-const { type, size } = Astro.props;
-
-// const colour = type == SKILL_EVENT_TYPE.BEGIN ? "#6ad16a" : (type == SKILL_EVENT_TYPE.LEARN ? "white" : "gold");
+const { type, size } = Astro.props
 ---
 
 <div>
-{[type].map((t) => {
-    switch (t) {
-        case SKILL_EVENT_TYPE.BEGIN:
-            return <Flag size={size} />
-        case SKILL_EVENT_TYPE.LEARN:
-            return <Hammer size={size} />
-        case SKILL_EVENT_TYPE.MASTER:
-            return <Trophy size={size} />
+    {
+        [type].map((t) => {
+            switch (t) {
+                case SKILL_EVENT_TYPE.BEGIN:
+                    return <Flag size={size} />
+                case SKILL_EVENT_TYPE.LEARN:
+                    return <Hammer size={size} />
+                case SKILL_EVENT_TYPE.MASTER:
+                    return <Trophy size={size} />
+            }
+        })
     }
-})}
 </div>

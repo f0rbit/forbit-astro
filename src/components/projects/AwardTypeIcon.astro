@@ -1,0 +1,27 @@
+---
+import { FileBadge, GraduationCap, ScrollText } from 'lucide-astro'
+import { AWARD_TYPE } from '../../types'
+import type { AwardType } from '../../types'
+
+interface Props {
+    type: AwardType
+    size: number
+}
+
+const { type, size } = Astro.props
+---
+
+<div>
+    {
+        [type].map((t) => {
+            switch (t) {
+                case AWARD_TYPE.EDUCATION:
+                    return <GraduationCap size={size} />
+                case AWARD_TYPE.AWARD:
+                    return <FileBadge size={size} />
+                case AWARD_TYPE.CERTIFICATE:
+                    return <ScrollText size={size} />
+            }
+        })
+    }
+</div>
