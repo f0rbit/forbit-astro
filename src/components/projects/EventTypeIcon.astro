@@ -1,6 +1,6 @@
 ---
 import { SKILL_EVENT_TYPE, type SkillEventType } from '../../types'
-import { Flag, Hammer, Trophy } from 'lucide-astro'
+import { ArrowUpRight, Check, Sparkles } from 'lucide-astro'
 
 interface Props {
     type: SkillEventType
@@ -15,11 +15,12 @@ const { type, size } = Astro.props
         [type].map((t) => {
             switch (t) {
                 case SKILL_EVENT_TYPE.BEGIN:
-                    return <Flag size={size} />
+                    return <Sparkles size={size} />
                 case SKILL_EVENT_TYPE.LEARN:
-                    return <Hammer size={size} />
+                    return <ArrowUpRight size={size} />
                 case SKILL_EVENT_TYPE.MASTER:
-                    return <Trophy size={size} />
+                    return <Check size={size} />
+                 
             }
         })
     }
