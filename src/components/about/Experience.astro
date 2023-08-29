@@ -2,15 +2,15 @@
 import moment from 'moment'
 import { experience } from '../../assets/experience'
 import type { Experience } from '../../assets/experience'
-import EventTypeIcon from '../projects/EventTypeIcon.astro'
-import { SKILL_EVENT_TYPE } from '../../types'
+import SkillEvents from '../about/SkillEvents.astro'
 import { formatDuration } from '../../utils'
 interface Props {
     types: readonly Experience['type'][]
     sort: 'latest' | 'earliest' | 'position' | 'reverse_position'
+    mode: 'left' | 'middle'
 }
 
-const { types, sort } = Astro.props
+const { types, sort, mode } = Astro.props
 
 const experiences = Object.entries(experience)
     .map(([id, data]) => ({ id, ...data }))
@@ -38,62 +38,71 @@ if (sort == 'latest') {
 moment.locale('en-au')
 ---
 
-<div class="pl-[32px] relative flex flex-col gap-5">
-    <div class="absolute left-[19.5px] h-[calc(100%-15px)] w-[1px] bg-gray-50 mt-[10px]"></div>
-    {
-        experiences.map((experience) => {
-            const date_string = `${moment(experience.start_date).calendar()} - ${experience.end_date ? moment(experience.end_date).calendar() : 'Present'}`
-            const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : null
-            const title = experience.title
-            return (
-                <div class="flex flex-col gap-1 relative">
-                    <div class="w-2 h-2 rounded-full absolute -left-[16px] top-[6px] bg-gray-50" />
-                    <div class="flex flex-col">
-                        <label class="text-sm -mb-1">
-                            <span>{date_string}</span>
-                            {duration && <span> ({formatDuration(duration)})</span>}
-                        </label>
-                        <h3>{title}</h3>
-                    </div>
-                    <div class="pl-4 flex flex-col gap-2">
-                        <p>{experience.description}</p>
-                        <div class="flex flex-row gap-3 items-center">
-                            <span class="-mr-1">Skills: </span>
-                            {experience.skills.map(({ skill, events }) => {
-                                /** @todo extract this into seperate component */
-                                const capitalise = (s: string) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase()
-                                const past = (s: string) => {
-                                    if (s == 'BEGIN') return 'BEGUN'
-                                    if (s == 'LEARN') return 'LEARNT'
-                                    if (s == 'MASTER') return 'MASTERED'
-                                    return '?'
-                                }
-                                let title = ''
-                                if (
-                                    events.includes(SKILL_EVENT_TYPE.BEGIN) &&
-                                    events.includes(SKILL_EVENT_TYPE.LEARN) &&
-                                    events.includes(SKILL_EVENT_TYPE.MASTER)
-                                ) {
-                                    title = 'Begun, Learnt & Mastered'
-                                } else if (events.length != 0) {
-                                    title = events.map(past).map(capitalise).join(' & ')
-                                }
-                                title += (title.length > 1 ? ' ' : '') + skill
-                                return (
-                                    <div class="flex flex-row gap-2 border rounded px-2 py-1" title={title}>
-                                        <span>{skill}</span>
-                                        <span class="flex flex-row gap-1 items-center">
-                                            {events.map((t) => (
-                                                <EventTypeIcon type={t} size={18} />
-                                            ))}
-                                        </span>
-                                    </div>
-                                )
-                            })}
+{
+    mode == 'left' ? (
+        <div class="pl-[32px] relative flex flex-col gap-5">
+            <div class="absolute left-[19.5px] h-[calc(100%-15px)] w-[1px] bg-gray-50 mt-[10px]" />
+            {experiences.map((experience) => {
+                const date_string = `${moment(experience.start_date).calendar()} - ${experience.end_date ? moment(experience.end_date).calendar() : 'Present'}`
+                const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : null
+                const title = experience.title
+                return (
+                    <div class="flex flex-col gap-1 relative">
+                        <div class="w-2 h-2 rounded-full absolute -left-[16px] top-[6px] bg-gray-50" />
+                        <div class="flex flex-col">
+                            <label class="text-sm -mb-1">
+                                <span>{date_string}</span>
+                                {duration && <span> ({formatDuration(duration)})</span>}
+                            </label>
+                            <h3>{title}</h3>
+                        </div>
+                        <div class="pl-4 flex flex-col gap-2">
+                            <p>{experience.description}</p>
+                            <div class="flex flex-row gap-3 items-center">
+                                <span class="-mr-1">Skills: </span>
+                                {experience.skills.map((event) => (
+                                    <SkillEvents event={event} />
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )
-        })
-    }
-</div>
+                )
+            })}
+        </div>
+    ) : (
+        <div class="relative flex flex-col gap-5 w-full h-[142rem]">
+            <div class="absolute left-[49.99%] h-[calc(100%-15px)] w-[1px] bg-gray-50 mt-[10px]" />
+            {experiences.map((experience, index) => {
+                const date_string = `${moment(experience.start_date).calendar()} - ${experience.end_date ? moment(experience.end_date).calendar() : 'Present'}`
+                const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : null
+                const title = experience.title
+                const side = index % 2 ? 'right' : 'left'
+                const opposite_side = index % 2 ? 'left' : 'right'
+                const height = (index / 2) * 390 // height in pixels;
+                return (
+                    <div class="flex flex-col gap-1" style={{ position: 'absolute', [side]: '0', top: height + 'px', width: 'calc(50% - 16px)' }}>
+                        <div class="relative">
+                            <div class="w-2 h-2 rounded-full absolute top-[6px] bg-gray-50" style={{ [opposite_side]: '-20px' }} />
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-sm -mb-1">
+                                <span>{date_string}</span>
+                                {duration && <span> ({formatDuration(duration)})</span>}
+                            </label>
+                            <h3>{title}</h3>
+                        </div>
+                        <div class="pl-4 flex flex-col gap-2">
+                            <p>{experience.description}</p>
+                            <div class="flex flex-row gap-3 items-center">
+                                <span class="-mr-1">Skills: </span>
+                                {experience.skills.map((event) => (
+                                    <SkillEvents event={event} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
+    )
+}

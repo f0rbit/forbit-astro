@@ -15,7 +15,12 @@ import Experience from "../components/about/Experience.astro"
         </section>
         <section id="experience">
             <h2>My Journey</h2>
-            <Experience types={["learning", "hobby", "professional"]} sort={"earliest"} />
+            <div class="hidden lg:block">
+            <Experience types={["learning", "hobby", "professional"]} sort={"earliest"} mode={"middle"}/>
+            </div>
+            <div class="block lg:hidden">
+            <Experience types={["learning", "hobby", "professional"]} sort={"earliest"} mode={"left"}/>
+            </div>
         </section>
         <section id="working-on">What I'm working on</section>
         <section id="hobbies">Hobbies</section>

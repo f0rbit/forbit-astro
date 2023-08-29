@@ -1,0 +1,33 @@
+---
+import type { SkillEvent } from '../../types';
+import { SKILL_EVENT_TYPE } from '../../types'
+import EventTypeIcon from "../projects/EventTypeIcon.astro";
+
+interface Props {
+    event: SkillEvent
+}
+const { event } = Astro.props
+const { skill, events } = event
+
+const capitalise = (s: string) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase()
+const past = (s: string) => {
+    if (s == 'BEGIN') return 'BEGUN'
+    if (s == 'LEARN') return 'LEARNT'
+    if (s == 'MASTER') return 'MASTERED'
+    return '?'
+}
+let title = ''
+if (events.includes(SKILL_EVENT_TYPE.BEGIN) && events.includes(SKILL_EVENT_TYPE.LEARN) && events.includes(SKILL_EVENT_TYPE.MASTER)) {
+    title = 'Begun, Learnt & Mastered'
+} else if (events.length != 0) {
+    title = events.map(past).map(capitalise).join(' & ')
+}
+title += (title.length > 1 ? ' ' : '') + skill
+---
+
+<div class="flex flex-row gap-2 border rounded px-2 py-1" title={title}>
+    <span>{skill}</span>
+    <span class="flex flex-row gap-1 items-center">
+        {events.map((t) => <EventTypeIcon type={t} size={18} />)}
+    </span>
+</div>
