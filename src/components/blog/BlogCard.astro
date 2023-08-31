@@ -1,0 +1,13 @@
+---
+interface Props {
+    post: any
+}
+
+const { post } = Astro.props;
+---
+
+<div class="p-3 rounded border-borders-primary border flex flex-col gap-2">
+    <h3 class="text-base-text-primary">{post.title}</h3>
+    <p class="text-base-text-subtle">{post.description}</p>
+    <a href={post.url} class="flex justify-center"><button class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary">Read</button></a>
+</div>

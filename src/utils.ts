@@ -18,3 +18,10 @@ export async function getProjects() {
     if (!result.success) return [];
     return result.data.filter((project) => project.visibility == PROJECT_VISIBILITY.PUBLIC);
 }
+
+
+export async function fetchDevToAPI(url: string): Promise<any[]> {
+    const api_key = import.meta.env.DEVTO_KEY;
+    const result = (await (await fetch(url, { headers: { 'api-key': api_key, 'accept': 'application/vnd.forem.api-v1+json'  }})).json());
+    return result;
+}

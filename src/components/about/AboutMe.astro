@@ -1,5 +1,7 @@
 ---
 import { Laptop2, GraduationCap, Camera, Fish } from 'lucide-astro'
+import { Image } from 'astro:assets';
+import forbitIcon from "../../assets/forbit-icon.png"
 interface Props {
     more: boolean
 }
@@ -9,8 +11,9 @@ const { more } = Astro.props;
 
 <div class="flex gap-4 flex-col lg:flex-row items-center lg:items-unset">
     <div class="lg:w-max flex items-center justify-center">
-        {/*Image would go here*/}
-        <div class="h-16 w-16 bg-gray-800 rounded-[30%]"></div>
+        <div class="h-16 w-16">
+            <Image src={forbitIcon} alt="forbit logo" class="rounded-[30%]"/>
+        </div>
     </div>
     <ul class="w-min lg:w-max whitespace-nowrap px-3 py-2 border rounded border-borders-primary">
         <li class="flex flex-row gap-2"><Laptop2 />Software Engineer</li>

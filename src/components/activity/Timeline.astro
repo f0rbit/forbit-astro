@@ -63,21 +63,21 @@ if (limit) events = events.slice(0, limit)
 ---
 
 <div class="relative pl-10">
-    <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-white mt-3"></div>
+    <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3"></div>
     <div class="flex flex-col gap-2">
         {
             events.map((event) => {
                 return (
                     <div class="relative">
-                        <div class="w-2 h-2 rounded-full bg-white -left-[23.5px] top-2 absolute" />
+                        <div class="w-2 h-2 rounded-full bg-base-text-subtlish -left-[23.5px] top-2 absolute" />
                         <div class="flex flex-col">
                             <label class="text-sm -mb-1">{moment(event.date).fromNow()}</label>
-                            <h3>{event.title ?? ''}</h3>
+                            <h3 class="text-base-text-secondary">{event.title ?? ''}</h3>
                         </div>
                         <div class="pl-5">
                         {event.category == 'GITHUB' && (
-                            <p>
-                                <span class="font-mono">{event.sha.slice(0, 7)}</span> - <span>forbit/{event.project}</span>
+                            <p class="text-sm">
+                                <a href={event.permalink} class="font-mono">{event.sha.slice(0, 7)}</a> - <a href={`https://github.com/f0rbit/${event.project}`}>forbit/{event.project}</a>
                             </p>
                         )}
                         {event.category == 'COMMITS' && (
