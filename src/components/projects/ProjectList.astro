@@ -1,5 +1,6 @@
 ---
-import type { Project, ApiResult } from '../../types'
+import type { Project } from '../../types'
+import { getProjects } from '../../utils';
 import ProjectCard from '../ProjectCard.astro'
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
 
 const { projects, select } = Astro.props
 
-const data = projects ? projects : (await (await fetch(import.meta.env.PROJECT_URL)).json() as ApiResult<Project[]>)?.data ?? [];
+const data = projects ? projects : (await getProjects()) ?? [];
 
 // need the as Project[] because tsserver can't detect that the filter is removing the undefined projects
 let filtered = select ? select.map((project_id) => data.find((project) => project.project_id == project_id)).filter(Boolean) as Project[] : data;

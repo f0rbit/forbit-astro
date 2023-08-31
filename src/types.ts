@@ -12,6 +12,17 @@ export const PROJECT_STATUS = {
 
 export type PROJECT_STATUS = (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS];
 
+export const PROJECT_VISIBILITY = {
+    PUBLIC: "PUBLIC",
+    PRIVATE: "PRIVATE",
+    HIDDEN: "HIDDEN",
+    ARCHIVED: "ARCHIVED",
+    DRAFT: "DRAFT",
+    DELETED: "DELETED"
+}
+
+export type PROJECT_VISIBILITY = (typeof PROJECT_VISIBILITY)[keyof typeof PROJECT_VISIBILITY];
+
 export type Project = {
     project_id: string,
     owner_id: string,
@@ -26,7 +37,8 @@ export type Project = {
     deleted: boolean,
     link_url: string | null,
     link_text: string | null,
-    current_version: string | null
+    current_version: string | null,
+    visibility: PROJECT_VISIBILITY
 }
 
 export const SKILL = {

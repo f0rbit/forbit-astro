@@ -42,7 +42,7 @@ const { title, awards } = experience
         <div class={`flex flex-row gap-3 items-center flex-wrap ${type == 'left' ? 'justify-end' : ''}`}>
             {
                 awards.map((award) => (
-                    <div class="flex flex-row items-center gap-2 border rounded px-2 py-1" title={award.description}>
+                    <div class="flex flex-row items-center gap-2 border border-borders-primary rounded px-2 py-1" title={award.description}>
                         <AwardTypeIcon type={award.type} size={20} />
                         <span>{award.title}</span>
                     </div>

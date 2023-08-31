@@ -2,24 +2,19 @@
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro'
-import type { ApiResult, Project } from '../types'
 import ProjectList from '../components/projects/ProjectList.astro'
+import { getProjects } from '../utils'
 
-const projects = (await (await fetch(import.meta.env.PROJECT_URL)).json()) as ApiResult<Project[]>
+const projects = await getProjects()
 ---
 
 <Page title="Projects" description="A list of all my projects">
     <Navigation />
     <CenteredContainer tag="div" class="flex flex-col gap-2">
         <header>Sorting Options...</header>
-        {
-            !projects.success ? (
-                <div>Fetch Error: {projects.error}</div>
-            ) : (
-                <main class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-                    <ProjectList projects={projects?.data ?? []} select={null} />
-                </main>
-            )
-        }
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
+            <ProjectList projects={projects} select={null} />
+        </main>
     </CenteredContainer>
 </Page>

@@ -25,7 +25,7 @@ if (events.includes(SKILL_EVENT_TYPE.BEGIN) && events.includes(SKILL_EVENT_TYPE.
 title += (title.length > 1 ? ' ' : '') + (skill ? skill + " skills" : "")
 ---
 
-<div class="flex flex-row gap-2 border rounded px-2 py-1" title={title}>
+<div class="flex flex-row gap-2 border border-borders-primary rounded px-2 py-1" title={title}>
     <span class="flex flex-row gap-1 items-center">
         {events.sort(sortSkillEvent).map((t) => <EventTypeIcon type={t} size={18} />)}
     </span>

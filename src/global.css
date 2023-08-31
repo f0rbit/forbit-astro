@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun&display=swap');
 html a {
     @apply text-blue-400 hover:text-blue-500
 }

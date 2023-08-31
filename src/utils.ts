@@ -1,4 +1,5 @@
 import type { Duration } from "moment";
+import { PROJECT_VISIBILITY, type ApiResult, type Project } from "./types";
 
 export function formatDuration(duration: Duration) {
     if (duration.asMonths() >= 16) {
@@ -12,3 +13,8 @@ export function formatDuration(duration: Duration) {
     }
 }
 
+export async function getProjects() {
+    const result = (await (await fetch(import.meta.env.PROJECT_URL)).json()) as ApiResult<Project[]>;
+    if (!result.success) return [];
+    return result.data.filter((project) => project.visibility == PROJECT_VISIBILITY.PUBLIC);
+}
