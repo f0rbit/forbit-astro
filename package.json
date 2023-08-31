@@ -10,9 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^5.3.6",
-    "@astrojs/tailwind": "^4.0.0",
-    "astro": "^2.10.14",
+    "@astrojs/node": "^6.0.0",
+    "@astrojs/tailwind": "^5.0.0",
+    "astro": "^3.0.0",
     "astro-navbar": "^2.0.1",
     "lucide-astro": "^0.269.0",
     "moment": "^2.29.4",
