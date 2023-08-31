@@ -51,7 +51,7 @@ moment.locale('en-au')
                 {experiences.filter((_, index) => index % 2 == 0).map((e) => <ExperienceCard experience={e} type={"left"} tags={tags} />)}
             </div>
             <div class="min-h-full min-w-[1px] w-[1px] bg-gray-50 mt-[10px]" />
-            <div id="timeline-right" class="mt-[10rem] flex-grow flex flex-col gap-16 w-full">
+            <div id="timeline-right" class="mt-[7rem] flex-grow flex flex-col gap-16 w-full">
                 {experiences.filter((_, index) => index % 2 == 1).map((e) => <ExperienceCard experience={e} type={"right"} tags={tags}/>)}
             </div>
         </div>

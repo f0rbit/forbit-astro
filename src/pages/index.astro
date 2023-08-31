@@ -17,7 +17,7 @@ import Timeline from '../components/activity/Timeline.astro'
     <CenteredContainer class="flex flex-col gap-2" tag="main">
         <section id="about-me">
             <h2>About Me</h2>
-            <div class="p-2">
+            <div class="p-3 border border-borders-primary rounded">
                 <AboutMe more={true} />
             </div>
         </section>
@@ -26,19 +26,23 @@ import Timeline from '../components/activity/Timeline.astro'
             <div class="grid gap-2 p-2 grid-cols-1 xl:grid-cols-3"><RecentProjects /></div>
         </section>
         <div class="flex gap-2">
-            <div class="basis-3/4">
-                <section id="experience">
+            <div class="basis-3/4 flex flex-col gap-2">
+                <section id="experience" class="flex gap-2 flex-col">
                     <h2>Experience</h2>
-                    <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
+                    <div class="border border-borders-primary rounded py-3 pr-3">
+                        <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
+                    </div>
                 </section>
                 <section id="recent-blogs" class="bg-orange-500">
                     <h2>Recent Blogs</h2>
                     <div class="h-[800px]">A bunch of different blog posts</div>
                 </section>
             </div>
-            <section id="recent-activity" class="bg-purple-500 basis-1/4">
+            <section id="recent-activity" class="basis-1/4 flex gap-2 flex-col">
                 <h2>Recent Activity</h2>
-                <Timeline limit={10} group_commits={false} />
+                <div class="border border-borders-primary rounded pr-3 pl-0.5 pt-2.5 pb-3">
+                    <Timeline limit={10} group_commits={false} />
+                </div>
             </section>
         </div>
     </CenteredContainer>

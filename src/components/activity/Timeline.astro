@@ -1,4 +1,5 @@
 ---
+import moment from 'moment'
 interface Props {
     limit: number | null
     group_commits: boolean
@@ -6,10 +7,10 @@ interface Props {
 
 const { limit, group_commits } = Astro.props
 
-const activity = await (await fetch(import.meta.env.POST_URL)).json();
-export const prerender = false;
+const activity = await (await fetch(import.meta.env.POSTS_URL)).json()
+export const prerender = false
 
-/** @todo fix typings */
+/** @todo fix typings & move to utils file */
 function getTimeline(activities: any, group_commits: any) {
     const DAY_IN_MS = 24 * 60 * 60 * 1000 // Milliseconds in a day
     const event_timeline = []
@@ -56,22 +57,42 @@ function getTimeline(activities: any, group_commits: any) {
 }
 
 let events = getTimeline(activity, group_commits)
-// do the sorting & group commits
-console.log('before', events)
+
 // limit the response
 if (limit) events = events.slice(0, limit)
-
-console.log('after', events)
 ---
 
-<div>
-    {
-        events.map((event) => {
-            return (
-                <div>
-                    <h3>{event.title ?? ''}</h3>
-                </div>
-            )
-        })
-    }
+<div class="relative pl-10">
+    <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-white mt-3"></div>
+    <div class="flex flex-col gap-2">
+        {
+            events.map((event) => {
+                return (
+                    <div class="relative">
+                        <div class="w-2 h-2 rounded-full bg-white -left-[23.5px] top-2 absolute" />
+                        <div class="flex flex-col">
+                            <label class="text-sm -mb-1">{moment(event.date).fromNow()}</label>
+                            <h3>{event.title ?? ''}</h3>
+                        </div>
+                        <div class="pl-5">
+                        {event.category == 'GITHUB' && (
+                            <p>
+                                <span class="font-mono">{event.sha.slice(0, 7)}</span> - <span>forbit/{event.project}</span>
+                            </p>
+                        )}
+                        {event.category == 'COMMITS' && (
+                            <div>
+                                {event.commits.map((commit: any) => (
+                                    <p>
+                                        <span class="font-mono">{commit.sha.slice(0, 7)}</span> - <span>{commit.title}</span>
+                                    </p>
+                                ))}
+                            </div>
+                        )}
+                        </div>
+                    </div>
+                )
+            })
+        }
+    </div>
 </div>

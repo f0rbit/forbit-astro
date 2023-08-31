@@ -6,7 +6,7 @@ interface Props {
 }
 const { status } = Astro.props
 ---
-<div class="flex flex-row gap-2 border rounded-sm w-max px-2 py-1">
+<div class="flex flex-row gap-2 border border-borders-primary rounded w-max px-2 py-1">
     <span>
         {
             [status].map((s: PROJECT_STATUS) => {

@@ -10,12 +10,12 @@ interface Props {
 const { project } = Astro.props
 ---
 
-<div id={project.project_id} class="flex items-center flex-col gap-4 rounded-sm border px-2 py-1">
+<div id={project.project_id} class="flex items-center flex-col gap-4 rounded border border-borders-primary px-2 py-1 text-base-text-secondary">
     <h2 class="text-2xl">{project.name}</h2>
     <p class="w-full h-full px-4">{project.description}</p>
     <div class="flex flex-row gap-2">
         <Status status={project.status} />
-        {project.repo_url && <div class="rounded-sm border px-2 py-1 font-bold"><a href={project.repo_url} class="flex flex-row gap-1"><Github /><p>GitHub</p></a></div>}
-        {project.link_url && <div class="rounded-sm border px-2 py-1 font-bold"><a href={project.link_url}>{project.link_text}</a></div>}
+        {project.repo_url && <div class="rounded border border-borders-primary px-2 py-1 font-bold"><a href={project.repo_url} class="flex flex-row gap-1"><Github /><p>GitHub</p></a></div>}
+        {project.link_url && <div class="rounded border border-borders-primary px-2 py-1 font-bold"><a href={project.link_url}>{project.link_text}</a></div>}
     </div>
 </div>
