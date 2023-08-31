@@ -1,0 +1,77 @@
+---
+interface Props {
+    limit: number | null
+    group_commits: boolean
+}
+
+const { limit, group_commits } = Astro.props
+
+const activity = await (await fetch(import.meta.env.POST_URL)).json();
+export const prerender = false;
+
+/** @todo fix typings */
+function getTimeline(activities: any, group_commits: any) {
+    const DAY_IN_MS = 24 * 60 * 60 * 1000 // Milliseconds in a day
+    const event_timeline = []
+    const timeline = activities.toReversed()
+
+    let commits: any = []
+    let last_commit_date = 0
+
+    const pushCommits = () => {
+        if (commits.length > 0) {
+            event_timeline.push({
+                category: 'COMMITS',
+                commits: commits.slice().reverse(),
+                date: commits[commits.length - 1].date,
+                title: `${commits.length} Commits to f0rbit/${commits[0].project}`,
+                project: commits[0].project,
+            })
+            commits = []
+        }
+    }
+
+    for (const item of timeline) {
+        if (item.category == 'BLOG') continue //skip over blog events for  now, malfored data in db
+        if (item.category === 'GITHUB' && group_commits) {
+            const item_date = item.date // Convert unix timestamp to milliseconds
+
+            if (commits.length === 0 || (item.project === commits[0].project && item_date - last_commit_date <= 3 * DAY_IN_MS)) {
+                commits.push(item)
+                last_commit_date = item_date
+            } else {
+                pushCommits()
+                commits = [item]
+                last_commit_date = item_date
+            }
+        } else {
+            pushCommits()
+            event_timeline.push(item)
+        }
+    }
+
+    pushCommits() // Push any remaining commits
+
+    return event_timeline.toReversed()
+}
+
+let events = getTimeline(activity, group_commits)
+// do the sorting & group commits
+console.log('before', events)
+// limit the response
+if (limit) events = events.slice(0, limit)
+
+console.log('after', events)
+---
+
+<div>
+    {
+        events.map((event) => {
+            return (
+                <div>
+                    <h3>{event.title ?? ''}</h3>
+                </div>
+            )
+        })
+    }
+</div>

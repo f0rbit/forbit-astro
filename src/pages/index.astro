@@ -5,6 +5,7 @@ import Navigation from '../components/Navigation.astro'
 import RecentProjects from '../components/projects/RecentProjects.astro'
 import AboutMe from '../components/about/AboutMe.astro'
 import Experience from '../components/about/Experience.astro'
+import Timeline from '../components/activity/Timeline.astro'
 ---
 
 <Home>
@@ -37,6 +38,7 @@ import Experience from '../components/about/Experience.astro'
             </div>
             <section id="recent-activity" class="bg-purple-500 basis-1/4">
                 <h2>Recent Activity</h2>
+                <Timeline limit={10} group_commits={false} />
             </section>
         </div>
     </CenteredContainer>
