@@ -72,5 +72,6 @@ export type AwardType = (typeof AWARD_TYPE)[keyof typeof AWARD_TYPE];
 
 export type Award = { type: AwardType, title: string, description?: string };
 
+export type ApiResult<T> = { success: true, data: T, error: null } | { success: false, data: null, error: string }
 
 
