@@ -37,7 +37,7 @@ const { title, awards } = experience
             {tags && <div class="text-sm scale-[0.75] mt-[2px] border px-2 rounded capitalize flex">{experience.type}</div>}
         </div>
     </div>
-    <div class="pl-4 flex flex-col gap-2">
+    <div class={`flex flex-col gap-2 ${type == 'left' ? "pr-3" : "pl-3"}`}>
         <div><CompactText text={experience.description} id={experience.title.toLowerCase().replaceAll(' ', '_')} /></div>
         <div class={`flex flex-row gap-3 items-center flex-wrap ${type == 'left' ? 'justify-end' : ''}`}>
             {
