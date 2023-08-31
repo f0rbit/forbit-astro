@@ -4,6 +4,7 @@ import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro'
 import AboutMe from '../components/about/AboutMe.astro'
 import Experience from '../components/about/Experience.astro'
+import RecentProjects from '../components/projects/RecentProjects.astro'
 ---
 
 <Page title="About Me" description="About me page">
@@ -22,7 +23,12 @@ import Experience from '../components/about/Experience.astro'
                 <Experience types={['learning', 'hobby', 'professional']} sort={'earliest'} mode={'left'} />
             </div>
         </section>
-        <section id="working-on">What I'm working on</section>
+        <section id="working-on">
+            <h2>Recent Projects</h2>
+            <div class="grid gap-2 p-2 grid-cols-1 xl:grid-cols-3">
+                <RecentProjects />
+            </div>
+        </section>
         <section id="hobbies">Hobbies</section>
         <section id="skillset">Skill Set</section>
     </CenteredContainer>

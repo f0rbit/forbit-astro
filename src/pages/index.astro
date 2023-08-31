@@ -2,10 +2,10 @@
 import Home from '../layouts/Home.astro'
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Navigation from '../components/Navigation.astro'
-import RecentProjects from '../components/projects/RecentProjects.astro'
 import AboutMe from '../components/about/AboutMe.astro'
 import Experience from '../components/about/Experience.astro'
 import Timeline from '../components/activity/Timeline.astro'
+import ProjectList from '../components/projects/ProjectList.astro'
 ---
 
 <Home>
@@ -22,11 +22,11 @@ import Timeline from '../components/activity/Timeline.astro'
             </div>
         </section>
         <section id="projects">
-            <h2>Recent Projects</h2>
-            <div class="grid gap-2 p-2 grid-cols-1 xl:grid-cols-3"><RecentProjects /></div>
+            <h2>Featured Projects</h2>
+            <div class="grid gap-2 p-2 grid-cols-1 xl:grid-cols-3"><ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} /></div>
         </section>
         <div class="flex gap-2">
-            <div class="basis-3/4 flex flex-col gap-2">
+            <div class="w-max flex flex-col gap-2">
                 <section id="experience" class="flex gap-2 flex-col">
                     <h2>Experience</h2>
                     <div class="border border-borders-primary rounded py-3 pr-3">
@@ -38,7 +38,7 @@ import Timeline from '../components/activity/Timeline.astro'
                     <div class="h-[800px]">A bunch of different blog posts</div>
                 </section>
             </div>
-            <section id="recent-activity" class="basis-1/4 flex gap-2 flex-col">
+            <section id="recent-activity" class="hidden min-w-[300px] 2xl:min-w-[400px] xl:flex gap-2 flex-col">
                 <h2>Recent Activity</h2>
                 <div class="border border-borders-primary rounded pr-3 pl-0.5 pt-2.5 pb-3">
                     <Timeline limit={10} group_commits={false} />
