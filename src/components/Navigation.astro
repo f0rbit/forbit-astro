@@ -8,7 +8,7 @@ interface Props {
 const { home } = Astro.props;
 ---
 
-<div id="navbar" class={`lg:flex gap-5 justify-center border-borders-primary border-b-1 mb-3 p-3 ${home == true ? "border-t-1" : ""}`}>
+<div id="navbar" class={`lg:flex items-center gap-5 justify-center border-borders-primary border-b-1 mb-3 p-3 ${home == true ? "border-t-1" : ""}`}>
     <Astronav>
         <div class="flex w-full lg:w-max justify-between">
             {!home && <Image src={forbitLogo} alt="forbit logo" class="rounded-[30%] w-6 h-6"/>}
@@ -16,14 +16,13 @@ const { home } = Astro.props;
                 <MenuIcon class="w-4 h-4 text-gray-800" />
             </div>
         </div>
-        <MenuItems class="hidden lg:flex font-semibold pt-3 lg:pt-0">
-            <ul class="flex flex-col lg:flex-row gap-2 lg:gap-5">
+        <MenuItems class="hidden lg:flex font-medium pt-3 lg:pt-0">
+            <ul class="flex flex-col lg:flex-row gap-2 lg:gap-5 text-lg">
                 <li><a href="/">Home</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/projects">Projects</a></li>
                 <li><a href="/blog">Blog</a></li>
                 <li><a href="/timeline">Timeline</a></li>
-                <li><a href="/contact">Contact</a></li>
             </ul>
         </MenuItems>
     </Astronav>

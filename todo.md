@@ -3,7 +3,7 @@
 - [x] Blog Posts
 - [ ] Contact Information footer
 - [ ] Recent Activity Timeline
-    - [ ] Commit Component
+    - [ ] Commit Component Styling
     - [ ] Tweet Component
     - [ ] Reddit Post Component
 - [ ] Add Technologies to projects
@@ -16,3 +16,6 @@
     - [ ] Some state handling
 - [ ] Project Filtering Options
 - [ ] Blog pages
+    - [ ] Styling
+    - [ ] Get the list of contents to work (id-based titles)
+    - [ ] Have the timeline on the side of the content
