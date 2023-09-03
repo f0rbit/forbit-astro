@@ -87,3 +87,11 @@ export type Award = { type: AwardType, title: string, description?: string };
 export type ApiResult<T> = { success: true, data: T, error: null } | { success: false, data: null, error: string }
 
 
+export const BLOG_GROUP = {
+    DEVTO: "devto",
+    JOURNEY: "journey",
+    HOBBIES: "hobbies",
+    DEV: "dev",
+}
+
+export type BlogGroup = (typeof BLOG_GROUP)[keyof typeof BLOG_GROUP]

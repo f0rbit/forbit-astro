@@ -14,3 +14,11 @@ html h2 {
 html h3 {
     @apply text-xl font-bold text-base-text-secondary
 }
+
+article hr {
+    @apply h-4 border-none
+}
+
+article p {
+    @apply mb-2
+}

@@ -6,10 +6,10 @@ import AboutMe from '../components/about/AboutMe.astro'
 import Experience from '../components/about/Experience.astro'
 import Timeline from '../components/activity/Timeline.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
-import { fetchDevToAPI } from '../utils'
+import { getBlogPosts } from '../utils'
 import BlogCard from '../components/blog/BlogCard.astro'
 
-const posts = (await fetchDevToAPI("https://dev.to/api/articles/me")).slice(0,3); 
+const posts = (await getBlogPosts()).slice(0, 3);
 ---
 
 <Home>

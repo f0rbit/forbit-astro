@@ -4,10 +4,22 @@ interface Props {
 }
 
 const { post } = Astro.props;
+let relative_url = "";
+if (post?.published) {
+    relative_url = "devto/" + post.slug;
+}
+console.log(post);
 ---
 
 <div class="p-3 rounded border-borders-primary border flex flex-col gap-2">
     <h3 class="text-base-text-primary">{post.title}</h3>
     <p class="text-base-text-subtle">{post.description}</p>
-    <a href={post.url} class="flex justify-center"><button class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary">Read</button></a>
+    <div class="flex justify-center flex-row gap-2">
+        <a href={"/blog/" + relative_url} class="w-min">
+            <button class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary">Read</button>
+        </a>
+        <a href={post.url} class="w-min">
+            <button class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary">Visit</button>
+        </a>
+    </div>
 </div>

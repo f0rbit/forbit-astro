@@ -2,9 +2,15 @@
 import Page from '../layouts/Page.astro'
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Navigation from '../components/Navigation.astro'
+import { getBlogPosts } from '../utils';
+import BlogCard from '../components/blog/BlogCard.astro';
+
+const posts = await getBlogPosts();
 ---
 
 <Page title="Blog" description="Just some of my thoughts">
-    <Navigation />
-    <CenteredContainer>List of articles</CenteredContainer>
+    <Navigation home={false} />
+    <CenteredContainer class="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+        {posts.map((post) => <BlogCard post={post} />)}
+    </CenteredContainer>
 </Page>
