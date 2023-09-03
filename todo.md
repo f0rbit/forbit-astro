@@ -1,9 +1,18 @@
 # TODO
-- [ ] Experiences Timeline
-- [ ] Blog Posts
-- [ ] Project sub-pages
-- [ ] Contact Page
+- [x] Experiences Timeline
+- [x] Blog Posts
+- [ ] Contact Information footer
 - [ ] Recent Activity Timeline
+    - [ ] Commit Component
+    - [ ] Tweet Component
+    - [ ] Reddit Post Component
 - [ ] Add Technologies to projects
-- [ ] What I'm working on section
+    - [ ] Add project sub pages, customisable static?
+- [x] What I'm working on section
 - [ ] Hobby Cards
+    - [ ] Get these to go to relevant pages
+- [ ] Skill Sets
+    - [ ] Descriptions of each of my skills, list of relveant experience that helped in formation
+    - [ ] Some state handling
+- [ ] Project Filtering Options
+- [ ] Blog pages
