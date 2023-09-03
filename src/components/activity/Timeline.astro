@@ -64,7 +64,7 @@ if (limit) events = events.slice(0, limit)
 
 <div class="relative pl-10">
     <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3"></div>
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 w-[40rem]" style={{maxWidth: "min(100%, 90vw)"}}>
         {
             events.map((event) => {
                 return (
@@ -81,13 +81,14 @@ if (limit) events = events.slice(0, limit)
                             </p>
                         )}
                         {event.category == 'COMMITS' && (
-                            <div>
+                            <details>
+                                <summary class="cursor-pointer">{event.commits.length} Commits</summary>
                                 {event.commits.map((commit: any) => (
                                     <p>
                                         <span class="font-mono">{commit.sha.slice(0, 7)}</span> - <span>{commit.title}</span>
                                     </p>
                                 ))}
-                            </div>
+                            </details>
                         )}
                         </div>
                     </div>
