@@ -1,7 +1,7 @@
 import type { Duration } from "moment";
 import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP } from "./types";
 
-const DEFAULT_CACHE_INTERVAL = 60 * 1000;
+const DEFAULT_CACHE_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 export function formatDuration(duration: Duration) {
     if (duration.asMonths() >= 16) {
