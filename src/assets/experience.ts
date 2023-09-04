@@ -1,5 +1,5 @@
 import { SKILL, SKILL_EVENT_TYPE, AWARD_TYPE } from "../types";
-import type { Award, SkillEvent } from "../types";
+import type { Award, Skill, SkillEvent } from "../types";
 
 export type Experience = {
     start_date: Date,
@@ -144,3 +144,11 @@ export const experience: { [id: string]: Experience } = {
         awards: [],
     }
 };
+
+export function getExperienceRelatingToSkill(skill: Skill) {
+    const relevant = new Set<string>();
+    Object.entries(experience).forEach(([id, data]) => {
+        if (data.skills.find((s) => s.skill == skill)) relevant.add(id);
+    });
+    return relevant;
+}
