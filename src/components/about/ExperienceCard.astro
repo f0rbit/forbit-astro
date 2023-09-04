@@ -6,7 +6,7 @@ import SkillEvents from '../about/SkillEvents.astro'
 import AwardTypeIcon from '../projects/AwardTypeIcon.astro'
 import CompactText from '../CompactText.astro'
 interface Props {
-    experience: Experience
+    experience: Experience & { id: string }
     type: 'left' | 'right' | 'normal'
     tags: boolean
 }
@@ -33,11 +33,11 @@ const { title, awards } = experience
             {duration && <span> ({formatDuration(duration)})</span>}
         </label>
         <div class={`flex ${type == 'left' ? 'flex-row-reverse' : 'flex-row'} items-center gap-0.5 `}>
-            <h3>{title}</h3>
+            <h3 id={experience.id}>{title}</h3>
             {tags && <div class="text-sm scale-[0.75] mt-[2px] border px-2 rounded capitalize flex">{experience.type}</div>}
         </div>
     </div>
-    <div class={`flex flex-col gap-2 ${type == 'left' ? "pr-3" : "pl-3"}`}>
+    <div class={`flex flex-col gap-2 ${type == 'left' ? 'pr-3' : 'pl-3'}`}>
         <div><CompactText text={experience.description} id={experience.title.toLowerCase().replaceAll(' ', '_')} /></div>
         <div class={`flex flex-row gap-3 items-center flex-wrap ${type == 'left' ? 'justify-end' : ''}`}>
             {

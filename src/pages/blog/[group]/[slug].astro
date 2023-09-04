@@ -10,6 +10,7 @@ import { getBlogPost } from '../../../utils'
 import { remark } from 'remark';
 
 const post = await getBlogPost(group as BlogGroup, slug as string)
+console.log(post.slug);
 
 const parsed = await remark().use(remarkHtml).process(post.body_markdown); 
 
@@ -24,7 +25,7 @@ export const prerender = false
                 <p>Error fetching blog post</p>
             ) : (
                 <>
-                    <h1>{post.title}</h1>
+                    <h1 transition:name={"title-"+post.slug}>{post.title}</h1>
                     <date>Published {moment(post.published_at).calendar()}</date>
                     <article>{parsed}</article>
                 </>

@@ -13,7 +13,7 @@
     - [ ] Get these to go to relevant pages
 - [ ] Skill Sets
     - [ ] Descriptions of each of my skills, list of relveant experience that helped in formation
-    - [ ] Some state handling
+    - [x] Some state handling
 - [ ] Project Filtering Options
 - [ ] Blog pages
     - [ ] Styling

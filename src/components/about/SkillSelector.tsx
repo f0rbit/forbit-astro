@@ -20,6 +20,15 @@ function SkillComponent(props: { skills: Record<string, SkillInformation> }) {
                     <SkillCard skill={selected[0]} information={selected[1]} header={true} />
                     <div>
                         <p>{selected[1].description}</p>
+                        <div className="flex flex-row gap-2 items-center">
+                            <h5>Experience</h5>
+                            <div className="flex flex-row gap-1">
+                                {Array.from(selected[1].experience).map((exp) => (
+                                    <a href={`#${exp}`}>{exp}</a>
+                                ))}
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             })}

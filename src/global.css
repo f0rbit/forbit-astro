@@ -15,6 +15,10 @@ html h3 {
     @apply text-xl font-bold text-base-text-secondary
 }
 
+html h4, html h5 {
+    @apply text-lg font-semibold text-base-text-secondary
+}
+
 article hr {
     @apply h-4 border-none
 }
