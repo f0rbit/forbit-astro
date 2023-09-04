@@ -23,7 +23,7 @@ const PROJECT_CACHE = {
 
 export async function getProjects() {
     if (PROJECT_CACHE.last_fetched != null && (Date.now() - PROJECT_CACHE.last_fetched.getTime() < PROJECT_CACHE.interval)) {
-        console.log("cache hit");
+        console.log("PROJECTS: cache hit");
         return PROJECT_CACHE.data;
     }  
     PROJECT_CACHE.last_fetched = null;
@@ -32,7 +32,7 @@ export async function getProjects() {
     PROJECT_CACHE.last_fetched = new Date();
     const data = result.data.filter((p) => p.visibility == PROJECT_VISIBILITY.PUBLIC);
     PROJECT_CACHE.data = data;
-    console.log("new cached entry");
+    console.log("PROJECTS: new entry");
     return data;
 }
 
@@ -60,7 +60,7 @@ const BLOG_CACHE = {
 
 export async function getBlogPosts() {
     if (BLOG_CACHE.last_fetched != null && (Date.now() - BLOG_CACHE.last_fetched.getTime() < BLOG_CACHE.interval)) {
-        console.log("blog cache hit");
+        console.log("BLOG: cache hit");
         return BLOG_CACHE.data;
     }
     BLOG_CACHE.last_fetched = null;
@@ -69,6 +69,7 @@ export async function getBlogPosts() {
     posts.push(...dev_posts);
     BLOG_CACHE.last_fetched = new Date();
     BLOG_CACHE.data = posts;
+    console.log("BLOG: new entry");
     return posts;
 }
 
@@ -89,7 +90,7 @@ const TIMELINE_CACHE = {
 
 export async function fetchTimeline() {
     if (TIMELINE_CACHE.last_fetched != null && (Date.now() - TIMELINE_CACHE.last_fetched.getTime() < TIMELINE_CACHE.interval)) {
-        console.log("timeline cache hit");
+        console.log("TIMELINE: cache hit");
         return TIMELINE_CACHE.data;
     }
     TIMELINE_CACHE.last_fetched = null;
@@ -97,6 +98,7 @@ export async function fetchTimeline() {
     const activity = await (await fetch(import.meta.env.POSTS_URL)).json()
     TIMELINE_CACHE.last_fetched = new Date();
     TIMELINE_CACHE.data = activity;
+    console.log("TIMELINE: new entry");
     return activity;
 }
 
