@@ -3,18 +3,19 @@ import { getExperienceRelatingToSkill } from "./experience";
 
 export type SkillInformation = {
     description: string,
-    experience?: Set<string>; 
+    experience: Set<string>; 
     projects: Project['project_id'][]
 }
 
-const base_skills: { [id: Skill]: SkillInformation } = {
+export const skills: { [id: Skill]: SkillInformation } = {
     [SKILL.JAVA]: {
+        experience: getExperienceRelatingToSkill(SKILL.JAVA),
         description: "My java journey started....",
         projects: ['gm-server']
+    },
+    [SKILL.GAMEMAKER]: {
+        experience: getExperienceRelatingToSkill(SKILL.GAMEMAKER),
+        description: "I'm a game maker professional basically",
+        projects: ['gm-server', 'pixel-fly', 'bit-quest', 'clumsy-santa'],
     }
 }
-
-// add the relevant experiences to the skill
-export const skills = Object.entries(base_skills).map(([skill, data]) => {
-    data.experience = getExperienceRelatingToSkill(skill);
-});

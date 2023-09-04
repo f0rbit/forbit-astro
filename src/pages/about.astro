@@ -5,6 +5,8 @@ import Navigation from '../components/Navigation.astro'
 import AboutMe from '../components/about/AboutMe.astro'
 import Experience from '../components/about/Experience.astro'
 import RecentProjects from '../components/projects/RecentProjects.astro'
+import SkillSelector from '../components/about/SkillSelector'
+import { skills } from '../assets/skills'
 
 const hobbies = [
     {
@@ -54,6 +56,9 @@ export const prerender = false;
                 </div>
             </div>))}
         </section>
-        <section id="skillset">Skill Set</section>
+        <section id="skillset">
+            <h2>Skills</h2>
+            <SkillSelector client:load skills={skills} />
+        </section>
     </CenteredContainer>
 </Page>
