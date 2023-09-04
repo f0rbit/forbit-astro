@@ -1,7 +1,7 @@
 # TODO
 - [x] Experiences Timeline
 - [x] Blog Posts
-- [ ] Contact Information footer
+- [x] Contact Information footer
 - [ ] Recent Activity Timeline
     - [ ] Commit Component Styling
     - [ ] Tweet Component
