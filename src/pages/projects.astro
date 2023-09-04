@@ -6,10 +6,12 @@ import ProjectList from '../components/projects/ProjectList.astro'
 import { getProjects } from '../utils'
 
 const projects = await getProjects()
+
+export const prerender = false;
 ---
 
 <Page title="Projects" description="A list of all my projects">
-    <Navigation />
+    <Navigation home={false}/>
     <CenteredContainer tag="div" class="flex flex-col gap-2">
         <header>Sorting Options...</header>
 

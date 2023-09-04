@@ -6,6 +6,8 @@ import { getBlogPosts } from '../utils';
 import BlogCard from '../components/blog/BlogCard.astro';
 
 const posts = await getBlogPosts();
+
+export const prerender = false;
 ---
 
 <Page title="Blog" description="Just some of my thoughts">

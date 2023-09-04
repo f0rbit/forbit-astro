@@ -3,10 +3,12 @@ import Page from '../layouts/Page.astro'
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Navigation from '../components/Navigation.astro'
 import Timeline from "../components/activity/Timeline.astro"
+
+export const prerender = false;
 ---
 
 <Page title="Timeline" description="Recent Activity on the Internet">
-    <Navigation />
+    <Navigation home={false} />
     <CenteredContainer class="flex justify-center">
         <Timeline group_commits={true} limit={null} />
     </CenteredContainer>

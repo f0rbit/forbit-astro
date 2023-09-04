@@ -19,10 +19,12 @@ const hobbies = [
         background: ""
     }
 ]
+
+export const prerender = false;
 ---
 
 <Page title="About Me" description="About me page">
-    <Navigation />
+    <Navigation home={false} />
     <CenteredContainer tag="main" class="flex flex-col gap-2">
         <section id="info">
             <h2>About Me</h2>

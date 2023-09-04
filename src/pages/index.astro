@@ -6,50 +6,55 @@ import AboutMe from '../components/about/AboutMe.astro'
 import Experience from '../components/about/Experience.astro'
 import Timeline from '../components/activity/Timeline.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
-import { getBlogPosts } from '../utils'
-import BlogCard from '../components/blog/BlogCard.astro'
+import RecentBlogs from '../components/blog/RecentBlogs.astro'
 
-const posts = (await getBlogPosts()).slice(0, 3);
+export const prerender = false
 ---
 
 <Home>
-    <header class="w-full h-screen flex justify-center items-center flex-col gap-2">
+    <header class="w-full h-full flex justify-center items-center flex-col gap-2">
         <h1 class="text-[4vw] font-bold">forbit</h1>
         <p>I am a Computer Scientist.</p>
     </header>
     <Navigation home={true} />
-    <CenteredContainer class="flex flex-col gap-2" tag="main">
-        <section id="about-me" class="flex flex-col gap-2">
-            <h2>About Me</h2>
-            <div class="p-3 border border-borders-primary rounded">
-                <AboutMe more={true} />
-            </div>
-        </section>
-        <section id="projects">
-            <h2>Featured Projects</h2>
-            <div class="grid gap-2 grid-cols-1 xl:grid-cols-3"><ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} /></div>
-        </section>
-        <div class="flex gap-2">
-            <div class="w-max flex flex-col gap-2">
-                <section id="experience" class="flex gap-2 flex-col">
-                    <h2>Experience</h2>
-                    <div class="border border-borders-primary rounded py-3 pr-3">
-                        <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
-                    </div>
-                </section>
-                <section id="recent-blogs" class="flex gap-2 flex-col">
-                    <h2>Recent Blogs</h2>
-                    <div class="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                    {posts.map((post: any) => (<BlogCard post={post} />))}
-                    </div>
-                </section>
-            </div>
-            <section id="recent-activity" class="hidden min-w-[300px] 2xl:min-w-[400px] xl:flex gap-2 flex-col">
-                <h2>Recent Activity</h2>
-                <div class="border border-borders-primary rounded pr-3 pl-0.5 pt-2.5 pb-3">
-                    <Timeline limit={10} group_commits={false} />
+    <main>
+        <CenteredContainer class="flex flex-col gap-2">
+            <section id="about-me" class="flex flex-col gap-2">
+                <h2>About Me</h2>
+                <div class="p-3 border border-borders-primary rounded">
+                    <AboutMe more={true} />
                 </div>
             </section>
-        </div>
-    </CenteredContainer>
+        </CenteredContainer>
+        <CenteredContainer>
+            <section id="projects">
+                <h2>Featured Projects</h2>
+                <div class="grid gap-2 grid-cols-1 xl:grid-cols-3">
+                    <ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} />
+                </div>
+            </section>
+        </CenteredContainer>
+        <CenteredContainer>
+            <div class="flex gap-2">
+                <div class="w-max flex flex-col gap-2">
+                    <section id="experience" class="flex gap-2 flex-col">
+                        <h2>Experience</h2>
+                        <div class="border border-borders-primary rounded py-3 pr-3">
+                            <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
+                        </div>
+                    </section>
+                    <section id="recent-blogs" class="flex gap-2 flex-col">
+                        <h2>Recent Blogs</h2>
+                        <RecentBlogs />
+                    </section>
+                </div>
+                <section id="recent-activity" class="hidden min-w-[300px] 2xl:min-w-[400px] xl:flex gap-2 flex-col">
+                    <h2>Recent Activity</h2>
+                    <div class="border border-borders-primary rounded pr-3 pl-0.5 pt-2.5 pb-3">
+                        <Timeline limit={10} group_commits={false} />
+                    </div>
+                </section>
+            </div>
+        </CenteredContainer>
+    </main>
 </Home>
