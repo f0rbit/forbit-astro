@@ -53,7 +53,7 @@ export const experience: { [id: string]: Experience } = {
         awards: []
     },
     "minecraft-dev": {
-        title: "Minecraft",
+        title: "Minecraft Plugins",
         description: "Throughout my childhood, there was one game I always came back too. I started playing minecraft early in 2012, and I had tinkered around with minecraft servers, as I hosted some in order to play with my friends. During this time I found plugins, and I felt like such a hacker editing the configuration files. It wasn't long until my love for game-dev crossed paths with Minecraft, and I embarked on a journey to create a dungeon-crawler within Minecraft, using plugins. At first, I was using all pre-made plugins and attempting to configure them to throw together some experience to share with others. Eventually, I found needs that couldn't be met with any existing plugins, so I attempted to create my own. This was my first steps into the world of Java - my first \"real\" programming language.",
         start_date: minecraft_start,
         end_date: minecraft_end,
