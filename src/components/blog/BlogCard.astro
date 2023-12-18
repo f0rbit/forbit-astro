@@ -1,25 +1,22 @@
 ---
+import type { Post } from "../../types"
 interface Props {
-    post: any
+    post: Post
 }
 
 const { post } = Astro.props;
-let relative_url = "";
-if (post?.published) {
-    relative_url = "devto/" + post.slug;
-}
-console.log(post.slug);
+const relative_url = `${post.group}/${post.slug}`;
 ---
 
 <div class="p-3 rounded border-borders-primary border flex flex-col gap-2">
     <h3 class="text-base-text-primary" transition:name={"title-"+post.slug}>{post.title}</h3>
     <p class="text-base-text-subtle">{post.description}</p>
     <div class="flex justify-center flex-row gap-2">
-        <a href={"/blog/" + relative_url} class="w-min">
+        <a href={`/blog/${relative_url}`} class="w-min">
             <button class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary">Read</button>
         </a>
-        <a href={post.url} class="w-min">
+        {!!post.url && <a href={post.url} class="w-min">
             <button class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary">Visit</button>
-        </a>
+        </a>}
     </div>
 </div>

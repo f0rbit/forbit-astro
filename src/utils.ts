@@ -1,5 +1,5 @@
 import type { Duration } from "moment";
-import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP } from "./types";
+import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 
 const DEFAULT_CACHE_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
@@ -40,7 +40,7 @@ function getDevToHeaders(API_KEY: any) {
     return { headers: { 'api-key': API_KEY, 'accept': 'application/vnd.forem.api-v1+json' } };
 }
 
-export async function fetchDevToAPI(url: string): Promise<any> {
+export async function fetchDevToAPI(url: string) {
     try {
         const api_key = import.meta.env.DEVTO_KEY;
         const response = await fetch(url, getDevToHeaders(api_key));
@@ -52,10 +52,32 @@ export async function fetchDevToAPI(url: string): Promise<any> {
     }
 }
 
+export async function getBlogServerPosts() {
+    try {
+        const response = await fetch("http://localhost:8080/posts", { method: "GET" });
+        if (!response || !response.ok) return [];
+        const result = await response.json();
+        return result.posts.map((p: any) => ({ ...p, group: BLOG_GROUP.DEV })) as Post[];
+    } catch (err) {
+        return [];
+    }
+}
+
+export async function fetchBlogPost(slug: string) {
+    try {
+        const response = await fetch(`http://localhost:8080/post/${slug}`);
+        if (!response || !response.ok) return null;
+        const result = await response.json();
+        return { ...result, group: BLOG_GROUP.DEV } as Post;
+    } catch (err) {
+        return null;
+    }
+}
+
 const BLOG_CACHE = {
     interval: DEFAULT_CACHE_INTERVAL,
     last_fetched: null as Date | null,
-    data: [] as any[]
+    data: [] as Post[]
 }
 
 export async function getBlogPosts() {
@@ -64,20 +86,27 @@ export async function getBlogPosts() {
         return BLOG_CACHE.data;
     }
     BLOG_CACHE.last_fetched = null;
-    const posts = [];
-    const dev_posts = await fetchDevToAPI("https://dev.to/api/articles/me");
+    const posts: Post[] = [];
+    const dev_posts = (await fetchDevToAPI("https://dev.to/api/articles/me")).map((p: any) => ({ ...p, group: BLOG_GROUP.DEVTO })) as Post[];
     posts.push(...dev_posts);
+    const local_posts = await getBlogServerPosts();
+    posts.push(...local_posts);
     BLOG_CACHE.last_fetched = new Date();
     BLOG_CACHE.data = posts;
     console.log("BLOG: new entry");
     return posts;
 }
 
-export async function getBlogPost(group: BlogGroup, slug: string) {
+export async function getBlogPost(group: BlogGroup, slug: string): Promise<Post | null> {
     if (group == BLOG_GROUP.DEVTO) {
         // fetch from devto
-        return await fetchDevToAPI("https://dev.to/api/articles/forbit/" + slug);
+        const post = await fetchDevToAPI("https://dev.to/api/articles/forbit/" + slug);
+        post['content'] = post['body_markdown'];
+        return post;
+    } else if (group == BLOG_GROUP.DEV) {
+        return await fetchBlogPost(slug);
     } else {
+        console.error(`Invalid blog group ${group}`);
         return null;
     }
 }

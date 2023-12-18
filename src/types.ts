@@ -89,9 +89,16 @@ export type ApiResult<T> = { success: true, data: T, error: null } | { success: 
 
 export const BLOG_GROUP = {
     DEVTO: "devto",
-    JOURNEY: "journey",
-    HOBBIES: "hobbies",
     DEV: "dev",
 }
 
 export type BlogGroup = (typeof BLOG_GROUP)[keyof typeof BLOG_GROUP]
+
+export type Post = {
+    slug: string,
+    group: BlogGroup,
+    title: string,
+    description: string,
+    published: boolean,
+    url?: string
+}
