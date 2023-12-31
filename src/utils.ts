@@ -52,12 +52,27 @@ export async function fetchDevToAPI(url: string) {
     }
 }
 
+const BLOG_ENV = {
+    url: import.meta.env.BLOG_URL,
+    key: import.meta.env.BLOG_TOKEN
+}
+
+function parseDevBlog(post: any): Post {
+    post.tag_list = post.tags;
+    post.group = BLOG_GROUP.DEV;
+    post.tag_list = post.tags;
+    post.description = post.content.substring(0, 80);
+    post.published_at = post.publish_at;
+
+    return post;
+}
+
 export async function getBlogServerPosts() {
     try {
-        const response = await fetch("http://localhost:8080/posts", { method: "GET" });
+        const response = await fetch(`${BLOG_ENV.url}/posts`, { method: "GET", headers: { 'Auth-Token': BLOG_ENV.key } });
         if (!response || !response.ok) return [];
         const result = await response.json();
-        return result.posts.map((p: any) => ({ ...p, group: BLOG_GROUP.DEV })) as Post[];
+        return result.posts.map(parseDevBlog) as Post[];
     } catch (err) {
         return [];
     }
@@ -65,10 +80,10 @@ export async function getBlogServerPosts() {
 
 export async function fetchBlogPost(slug: string) {
     try {
-        const response = await fetch(`http://localhost:8080/post/${slug}`);
+        const response = await fetch(`${BLOG_ENV.url}/post/${slug}`, { method: "GET", headers: { 'Auth-Token': BLOG_ENV.key } });
         if (!response || !response.ok) return null;
         const result = await response.json();
-        return { ...result, group: BLOG_GROUP.DEV } as Post;
+        return parseDevBlog(result);
     } catch (err) {
         return null;
     }
@@ -91,6 +106,8 @@ export async function getBlogPosts() {
     posts.push(...dev_posts);
     const local_posts = await getBlogServerPosts();
     posts.push(...local_posts);
+    // then sort
+    posts.sort((a,b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
     BLOG_CACHE.last_fetched = new Date();
     BLOG_CACHE.data = posts;
     console.log("BLOG: new entry");
