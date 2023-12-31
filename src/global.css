@@ -4,7 +4,8 @@ html a {
 }
 
 html h1 {
-    @apply text-3xl font-bold text-base-text-primary
+    @apply text-3xl font-bold text-base-text-primary;
+    line-height: unset;
 }
 
 html h2 {
