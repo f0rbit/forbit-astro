@@ -102,7 +102,8 @@ export async function getBlogPosts() {
     }
     BLOG_CACHE.last_fetched = null;
     const posts: Post[] = [];
-    const dev_posts = (await fetchDevToAPI("https://dev.to/api/articles/me")).map((p: any) => ({ ...p, group: BLOG_GROUP.DEVTO })) as Post[];
+	const dev_posts_raw = await fetchDevToAPI("https://dev.to/api/articles/me");
+    const dev_posts: Post[] = dev_posts_raw ? dev_posts_raw.map((p: any) => ({ ...p, group: BLOG_GROUP.DEVTO })) : [];
     posts.push(...dev_posts);
     const local_posts = await getBlogServerPosts();
     posts.push(...local_posts);
