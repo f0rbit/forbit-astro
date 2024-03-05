@@ -27,10 +27,12 @@ export async function getProjects() {
         return PROJECT_CACHE.data;
     }  
     PROJECT_CACHE.last_fetched = null;
-    const result = (await (await fetch(import.meta.env.PROJECT_URL)).json()) as ApiResult<Project[]>;
-    if (!result.success) return [];
+    const project_response = await fetch(import.meta.env.PROJECT_URL);
+    if (!project_response || project_response.ok == false) return [];
+    const project_result = (await project_response.json()) as ApiResult<Project[]>;
+    if (!project_result.success) return [];
     PROJECT_CACHE.last_fetched = new Date();
-    const data = result.data.filter((p) => p.visibility == PROJECT_VISIBILITY.PUBLIC);
+    const data = project_result.data.filter((p) => p.visibility == PROJECT_VISIBILITY.PUBLIC);
     PROJECT_CACHE.data = data;
     console.log("PROJECTS: new entry");
     return data;
