@@ -17,5 +17,15 @@ export const skills: { [id: Skill]: SkillInformation } = {
         experience: getExperienceRelatingToSkill(SKILL.GAMEMAKER),
         description: "I'm a game maker professional basically",
         projects: ['gm-server', 'pixel-fly', 'bit-quest', 'clumsy-santa'],
-    }
+    },
+    [SKILL.JAVASCIPRT]: {
+        experience: getExperienceRelatingToSkill(SKILL.JAVASCIPRT),
+        description: "I'm a javascript professional basically",
+        projects: ['devpad', 'forbit.dev'],
+    },
+    [SKILL.LEADERSHIP]: {
+        experience: getExperienceRelatingToSkill(SKILL.LEADERSHIP),
+        description: "I'm a leader",
+        projects: []
+    },
 }
