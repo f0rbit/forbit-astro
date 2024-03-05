@@ -79,7 +79,9 @@ export async function getBlogServerPosts() {
         const response = await fetch(`${BLOG_ENV.url}/posts`, { method: "GET", headers: { 'Auth-Token': BLOG_ENV.key } });
         if (!response || !response.ok) return [];
         const result = await response.json();
-        return result.posts.map(parseDevBlog) as Post[];
+        if (!result || !result.posts) return [];
+        const filtered_result = result.posts.filter((p: any) => !p.archived);
+        return filtered_result.posts.map(parseDevBlog) as Post[];
     } catch (err) {
         return [];
     }
