@@ -18,6 +18,7 @@ export function formatDuration(duration: Duration) {
 const PROJECT_CACHE = {
     interval: DEFAULT_CACHE_INTERVAL,
     last_fetched: null as Date | null,
+    invalid_response: false as boolean,
     data: [] as Project[],
 }
 
@@ -28,14 +29,18 @@ export async function getProjects() {
     }  
     PROJECT_CACHE.last_fetched = null;
     const project_response = await fetch(import.meta.env.PROJECT_URL);
-    if (!project_response || project_response.ok == false) return [];
+    if (!project_response || project_response.ok == false) { PROJECT_CACHE.invalid_response = true; return [] };
     const project_result = (await project_response.json()) as ApiResult<Project[]>;
-    if (!project_result.success) return [];
+    if (!project_result.success) { PROJECT_CACHE.invalid_response = true; return [] };
     PROJECT_CACHE.last_fetched = new Date();
     const data = project_result.data.filter((p) => p.visibility == PROJECT_VISIBILITY.PUBLIC);
     PROJECT_CACHE.data = data;
     console.log("PROJECTS: new entry");
     return data;
+}
+
+export function isProjectCacheInvalid() {
+    return PROJECT_CACHE.invalid_response;
 }
 
 function getDevToHeaders(API_KEY: any) {

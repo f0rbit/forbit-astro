@@ -3,20 +3,29 @@ import CenteredContainer from '../components/CenteredContainer.astro'
 import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
-import { getProjects } from '../utils'
+import { getProjects, isProjectCacheInvalid } from '../utils'
 
 const projects = await getProjects()
+const invalid = isProjectCacheInvalid()
 
-export const prerender = false;
+export const prerender = false
 ---
 
 <Page title="Projects" description="A list of all my projects">
-    <Navigation home={false}/>
+    <Navigation home={false} />
     <CenteredContainer tag="div" class="flex flex-col gap-2">
-        <header>Sorting Options...</header>
+        {
+            invalid ? (
+                <p class="text-red-500 text-center">Invalid response from Projects API</p>
+            ) : (
+                <>
+                    <header>Sorting Options...</header>
 
-        <main class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-            <ProjectList projects={projects} select={null} />
-        </main>
+                    <main class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
+                        <ProjectList projects={projects} select={null} />
+                    </main>
+                </>
+            )
+        }
     </CenteredContainer>
 </Page>
