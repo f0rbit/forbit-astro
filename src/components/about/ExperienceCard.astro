@@ -14,7 +14,7 @@ interface Props {
 const { experience, type, tags } = Astro.props
 
 const date_string = `${moment(experience.start_date).calendar()} - ${experience.end_date ? moment(experience.end_date).calendar() : 'Present'}`
-const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : null
+const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : moment.duration(moment().diff(experience.start_date))
 const { title, awards } = experience
 ---
 
