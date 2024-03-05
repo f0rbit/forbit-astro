@@ -18,13 +18,9 @@ export const prerender = false
             invalid ? (
                 <p class="text-red-500 text-center">Invalid response from Projects API</p>
             ) : (
-                <>
-                    <header>Sorting Options...</header>
-
-                    <main class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-                        <ProjectList projects={projects} select={null} />
-                    </main>
-                </>
+                <main class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
+                    <ProjectList projects={projects} select={null} />
+                </main>
             )
         }
     </CenteredContainer>
