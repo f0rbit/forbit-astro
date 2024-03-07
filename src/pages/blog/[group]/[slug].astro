@@ -1,5 +1,4 @@
 ---
-import moment from 'moment'
 import remarkHtml from 'remark-html'
 import Navigation from '../../../components/Navigation.astro'
 import Page from '../../../layouts/Page.astro'
@@ -7,6 +6,7 @@ import type { BlogGroup } from '../../../types'
 const { group, slug } = Astro.params
 import { getBlogPost } from '../../../utils'
 import { remark } from 'remark';
+import PublishTime from "../../../components/blog/PublishTime.tsx";
 
 const post = await getBlogPost(group as BlogGroup, slug as string)
 
@@ -24,7 +24,8 @@ export const prerender = false
             ) : (
                 <>
                     <h1 class="text-4xl" transition:name={"title-"+post.slug}>{post.title}</h1>
-                    <date>Published {moment(post.published_at).calendar()}</date>
+                    {/*<date>Published {moment(post.published_at).calendar({sameElse: "DD/MM/yyyy"})}</date>*/}
+                    <PublishTime client:load date={post.published_at} />
                     <article>{parsed}</article>
                 </>
             )
