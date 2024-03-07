@@ -20,6 +20,10 @@ html h4, html h5 {
     @apply text-lg font-semibold text-base-text-secondary
 }
 
+article h1, h2, h3, h4, h5, h6 {
+    @apply mt-4 mb-1
+}
+
 article hr {
     @apply h-4 border-none
 }
@@ -27,3 +31,33 @@ article hr {
 article p {
     @apply mb-2
 }
+
+article ul {
+    @apply list-disc list-inside
+}
+
+article ol {
+    @apply list-decimal list-inside
+}
+
+
+article a {
+    @apply text-blue-400 hover:text-blue-500
+}
+
+article img {
+    @apply w-full h-auto
+}
+
+article blockquote {
+    @apply border-l-4 border-borders-primary pl-2
+}
+
+article pre {
+    @apply p-2 bg-base-bg-primary
+}
+
+article code {
+    @apply text-sm bg-base-accent-primary py-[2px] px-1.5
+}
+
