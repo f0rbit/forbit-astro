@@ -81,7 +81,7 @@ export async function getBlogServerPosts() {
         const result = await response.json();
         if (!result || !result.posts) return [];
         const filtered_result = result.posts.filter((p: any) => !p.archived);
-        return filtered_result.posts.map(parseDevBlog) as Post[];
+        return filtered_result.map(parseDevBlog) as Post[];
     } catch (err) {
         return [];
     }
