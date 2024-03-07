@@ -7,6 +7,7 @@ import Experience from '../components/about/Experience.astro'
 import Timeline from '../components/activity/Timeline.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
 import RecentBlogs from '../components/blog/RecentBlogs.astro'
+import { Typewriter } from 'solidjs-typewriter'
 
 export const prerender = false
 ---
@@ -14,7 +15,10 @@ export const prerender = false
 <Home>
     <header class="w-full h-screen flex justify-center items-center flex-col gap-2">
         <h1 class="text-[4vw] font-bold">forbit</h1>
-        <p>I am a Computer Scientist.</p>
+        <p>
+            <span>I am a </span>
+            <Typewriter client:load words={['computer science student', 'software developer', 'open source contributor', 'programming enthusiast', 'creative individual' ]} cursor={true} loop={-1} />
+        </p>
     </header>
     <Navigation home={true} />
     <main>
