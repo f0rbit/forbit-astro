@@ -1,7 +1,6 @@
 ---
 import moment from 'moment'
 import remarkHtml from 'remark-html'
-import CenteredContainer from '../../../components/CenteredContainer.astro'
 import Navigation from '../../../components/Navigation.astro'
 import Page from '../../../layouts/Page.astro'
 import type { BlogGroup } from '../../../types'
@@ -9,29 +8,27 @@ const { group, slug } = Astro.params
 import { getBlogPost } from '../../../utils'
 import { remark } from 'remark';
 
-console.log({ group, slug });
 const post = await getBlogPost(group as BlogGroup, slug as string)
-console.log(post.slug);
 
-const parsed = await remark().use(remarkHtml).process(post.content); 
+const parsed = await remark().use(remarkHtml).process(post?.content ?? "no content"); 
 
 export const prerender = false
 ---
 
 <Page title={slug ?? 'A blog post'} description="Blog Post">
     <Navigation home={false} />
-    <CenteredContainer>
+    <main class='max-w-[100ch] mx-auto px-6'>
         {
             !post ? (
                 <p>Error fetching blog post</p>
             ) : (
                 <>
-                    <h1 transition:name={"title-"+post.slug}>{post.title}</h1>
+                    <h1 class="text-4xl" transition:name={"title-"+post.slug}>{post.title}</h1>
                     <date>Published {moment(post.published_at).calendar()}</date>
                     <article>{parsed}</article>
                 </>
             )
         }
-    </CenteredContainer>
+    </main>
 </Page>
 :

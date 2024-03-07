@@ -102,5 +102,6 @@ export type Post = {
     published: boolean,
     url?: string,
     published_at: string,
-    tag_list: string[]
+    tag_list: string[],
+    content: string
 }
