@@ -11,11 +11,10 @@
 - [x] What I'm working on section
 - [ ] Hobby Cards
     - [ ] Get these to go to relevant pages
-- [ ] Skill Sets
-    - [ ] Descriptions of each of my skills, list of relveant experience that helped in formation
+- [x] Skill Sets
+    - [x] Descriptions of each of my skills, list of relveant experience that helped in formation
     - [x] Some state handling
-- [ ] Project Filtering Options
 - [ ] Blog pages
-    - [ ] Styling
+    - [x] Styling
     - [ ] Get the list of contents to work (id-based titles)
     - [ ] Have the timeline on the side of the content
