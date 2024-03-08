@@ -1,5 +1,5 @@
 import type { SkillInformation } from "../../assets/skills";
-import SkillCard from "../../components/about/SkillCard.tsx";
+import SkillCard, { SkillSubheading } from "../../components/about/SkillCard.tsx";
 import { createSignal } from "solid-js";
 
 function SkillComponent(props: { skills: Record<string, SkillInformation> }) {
@@ -14,19 +14,19 @@ function SkillComponent(props: { skills: Record<string, SkillInformation> }) {
     return (
         <div className="flex flex-col gap-2">
             {Object.entries(props.skills).filter(([id]) => id == selectedSkill()).map((selected) => {
-                return <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-2">
-                    <SkillCard skill={selected[0]} information={selected[1]} header={true} />
-                    <div>
-                        <p>{selected[1].description}</p>
-                        <div className="flex flex-row gap-2 items-center">
-                            <h5>Experience</h5>
-                            <div className="flex flex-row gap-1">
-                                {Array.from(selected[1].experience).map((exp) => (
-                                    <a href={`#${exp}`}>{exp}</a>
-                                ))}
-                            </div>
+                return <div className="flex flex-col gap-y-3">
+                    <div className="flex items-center gap-y-0 flex-col">
+                        <h3>{selected[0]}</h3>
+                        <SkillSubheading information={selected[1]} />
+                    </div>
+                    <p>{selected[1].description}</p>
+                    <div className="flex flex-row gap-2 items-center">
+                        <h5>Experience</h5>
+                        <div className="flex flex-row gap-1">
+                            {Array.from(selected[1].experience).map((exp) => (
+                                <a href={`#${exp}`}>{exp}</a>
+                            ))}
                         </div>
-
                     </div>
                 </div>
             })}
