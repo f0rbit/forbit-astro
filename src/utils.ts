@@ -28,7 +28,8 @@ export async function getProjects() {
         return PROJECT_CACHE.data;
     }  
     PROJECT_CACHE.last_fetched = null;
-    const project_response = await fetch(import.meta.env.PROJECT_URL);
+    const projects_url = `https://devpad.tools/api/projects?user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
+    const project_response = await fetch(projects_url);
     if (!project_response || project_response.ok == false) { PROJECT_CACHE.invalid_response = true; return [] };
     const project_result = (await project_response.json()) as ApiResult<Project[]>;
     if (!project_result.success) { PROJECT_CACHE.invalid_response = true; return [] };
@@ -37,6 +38,26 @@ export async function getProjects() {
     PROJECT_CACHE.data = data;
     console.log("PROJECTS: new entry");
     return data;
+}
+
+export async function getProject(project_id: string) {
+    // check to see if cache is recent
+    if (PROJECT_CACHE.last_fetched != null && (Date.now() - PROJECT_CACHE.last_fetched.getTime() < PROJECT_CACHE.interval)) {
+        console.log("FETCH_PROJECT: cache hit");
+        
+        // search through cache to see if we have the project
+        const project = PROJECT_CACHE.data.find((p) => p.project_id == project_id);
+        if (project) return project;
+        console.log("FETCH_PROJECT: not in cache");
+    }
+    // otherwise fetch directory to api
+    const project_url = `https://devpad.tools/api/project?project_id=${project_id}&user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
+    const project_response = await fetch(project_url);
+    if (!project_response || project_response.ok == false) return null;
+    const project_result = (await project_response.json()) as ApiResult<Project>;
+    console.log("FETCH_PROJECT: " + project_result.success ? "success" : "failure");
+    if (!project_result.success) return null;
+    return project_result.data;
 }
 
 export function isProjectCacheInvalid() {
