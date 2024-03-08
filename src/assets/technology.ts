@@ -18,9 +18,10 @@ export const TECHNOLOGY = {
     ASTRO: "astro"
 }
 
-export type TECHNOLOGY = (typeof TECHNOLOGY)[keyof typeof TECHNOLOGY];
+export type Technology = (typeof TECHNOLOGY)[keyof typeof TECHNOLOGY];
 
-export const TECH_MAP = {
+
+export const TECH_MAP: Record<string, Technology[]> = {
     "gm-server": [TECHNOLOGY.GAMEMAKER, TECHNOLOGY.JAVA],
     "dungeon-generator": [TECHNOLOGY.JAVA],
     "file-xxplorer": [TECHNOLOGY.REACT, TECHNOLOGY.RUST, TECHNOLOGY.TYPESCRIPT],
@@ -28,6 +29,7 @@ export const TECH_MAP = {
     "arena": [TECHNOLOGY.GAMEMAKER, TECHNOLOGY.JAVA],
     "clumsy-santa": [TECHNOLOGY.GAMEMAKER],
     "pixel-fly": [TECHNOLOGY.GAMEMAKER],
+    "rich-frog": [TECHNOLOGY.GAMEMAKER],
     "devpad": [TECHNOLOGY.REACT, TECHNOLOGY.TYPESCRIPT],
     "forbit-dev": [TECHNOLOGY.ASTRO, TECHNOLOGY.SOLIDJS, TECHNOLOGY.TYPESCRIPT],
     "dev-blog": [TECHNOLOGY.GO, TECHNOLOGY.REACT, TECHNOLOGY.TYPESCRIPT],

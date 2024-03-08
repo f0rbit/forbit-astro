@@ -1,0 +1,32 @@
+---
+import { Icon } from 'astro-icon/components';
+import { TECHNOLOGY, type Technology }  from '../../assets/technology';
+
+interface Props {
+    tech: string;
+}
+
+const { tech } = Astro.props
+
+export const getIconName = (tech: Technology) => {
+    switch (tech) {
+        case TECHNOLOGY.JAVA: return "ri:java-line";
+        case TECHNOLOGY.GAMEMAKER: return "simple-icons:gamemaker";
+        case TECHNOLOGY.HTML: return "ri:html5-line";
+        case TECHNOLOGY.CSS: return "simple-icons:css3";
+        case TECHNOLOGY.JAVASCRIPT: return "ri:javascript-line";
+        case TECHNOLOGY.GO: return "simple-icons:go";
+        case TECHNOLOGY.TYPESCRIPT: return "simple-icons:typescript";
+        case TECHNOLOGY.CPP: return "simple-icons:cplusplus";
+        case TECHNOLOGY.RUST: return "simple-icons:rust";
+        case TECHNOLOGY.REACT: return "ri:reactjs-line";
+        case TECHNOLOGY.SOLIDJS: return "tabler:brand-solidjs";
+        case TECHNOLOGY.VUEJS: return "ri:vuejs-line";
+        case TECHNOLOGY.ASTRO: return "simple-icons:astro";
+        default: return "ri:question-line";
+    }
+}
+---
+
+<Icon name={getIconName(tech)} />
+
