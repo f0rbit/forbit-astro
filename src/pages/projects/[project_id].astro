@@ -1,0 +1,14 @@
+---
+import { getProject } from "../../utils";
+const { project_id } = Astro.params;
+
+// fetch the project from api
+const project = project_id ? await getProject(project_id) : null;
+---
+
+{project ? (
+    <pre>{JSON.stringify(project, null, 2)}</pre>
+) : (
+  <div>Invalid Project!</div>
+)}
+ 
