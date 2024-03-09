@@ -76,3 +76,46 @@ article code {
     @apply text-sm bg-base-accent-primary py-[2px] px-1.5
 }
 
+.specification {
+    h1, h2, h3, h4, h5, h6 {
+        @apply mt-4 mb-1
+    }
+
+    h1 {
+        @apply text-2xl font-bold text-base-text-primary
+    }
+
+    h2 {
+        @apply text-xl font-bold text-base-text-secondary
+    }
+    hr {
+        @apply h-4 border-none
+    }
+    ul {
+        @apply list-disc list-inside
+    }
+    ol {
+        @apply list-decimal list-inside
+    }
+   
+    a {
+        @apply text-blue-400 hover:text-blue-500
+    }
+
+    img {
+        @apply w-full h-auto
+    }
+    blockquote {
+        @apply border-l-4 border-borders-primary pl-2
+    };
+    pre {
+        @apply p-2 bg-base-bg-primary
+    }
+    code {
+        @apply text-sm bg-base-accent-primary py-[2px] px-1.5
+    }
+}
+
+.tech-list li::marker {
+    @apply -mt-2    
+}

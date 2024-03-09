@@ -2,9 +2,12 @@
 import { Hammer, MonitorX, Pause, Radio, Rocket, Trash2, Zap } from 'lucide-astro'
 import type { PROJECT_STATUS } from '../../types'
 interface Props {
-    status: PROJECT_STATUS
+    status: PROJECT_STATUS,
+    size?: number
 }
 const { status } = Astro.props
+
+const size = Astro.props.size ?? 24;
 
 const getColour = (status: PROJECT_STATUS) => {
     if (status == "DEVELOPMENT") return "#a25fed";
@@ -16,25 +19,25 @@ const getColour = (status: PROJECT_STATUS) => {
 
 const colour = getColour(status);
 ---
-<div class="flex flex-row gap-2 border border-borders-primary rounded w-max px-2 py-1" style={{color: colour}}>
+<div class="flex flex-row gap-1 border border-borders-primary rounded w-max px-2 py-1 items-center" style={{color: colour}}>
     <span>
         {
             [status].map((s: PROJECT_STATUS) => {
                 switch (s) {
                     case 'DEVELOPMENT':
-                        return <Hammer />
+                        return <Hammer size={size} />
                     case 'LIVE':
-                        return <Radio />
+                        return <Radio size={size} />
                     case 'PAUSED':
-                        return <Pause />
+                        return <Pause size={size} />
                     case 'STOPPED':
-                        return <MonitorX />
+                        return <MonitorX size={size} />
                     case 'RELEASED':
-                        return <Rocket />
+                        return <Rocket size={size} />
                     case 'ABANDONED':
-                        return <Trash2 />
+                        return <Trash2 size={size} />
                     case "FINISHED":
-                        return <Zap />
+                        return <Zap size={size} />
                 }
                 return <div>N/A</div>
             })
