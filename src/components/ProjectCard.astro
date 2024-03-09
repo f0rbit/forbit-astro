@@ -15,7 +15,7 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? [];
 ---
 
 <div id={project.project_id} class="flex items-center flex-col gap-4 rounded border border-borders-primary px-2 py-1 text-base-text-secondary">
-    <h2 class="text-2xl">{project.name}</h2>
+    <a href={`/projects/${project.project_id}`}><h2 class="text-2xl hover:text-blue-500">{project.name}</h2></a>
     <p class="w-full h-full px-4">{project.description}</p>
     <div class="flex flex-row gap-2 flex-wrap justify-center">
         <Status status={project.status} />
