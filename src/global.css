@@ -112,7 +112,7 @@ article code {
         @apply p-2 bg-base-bg-primary
     }
     code {
-        @apply text-sm bg-base-accent-primary py-[2px] px-1.5
+        @apply text-sm bg-base-accent-primary py-[2px] px-1.5 flex
     }
 }
 
