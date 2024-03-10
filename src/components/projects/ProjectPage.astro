@@ -6,6 +6,7 @@ import remarkHtml from 'remark-html'
 import TechnologyIcon from './TechnologyIcon.astro'
 import Status from './Status.astro'
 import { Github } from 'lucide-astro'
+import PublishTime from '../blog/PublishTime'
 
 interface Props {
     project: Project
@@ -53,7 +54,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         )
     }
 </div>
-{project.updated_at ? <div class="text-sm mt-1">Last updated: {new Date(project.updated_at).toLocaleDateString()}</div> : null}
+{project.updated_at ? <div class="text-sm mt-1"><span>Last updated </span><PublishTime client:load date={project.updated_at} /></div> : null}
 
 <h2 class="mt-2">Description</h2>
 <p>{project.description}</p>

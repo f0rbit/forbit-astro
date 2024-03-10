@@ -25,7 +25,7 @@ export const prerender = false
                 <>
                     <h1 class="text-4xl" transition:name={"title-"+post.slug}>{post.title}</h1>
                     {/*<date>Published {moment(post.published_at).calendar({sameElse: "DD/MM/yyyy"})}</date>*/}
-                    <PublishTime client:load date={post.published_at} />
+                    <div><span>Published </span><PublishTime client:load date={post.published_at} /></div>
                     <article>{parsed}</article>
                 </>
             )

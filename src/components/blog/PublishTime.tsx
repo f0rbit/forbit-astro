@@ -22,8 +22,7 @@ export default function PublishTime(props: Props) {
 
     return (
         <>
-        <span className="text-base-text-subtle">Published </span>
-        <time dateTime={date} className="text-base-text-subtle lowercase" title={title}>{time}</time>
+        <time dateTime={date} className="lowercase" title={title}>{time}</time>
         </>
     )
 }
