@@ -8,8 +8,8 @@
     - [ ] Reddit Post Component
 - [x] Add Technologies to projects
 - [ ] Investigate the old site and locate missing data and then hardcode that data for now
-- [ ] Add project sub-pages
-    - [ ] Include specification rendered in markdown
+- [x] Add project sub-pages
+    - [x] Include specification rendered in markdown
     - [ ] Have an area where if it's got a github link, we would display recent activity from media-timeline
 - [x] What I'm working on section
 - [ ] Hobby Cards
