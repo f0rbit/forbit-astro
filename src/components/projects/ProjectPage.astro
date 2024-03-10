@@ -7,6 +7,7 @@ import TechnologyIcon from './TechnologyIcon.astro'
 import Status from './Status.astro'
 import { Github } from 'lucide-astro'
 import PublishTime from '../blog/PublishTime'
+import Timeline from '../activity/Timeline.astro'
 
 interface Props {
     project: Project
@@ -54,7 +55,16 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         )
     }
 </div>
-{project.updated_at ? <div class="text-sm mt-1"><span>Last updated </span><PublishTime client:load date={project.updated_at} /></div> : null}
+{
+    project.updated_at ? (
+        <div class="text-sm mt-1">
+            <>
+                <span>Last updated </span>
+                <PublishTime client:load date={project.updated_at} />
+            </>
+        </div>
+    ) : null
+}
 
 <h2 class="mt-2">Description</h2>
 <p>{project.description}</p>
@@ -91,6 +101,12 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     ) : null
 }
 
+{
+    project.repo_url ? (
+        <Timeline project_repo={project.repo_url} limit={10} group_commits={false} /> 
+    ) : null
+}
+
 <!-- TODO: screenshots -->
 
 <!-- TODO: recent releases -->
@@ -98,5 +114,3 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 <!-- TODO: recent commits -->
 
 <!-- TODO: roadmap -->
-
-
