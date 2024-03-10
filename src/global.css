@@ -108,11 +108,14 @@ article code {
     blockquote {
         @apply border-l-4 border-borders-primary pl-2
     };
+    pre > code {
+        @apply flex
+    }
     pre {
         @apply p-2 bg-base-bg-primary
     }
     code {
-        @apply text-sm bg-base-accent-primary py-[2px] px-1.5 flex
+        @apply text-sm bg-base-accent-primary py-[2px] px-1.5 inline-flex
     }
 }
 
