@@ -4,13 +4,16 @@ import moment from 'moment'
 interface Props {
     limit: number | null
     group_commits: boolean
+    project_repo?: string,
 }
 
-const { limit, group_commits } = Astro.props
+const { limit, group_commits, project_repo = null } = Astro.props
 
 const activity = await fetchTimeline();
 
 let events = getTimeline(activity, group_commits)
+
+if (project_repo) events = events.filter((event: any) => event.permalink && event.permalink.includes(project_repo));
 
 // limit the response
 if (limit) events = events.slice(0, limit)
@@ -20,7 +23,7 @@ if (limit) events = events.slice(0, limit)
     <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3"></div>
     <div class="flex flex-col gap-2 w-[40rem]" style={{maxWidth: "min(100%, 90vw)"}}>
         {
-            events.map((event) => {
+            events.map((event: any) => {
                 return (
                     <div class="relative">
                         <div class="w-2 h-2 rounded-full bg-base-text-subtlish -left-[23.5px] top-2 absolute" />
