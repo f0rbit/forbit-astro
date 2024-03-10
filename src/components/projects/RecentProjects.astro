@@ -2,7 +2,7 @@
 import ProjectList from './ProjectList.astro'
 import { getProjects } from '../../utils';
 const projects = await getProjects();
-const recent_projects = projects.slice(0,3).sort((a, b) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()) ?? []
+const recent_projects = projects.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 3) ?? []
 ---
 
 <ProjectList select={null} projects={recent_projects} />
