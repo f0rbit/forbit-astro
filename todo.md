@@ -7,10 +7,11 @@
     - [ ] Tweet Component
     - [ ] Reddit Post Component
 - [x] Add Technologies to projects
-- [ ] Investigate the old site and locate missing data and then hardcode that data for now
+- [x] Investigate the old site and locate missing data and then hardcode that data for now
+    - [ ] Add all the old technologies (frameworks, platforms, applications, etc.)
 - [x] Add project sub-pages
     - [x] Include specification rendered in markdown
-    - [ ] Have an area where if it's got a github link, we would display recent activity from media-timeline
+    - [x] Have an area where if it's got a github link, we would display recent activity from media-timeline (using old posts data structure, media-timeline not done yet.)
 - [x] What I'm working on section
 - [ ] Hobby Cards
     - [ ] Get these to go to relevant pages
