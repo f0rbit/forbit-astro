@@ -20,7 +20,7 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 const parsed = project.specification ? await remark().use(remarkHtml).process(project.specification) : null
 ---
 
-<section class="flex-grow w-max flex flex-col">
+<section class="flex-grow w-full flex flex-col">
 <div class="flex flex-row gap-3 justify-left items-center">
     <h1>{project.name}</h1>
     {
@@ -99,7 +99,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 }
 </section>
 
-<section class="flex flex-col gap-2 w-[400px]">
+<section class="flex flex-col gap-2 w-[400px]" style={{ width: "min(400px, 100%)"}}>
 {
     project.repo_url ? (
         <>
