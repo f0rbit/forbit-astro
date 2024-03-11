@@ -1,0 +1,23 @@
+---
+interface Props {
+    commits: any[]
+}
+
+const { commits } = Astro.props;
+---
+
+<div class="flex flex-row gap-3 p-2">
+    <div class="w-[1px] bg-borders-primary"></div>
+    <div>
+        {
+            commits.map((commit: any) => (
+                <p>
+                    <a href={commit.permalink}>
+                        <span class="font-mono">{commit.sha.slice(0, 7)}</span>
+                    </a>{' '}
+                    - <span>{commit.title}</span>
+                </p>
+            ))
+        }
+    </div>
+</div>

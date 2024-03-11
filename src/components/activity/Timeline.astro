@@ -1,19 +1,21 @@
 ---
-import { fetchTimeline, getTimeline } from "../../utils";
+import { ChevronDown, ChevronUp } from 'lucide-astro'
+import { fetchTimeline, getTimeline } from '../../utils'
 import moment from 'moment'
+import CommitList from './CommitList.astro'
 interface Props {
     limit: number | null
     group_commits: boolean
-    project_repo?: string,
+    project_repo?: string
 }
 
 const { limit, group_commits, project_repo = null } = Astro.props
 
-const activity = await fetchTimeline();
+const activity = await fetchTimeline()
 
 let events = getTimeline(activity, group_commits)
 
-if (project_repo) events = events.filter((event: any) => event.permalink && event.permalink.includes(project_repo));
+if (project_repo) events = events.filter((event: any) => event.permalink && event.permalink.includes(project_repo))
 
 // limit the response
 if (limit) events = events.slice(0, limit)
@@ -21,7 +23,7 @@ if (limit) events = events.slice(0, limit)
 
 <div class="relative pl-10">
     <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3"></div>
-    <div class="flex flex-col gap-2 w-[40rem]" style={{maxWidth: "min(100%, 90vw)"}}>
+    <div class="flex flex-col gap-2 w-[40rem]" style={{ maxWidth: 'min(100%, 90vw)' }}>
         {
             events.map((event: any) => {
                 return (
@@ -32,21 +34,28 @@ if (limit) events = events.slice(0, limit)
                             <h3 class="text-base-text-secondary">{event.title ?? ''}</h3>
                         </div>
                         <div class="pl-5">
-                        {event.category == 'GITHUB' && (
-                            <p class="text-sm">
-                                <a href={event.permalink} class="font-mono">{event.sha.slice(0, 7)}</a> - <a href={`https://github.com/f0rbit/${event.project}`}>forbit/{event.project}</a>
-                            </p>
-                        )}
-                        {event.category == 'COMMITS' && (
-                            <details>
-                                <summary class="cursor-pointer">{event.commits.length} Commits</summary>
-                                {event.commits.map((commit: any) => (
-                                    <p>
-                                        <span class="font-mono">{commit.sha.slice(0, 7)}</span> - <span>{commit.title}</span>
-                                    </p>
-                                ))}
-                            </details>
-                        )}
+                            {event.category == 'GITHUB' && (
+                                <p class="text-sm">
+                                    <a href={event.permalink} class="font-mono">
+                                        {event.sha.slice(0, 7)}
+                                    </a>{' '}
+                                    - <a href={`https://github.com/f0rbit/${event.project}`}>forbit/{event.project}</a>
+                                </p>
+                            )}
+                            {event.category == 'COMMITS' && (
+event.commits?.length > 5 ? 
+                                <details>
+                                    <summary class="cursor-pointer flex border-1 border-borders-primary rounded px-2 justify-center items-center">
+                                        <span>
+                                            <ChevronDown class="down-arrow" />
+                                            <ChevronUp class="up-arrow hidden" />
+                                        </span>
+                                        <span>{event.commits.length} Commits</span>
+                                    </summary>
+                                    <CommitList commits={event.commits} />
+                                </details>
+: <CommitList commits={event.commits} /> 
+                            )}
                         </div>
                     </div>
                 )
@@ -54,3 +63,19 @@ if (limit) events = events.slice(0, limit)
         }
     </div>
 </div>
+
+{/* the commits summary ::marker state should hide/show the different chevrons */}
+<style>
+    .down-arrow {
+        display: block;
+    }
+    .up-arrow {
+        display: none;
+    }
+    details[open] .down-arrow {
+        display: none;
+    }
+    details[open] .up-arrow {
+        display: block;
+    }
+</style>
