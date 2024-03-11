@@ -20,6 +20,7 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 const parsed = project.specification ? await remark().use(remarkHtml).process(project.specification) : null
 ---
 
+<section class="flex-grow w-max flex flex-col">
 <div class="flex flex-row gap-3 justify-left items-center">
     <h1>{project.name}</h1>
     {
@@ -72,12 +73,8 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 {
     project.specification ? (
         <>
-            <details class="mt-2">
-                <summary class="cursor-pointer">
-                    <h2 class="inline-flex">Specification</h2>
-                </summary>
-                <div class="specification">{parsed}</div>
-            </details>
+            <h2 class="mt-2 -mb-2">Specification</h2>
+            <div class="specification">{parsed}</div>
         </>
     ) : null
 }
@@ -100,17 +97,21 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         </>
     ) : null
 }
+</section>
 
+<section class="flex flex-col gap-2 w-[400px]">
 {
     project.repo_url ? (
-        <Timeline project_repo={project.repo_url} limit={10} group_commits={false} /> 
+        <>
+            <h2>Recent Commits</h2>
+            <Timeline project_repo={project.repo_url} limit={10} group_commits={false} /> 
+        </>
     ) : null
 }
+</section>
 
 <!-- TODO: screenshots -->
 
 <!-- TODO: recent releases -->
-
-<!-- TODO: recent commits -->
 
 <!-- TODO: roadmap -->

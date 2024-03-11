@@ -13,6 +13,6 @@ const project = project_id ? await getProject(project_id) : null
 <Page title={`Project - ${project?.name ?? '404'}`} description={project ? `Project page for ${project.name}` : `Invalid project`}>
     <Navigation home={false} />
     <CenteredContainer tag="div" class="flex flex-col gap-2 overflow-x-hidden">
-        {project ? <main><ProjectPage project={project} /></main> : <p class="text-red-500 text-center">Invalid Project!</p>}
+        {project ? <main class="flex xl:flex-row flex-col gap-y-2"><ProjectPage project={project} /></main> : <p class="text-red-500 text-center">Invalid Project!</p>}
     </CenteredContainer>
 </Page>
