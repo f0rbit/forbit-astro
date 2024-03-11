@@ -194,7 +194,7 @@ export function getTimeline(activities: any, group_commits: any) {
                 category: 'COMMITS',
                 commits: commits.slice().reverse(),
                 date: commits[commits.length - 1].date,
-                title: `${commits.length} Commits to f0rbit/${commits[0].project}`,
+                title: `${commits.length} commits to f0rbit/${commits[0].project}`,
                 project: commits[0].project,
             })
             commits = []
