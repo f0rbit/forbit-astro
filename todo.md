@@ -3,7 +3,7 @@
 - [x] Blog Posts
 - [x] Contact Information footer
 - [ ] Recent Activity Timeline
-    - [ ] Commit Component Styling
+    - [x] Commit Component Styling
     - [ ] Tweet Component
     - [ ] Reddit Post Component
 - [x] Add Technologies to projects
