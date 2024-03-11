@@ -83,7 +83,7 @@ article {
         @apply border-l-4 border-borders-primary pl-2
     };
     pre > code {
-        @apply flex p-3 rounded border border-borders-primary
+        @apply flex p-3 rounded border border-borders-primary overflow-auto
     }
     pre {
         @apply p-2 bg-base-bg-primary
