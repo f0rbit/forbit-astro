@@ -23,7 +23,7 @@ if (limit) events = events.slice(0, limit)
 
 <div class="relative pl-10">
     <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3"></div>
-    <div class="flex flex-col gap-2 w-[40rem]" style={{ maxWidth: 'min(100%, 90vw)' }}>
+    <div class="flex flex-col" style={{ maxWidth: 'min(100%, 90vw)', width: 'min(85vw, 35rem)' }}>
         {
             events.map((event: any) => {
                 return (
@@ -42,20 +42,21 @@ if (limit) events = events.slice(0, limit)
                                     - <a href={`https://github.com/f0rbit/${event.project}`}>forbit/{event.project}</a>
                                 </p>
                             )}
-                            {event.category == 'COMMITS' && (
-event.commits?.length > 5 ? 
-                                <details>
-                                    <summary class="cursor-pointer flex border-1 border-borders-primary rounded px-2 justify-center items-center">
-                                        <span>
-                                            <ChevronDown class="down-arrow" />
-                                            <ChevronUp class="up-arrow hidden" />
-                                        </span>
-                                        <span>{event.commits.length} Commits</span>
-                                    </summary>
+                            {event.category == 'COMMITS' &&
+                                (event.commits?.length > 5 ? (
+                                    <details>
+                                        <summary class="cursor-pointer flex border-1 border-borders-primary rounded px-2 justify-center items-center">
+                                            <span>
+                                                <ChevronDown class="down-arrow" />
+                                                <ChevronUp class="up-arrow hidden" />
+                                            </span>
+                                            <span>{event.commits.length} Commits</span>
+                                        </summary>
+                                        <CommitList commits={event.commits} />
+                                    </details>
+                                ) : (
                                     <CommitList commits={event.commits} />
-                                </details>
-: <CommitList commits={event.commits} /> 
-                            )}
+                                ))}
                         </div>
                     </div>
                 )
