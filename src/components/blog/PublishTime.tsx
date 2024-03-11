@@ -8,7 +8,7 @@ export default function PublishTime(props: Props) {
     const { date } = props;
     // if the date was withing the past 2 days we want to use fromNow()
     // other wise calendar({ sameElse: "DD/MM/yyyy" }) will be used
-    
+
     let time = null;
     if (moment(date).isAfter(moment().subtract(2, "days"))) {
         time = moment(date).fromNow();
@@ -22,7 +22,7 @@ export default function PublishTime(props: Props) {
 
     return (
         <>
-        <time dateTime={date} className="lowercase" title={title}>{time}</time>
+            <time dateTime={date} className="lowercase" title={title}>{time}</time>
         </>
     )
 }
