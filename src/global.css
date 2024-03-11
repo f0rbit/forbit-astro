@@ -20,67 +20,7 @@ html h4, html h5 {
     @apply text-lg font-semibold text-base-text-secondary
 }
 
-article {
-    @apply text-lg
-}
-
-article h1 {
-    @apply text-5xl
-}
-article h2 {
-    @apply text-3xl
-}
-article h3 {
-    @apply text-2xl
-}
-
-
-article h1, article h2, article h3, article h4, article h5, article h6 {
-    @apply mt-4 mb-1
-}
-
-article hr {
-    @apply h-4 border-none
-}
-
-article p {
-    @apply mb-2
-}
-
-article ul {
-    @apply list-disc list-inside
-}
-
-article ol {
-    @apply list-decimal list-inside
-}
-
-
-article a {
-    @apply text-blue-400 hover:text-blue-500
-}
-
-article img {
-    @apply w-full h-auto
-}
-
-article blockquote {
-    @apply border-l-4 border-borders-primary pl-2
-}
-
-article pre {
-    @apply p-2 bg-base-bg-primary
-}
-
-article code {
-    @apply text-sm bg-base-accent-primary py-[2px] px-1.5
-}
-
-.specification {
-    h1, h2, h3, h4, h5, h6 {
-        @apply mt-4 mb-1
-    }
-
+article.specification {
     h1 {
         @apply text-2xl font-bold text-base-text-primary
     }
@@ -88,6 +28,29 @@ article code {
     h2 {
         @apply text-xl font-bold text-base-text-secondary
     }
+    h3 {
+        @apply text-lg font-semibold text-base-text-secondary
+    }
+}
+
+
+article {
+    h1, h2, h3, h4, h5, h6 {
+        @apply mt-4 mb-1
+    }
+    h1 {
+        @apply text-5xl
+    }
+    h2 {
+        @apply text-3xl
+    }
+    h3 {
+        @apply text-2xl
+    }
+    h4,h5 {
+        @apply text-xl
+    }
+
     hr {
         @apply h-4 border-none
     }
@@ -96,6 +59,17 @@ article code {
     }
     ol {
         @apply list-decimal list-inside
+    }
+
+    ul > li > ul > li, ol > li > ol > li {
+        @apply ml-6
+    }
+    ul > li > ul > li > ul > li, ol > li > ol > li > ol > li {
+        @apply ml-6
+    }
+
+    ul > li::marker, ol > li::marker {
+        @apply text-base-text-dark
     }
    
     a {
@@ -109,7 +83,7 @@ article code {
         @apply border-l-4 border-borders-primary pl-2
     };
     pre > code {
-        @apply flex
+        @apply flex p-3 rounded border border-borders-primary
     }
     pre {
         @apply p-2 bg-base-bg-primary
