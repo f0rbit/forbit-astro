@@ -11,7 +11,7 @@ interface Props {
 
 const { project } = Astro.props
 
-const technologies: Technology[] = TECH_MAP[project.project_id] ?? [];
+const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 ---
 
 <div id={project.project_id} class="flex items-center flex-col gap-4 rounded border border-borders-primary px-2 py-1 text-base-text-secondary">
@@ -19,10 +19,33 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? [];
     <p class="w-full h-full px-4">{project.description}</p>
     <div class="flex flex-row gap-2 flex-wrap justify-center">
         <Status status={project.status} />
-        {project.repo_url && <div class="rounded border border-borders-primary px-2 py-1 font-bold"><a href={project.repo_url} class="flex flex-row gap-1"><Github /><p>GitHub</p></a></div>}
-        {project.link_url && <div class="rounded border border-borders-primary px-2 py-1 font-bold"><a href={project.link_url}>{project.link_text}</a></div>}
-        {technologies.length > 0 && <div class="rounded border border-borders-primary px-2 py-1 font-bold flex flex-row gap-1 items-center">
-            {technologies.map((tech: Technology) => <TechnologyIcon tech={tech} />)}
-        </div>}
+        {
+            project.repo_url && (
+                <div class="rounded border border-borders-primary px-2 py-1 font-bold">
+                    <a href={project.repo_url} class="flex flex-row gap-1">
+                        <>
+                            <Github />
+                            <p>GitHub</p>
+                        </>
+                    </a>
+                </div>
+            )
+        }
+        {
+            project.link_url && (
+                <div class="rounded border border-borders-primary px-2 py-1 font-bold">
+                    <a href={project.link_url}>{project.link_text}</a>
+                </div>
+            )
+        }
+        {
+            technologies.length > 0 && (
+                <div class="rounded border border-borders-primary px-2 py-1 font-bold flex flex-row gap-1 items-center">
+                    {technologies.map((tech: Technology) => (
+                        <TechnologyIcon tech={tech} />
+                    ))}
+                </div>
+            )
+        }
     </div>
 </div>

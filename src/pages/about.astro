@@ -11,17 +11,21 @@ import { skills } from '../assets/skills'
 const hobbies = [
     {
         title: "Photography",
-        background: "\"https://images.pexels.com/photos/12882429/pexels-photo-12882429.jpeg\""
+        background: "\"https://images.pexels.com/photos/12882429/pexels-photo-12882429.jpeg\"",
+        url: "https://www.flickr.com/tmaterne/"
     },
     {
         title: "Painting",
         background: "https://images.squarespace-cdn.com/content/5942c23d8419c2dea969941a/1594788901787-3H2JUWI1097AF8HV6OMI/YT_PWMChallenge.png?content-type=image%2Fpng",
+        url: null
     }, {
         title: "Music",
-        background: "https://preview.redd.it/started-a-vinyl-collection-in-september-its-grown-very-fast-v0-n2xm1g3iz7dc1.jpeg?width=1080&crop=smart&auto=webp&s=c055e82d09fdff2d230486115176ef0771e9377d"
+        background: "https://preview.redd.it/started-a-vinyl-collection-in-september-its-grown-very-fast-v0-n2xm1g3iz7dc1.jpeg?width=1080&crop=smart&auto=webp&s=c055e82d09fdff2d230486115176ef0771e9377d",
+        url: null
     }, {
         title: "Badminton",
-        background: "https://www.westtorrens.sa.gov.au/files/content/public/v/2/events-directory/come-and-try-badminton-session-a/badminton.png?w=1200"
+        background: "https://www.westtorrens.sa.gov.au/files/content/public/v/2/events-directory/come-and-try-badminton-session-a/badminton.png?w=1200",
+        url: null
     }
 ]
 
@@ -53,11 +57,15 @@ export const prerender = false;
         <section id="hobbies">
             <h2>Hobbies</h2>
             <div class="grid gap-2 p-2 grid-cols-2 xl:grid-cols-4">
-            {Object.values(hobbies).map(({title, background}) => (<div class="flex justify-center items-center rounded border-borders-primary border bg-cover h-24"}} style={{backgroundImage: `url(${background})`}}>
-                <div class="w-full h-full bg-[rgba(0,0,0,0.5)] flex justify-center items-center">
-                    <h3 class="text-2xl drop-shadow-sm text-white text-center">{title}</h3>
+            {Object.values(hobbies).map(({ title, background, url }) => (
+            <a href={url}>
+                <div class="flex justify-center items-center rounded border-borders-primary border bg-cover h-24"}} style={{backgroundImage: `url(${background})`}}>
+                    <div class="w-full h-full bg-[rgba(0,0,0,0.5)] flex justify-center items-center">
+                        <h3 class="text-2xl drop-shadow-sm text-white text-center">{title}</h3>
+                    </div>
                 </div>
-            </div>))}
+            </a>
+            ))}
         </section>
         <section id="skillset">
             <h2>Skills</h2>

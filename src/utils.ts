@@ -26,7 +26,7 @@ export async function getProjects() {
     if (PROJECT_CACHE.last_fetched != null && (Date.now() - PROJECT_CACHE.last_fetched.getTime() < PROJECT_CACHE.interval)) {
         console.log("PROJECTS: cache hit");
         return PROJECT_CACHE.data;
-    }  
+    }
     PROJECT_CACHE.last_fetched = null;
     const projects_url = `https://devpad.tools/api/projects?user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
     const project_response = await fetch(projects_url);
@@ -44,7 +44,7 @@ export async function getProject(project_id: string) {
     // check to see if cache is recent
     if (PROJECT_CACHE.last_fetched != null && (Date.now() - PROJECT_CACHE.last_fetched.getTime() < PROJECT_CACHE.interval)) {
         console.log("FETCH_PROJECT: cache hit");
-        
+
         // search through cache to see if we have the project
         const project = PROJECT_CACHE.data.find((p) => p.project_id == project_id);
         if (project) return project;
@@ -132,13 +132,13 @@ export async function getBlogPosts() {
     }
     BLOG_CACHE.last_fetched = null;
     const posts: Post[] = [];
-	const dev_posts_raw = await fetchDevToAPI("https://dev.to/api/articles/me");
+    const dev_posts_raw = await fetchDevToAPI("https://dev.to/api/articles/me");
     const dev_posts: Post[] = dev_posts_raw ? dev_posts_raw.map((p: any) => ({ ...p, group: BLOG_GROUP.DEVTO })) : [];
     posts.push(...dev_posts);
     const local_posts = await getBlogServerPosts();
     posts.push(...local_posts);
     // then sort
-    posts.sort((a,b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+    posts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
     BLOG_CACHE.last_fetched = new Date();
     BLOG_CACHE.data = posts;
     console.log("BLOG: new entry");
