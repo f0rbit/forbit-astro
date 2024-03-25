@@ -77,7 +77,7 @@ article {
     }
 
     img {
-        @apply w-full h-auto
+        @apply w-full h-auto border border-borders-primary rounded p-1
     }
     blockquote {
         @apply border-l-4 border-borders-primary pl-2
