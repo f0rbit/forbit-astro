@@ -89,7 +89,7 @@ function parseDevBlog(post: any): Post {
     post.tag_list = post.tags;
     post.group = BLOG_GROUP.DEV;
     post.tag_list = post.tags;
-    post.description = post.content.substring(0, 80);
+    if (!post.description) post.description = post.content.substring(0, 80);
     post.published_at = post.publish_at;
 
     return post;
