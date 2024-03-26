@@ -31,7 +31,15 @@ const caches = {
         invalid_response: false,
         data: [], 
         fetch: fetch_blog
-    } as StaleCache<Post[]>
+    } as StaleCache<Post[]>,
+    'timeline': {
+        name: 'TIMELINE',
+        interval: DEFAULT_CACHE_INTERVAL,
+        last_fetched: null,
+        invalid_response: false,
+        data: [],
+        fetch: fetch_timeline
+    } as StaleCache<any[]>
 } as const;
 
 export function formatDuration(duration: Duration) {
@@ -53,15 +61,16 @@ export async function getProjects() {
 async function get_data<T>(cache: StaleCache<T>) {
     const log_cache: any = { ...cache }
     log_cache['data'] = log_cache['data'].length;
-    console.log(log_cache);
+    //console.log(log_cache);
 
     switch (cache_status(cache)) {
         case "fresh": {
-            console.log("PROJECTS: cache hit");
+            console.log(`${cache.name}: cache hit`);
             return cache.data;
         }
         case "stale": {
-            const response = { ...cache.data };
+            const response = structuredClone(cache.data); // avoid race condition collision
+            console.log(`${cache.name}: stale`);
             update_cache(cache);
             return response;
         }
@@ -192,6 +201,7 @@ async function fetch_blog() {
     posts.push(...local_posts);
     // then sort
     posts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+    console.log("BLOG: new entry");
     return { data: posts, invalid_response: false };
 }
 
@@ -213,24 +223,19 @@ export async function getBlogPost(group: BlogGroup, slug: string): Promise<Post 
     }
 }
 
-const TIMELINE_CACHE = {
-    interval: DEFAULT_CACHE_INTERVAL,
-    last_fetched: null as Date | null,
-    data: [] as any[]
+async function fetch_timeline() {
+    const response = await fetch(import.meta.env.POSTS_URL);
+    if (!response || !response.ok) {
+        console.error("TIMELINE: fetch error");
+        return { data: [], invalid_response: true };
+    }
+    const activity = await (await fetch(import.meta.env.POSTS_URL)).json()
+    console.log("TIMELINE: new entry");
+    return { data: activity as any[], invalid_response: false }
 }
 
 export async function fetchTimeline() {
-    if (TIMELINE_CACHE.last_fetched != null && (Date.now() - TIMELINE_CACHE.last_fetched.getTime() < TIMELINE_CACHE.interval)) {
-        console.log("TIMELINE: cache hit");
-        return TIMELINE_CACHE.data;
-    }
-    TIMELINE_CACHE.last_fetched = null;
-    /** @todo add error handling */
-    const activity = await (await fetch(import.meta.env.POSTS_URL)).json()
-    TIMELINE_CACHE.last_fetched = new Date();
-    TIMELINE_CACHE.data = activity;
-    console.log("TIMELINE: new entry");
-    return activity;
+    return await get_data(caches['timeline']);
 }
 
 /** @todo fix typings */
