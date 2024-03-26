@@ -1,7 +1,28 @@
 import type { Duration } from "moment";
 import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 
-const DEFAULT_CACHE_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const DEFAULT_CACHE_INTERVAL = 30 * 1000; // 10 minutes
+
+// define a type for consistent cache behaviour
+type StaleCache<T> = {
+    interval: number,
+    last_fetched: Date | null,
+    invalid_response: boolean,
+    data: T,
+    fetch: () => DataFetch<T>,
+}
+
+type DataFetch<T> = Promise<{ data: T, invalid_response: boolean }>;
+
+const caches = {
+    'project': {
+        interval: DEFAULT_CACHE_INTERVAL,
+        last_fetched: null,
+        invalid_response: false,
+        data: [],
+        fetch: fetch_projects
+    } as StaleCache<Project[]>
+}
 
 export function formatDuration(duration: Duration) {
     if (duration.asMonths() >= 16) {
@@ -23,21 +44,54 @@ const PROJECT_CACHE = {
 }
 
 export async function getProjects() {
-    if (PROJECT_CACHE.last_fetched != null && (Date.now() - PROJECT_CACHE.last_fetched.getTime() < PROJECT_CACHE.interval)) {
-        console.log("PROJECTS: cache hit");
-        return PROJECT_CACHE.data;
+    const cache = caches['project'];
+    const log_cache: any = { ...cache }
+    log_cache['data'] = log_cache['data'].length;
+    console.log(log_cache);
+    // check for cache hit
+    if (cache.last_fetched != null) {
+        const time_gap = Date.now() - cache.last_fetched.getTime();
+        if (time_gap < cache.interval) {
+            console.log("PROJECTS: cache hit");
+            // direct cache hit
+            return cache.data;
+        } else {
+            console.log("PROJECTS: stale");
+            // stale hit
+            const response = structuredClone(cache.data); // to stop any race conditions
+            update_cache(cache);
+            return response;
+        }
+    } else {
+        // otherwise just refetch
+        await update_cache(cache);
+        return cache.data;
     }
-    PROJECT_CACHE.last_fetched = null;
+}
+
+async function update_cache<T>(cache: StaleCache<T>) {
+    // perform fetch
+    const response = await cache.fetch();
+    cache.data = response.data;
+    cache.invalid_response = response.invalid_response;
+    cache.last_fetched = new Date();
+}
+
+async function fetch_projects() {
     const projects_url = `https://devpad.tools/api/projects?user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
     const project_response = await fetch(projects_url);
-    if (!project_response || project_response.ok == false) { PROJECT_CACHE.invalid_response = true; return [] };
+    if (!project_response || project_response.ok == false) {
+        console.error("PROJECTS: fetch error");
+        return { data: [], invalid_response: true };
+    }
     const project_result = (await project_response.json()) as ApiResult<Project[]>;
-    if (!project_result.success) { PROJECT_CACHE.invalid_response = true; return [] };
-    PROJECT_CACHE.last_fetched = new Date();
+    if (!project_result.success) { 
+        console.error("PROJECTS: result error");
+        return { data: [], invalid_response: false };
+    };
     const data = project_result.data.filter((p) => p.visibility == PROJECT_VISIBILITY.PUBLIC);
-    PROJECT_CACHE.data = data;
     console.log("PROJECTS: new entry");
-    return data;
+    return { data: data, invalid_response: false };
 }
 
 export async function getProject(project_id: string) {
