@@ -5,6 +5,7 @@ const DEFAULT_CACHE_INTERVAL = 30 * 1000; // 10 minutes
 
 // define a type for consistent cache behaviour
 type StaleCache<T> = {
+    name: string,
     interval: number,
     last_fetched: Date | null,
     invalid_response: boolean,
@@ -16,13 +17,22 @@ type DataFetch<T> = Promise<{ data: T, invalid_response: boolean }>;
 
 const caches = {
     'project': {
+        name: 'PROJECTS',
         interval: DEFAULT_CACHE_INTERVAL,
         last_fetched: null,
         invalid_response: false,
         data: [],
         fetch: fetch_projects
-    } as StaleCache<Project[]>
-}
+    } as StaleCache<Project[]>,
+    'blog': {
+        name: 'BLOG',
+        interval: DEFAULT_CACHE_INTERVAL,
+        last_fetched: null,
+        invalid_response: false,
+        data: [], 
+        fetch: fetch_blog
+    } as StaleCache<Post[]>
+} as const;
 
 export function formatDuration(duration: Duration) {
     if (duration.asMonths() >= 16) {
@@ -36,37 +46,37 @@ export function formatDuration(duration: Duration) {
     }
 }
 
-const PROJECT_CACHE = {
-    interval: DEFAULT_CACHE_INTERVAL,
-    last_fetched: null as Date | null,
-    invalid_response: false as boolean,
-    data: [] as Project[],
+export async function getProjects() {
+    return await get_data(caches['project']); 
 }
 
-export async function getProjects() {
-    const cache = caches['project'];
+async function get_data<T>(cache: StaleCache<T>) {
     const log_cache: any = { ...cache }
     log_cache['data'] = log_cache['data'].length;
     console.log(log_cache);
-    // check for cache hit
-    if (cache.last_fetched != null) {
-        const time_gap = Date.now() - cache.last_fetched.getTime();
-        if (time_gap < cache.interval) {
+
+    switch (cache_status(cache)) {
+        case "fresh": {
             console.log("PROJECTS: cache hit");
-            // direct cache hit
             return cache.data;
-        } else {
-            console.log("PROJECTS: stale");
-            // stale hit
-            const response = structuredClone(cache.data); // to stop any race conditions
+        }
+        case "stale": {
+            const response = { ...cache.data };
             update_cache(cache);
             return response;
         }
-    } else {
-        // otherwise just refetch
-        await update_cache(cache);
-        return cache.data;
+        case "empty": 
+        default: {
+            await update_cache(cache);
+            return cache.data;
+        }
     }
+}
+
+function cache_status<T>(cache: StaleCache<T>) {
+    if (cache.last_fetched == null) return "empty";
+    const time_gap = Date.now() - cache.last_fetched.getTime();
+    return time_gap < cache.interval ? "fresh" : "stale";
 }
 
 async function update_cache<T>(cache: StaleCache<T>) {
@@ -96,14 +106,14 @@ async function fetch_projects() {
 
 export async function getProject(project_id: string) {
     // check to see if cache is recent
-    if (PROJECT_CACHE.last_fetched != null && (Date.now() - PROJECT_CACHE.last_fetched.getTime() < PROJECT_CACHE.interval)) {
+    if (cache_status(caches['project']) != "empty") {
         console.log("FETCH_PROJECT: cache hit");
-
-        // search through cache to see if we have the project
-        const project = PROJECT_CACHE.data.find((p) => p.project_id == project_id);
+        const data = await get_data(caches['project']);
+        const project = data.find((p) => p.project_id == project_id);
         if (project) return project;
         console.log("FETCH_PROJECT: not in cache");
     }
+
     // otherwise fetch directory to api
     const project_url = `https://devpad.tools/api/project?project_id=${project_id}&user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
     const project_response = await fetch(project_url);
@@ -115,7 +125,7 @@ export async function getProject(project_id: string) {
 }
 
 export function isProjectCacheInvalid() {
-    return PROJECT_CACHE.invalid_response;
+    return caches['project'].invalid_response;
 }
 
 function getDevToHeaders(API_KEY: any) {
@@ -173,18 +183,7 @@ export async function fetchBlogPost(slug: string) {
     }
 }
 
-const BLOG_CACHE = {
-    interval: DEFAULT_CACHE_INTERVAL,
-    last_fetched: null as Date | null,
-    data: [] as Post[]
-}
-
-export async function getBlogPosts() {
-    if (BLOG_CACHE.last_fetched != null && (Date.now() - BLOG_CACHE.last_fetched.getTime() < BLOG_CACHE.interval)) {
-        console.log("BLOG: cache hit");
-        return BLOG_CACHE.data;
-    }
-    BLOG_CACHE.last_fetched = null;
+async function fetch_blog() {
     const posts: Post[] = [];
     const dev_posts_raw = await fetchDevToAPI("https://dev.to/api/articles/me");
     const dev_posts: Post[] = dev_posts_raw ? dev_posts_raw.map((p: any) => ({ ...p, group: BLOG_GROUP.DEVTO })) : [];
@@ -193,10 +192,11 @@ export async function getBlogPosts() {
     posts.push(...local_posts);
     // then sort
     posts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
-    BLOG_CACHE.last_fetched = new Date();
-    BLOG_CACHE.data = posts;
-    console.log("BLOG: new entry");
-    return posts;
+    return { data: posts, invalid_response: false };
+}
+
+export async function getBlogPosts() {
+    return await get_data(caches['blog']);
 }
 
 export async function getBlogPost(group: BlogGroup, slug: string): Promise<Post | null> {
