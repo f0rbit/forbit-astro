@@ -5,6 +5,6 @@ import BlogCard from './BlogCard.astro'
 const posts = (await getBlogPosts()).slice(0, 3)
 ---
 
-<div class="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+<div class="grid gap-2 grid-cols-1 lg:grid-cols-2 3xl:grid-cols-3">
     {posts.map((post: any) => <BlogCard post={post} />)}
 </div>
