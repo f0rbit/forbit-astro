@@ -1,7 +1,7 @@
 import type { Duration } from "moment";
 import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 
-const DEFAULT_CACHE_INTERVAL = 30 * 1000; // 10 minutes
+const DEFAULT_CACHE_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 // define a type for consistent cache behaviour
 type StaleCache<T> = {
@@ -13,6 +13,7 @@ type StaleCache<T> = {
     fetch: () => DataFetch<T>,
 }
 
+// response type for fetch_<cache> functions
 type DataFetch<T> = Promise<{ data: T, invalid_response: boolean }>;
 
 const caches = {
@@ -42,27 +43,19 @@ const caches = {
     } as StaleCache<any[]>
 } as const;
 
-export function formatDuration(duration: Duration) {
-    if (duration.asMonths() >= 16) {
-        return `${Math.round(duration.asYears())} years`;
-    } else if (duration.asMonths() >= 2) {
-        return `${Math.ceil(duration.asMonths())} months`;
-    } else if (duration.asDays() >= 3) {
-        return `${Math.ceil(duration.asDays())} days`;
-    } else {
-        return `${Math.ceil(duration.asHours())} hours`;
-    }
-}
-
 export async function getProjects() {
     return await get_data(caches['project']); 
 }
 
-async function get_data<T>(cache: StaleCache<T>) {
-    const log_cache: any = { ...cache }
-    log_cache['data'] = log_cache['data'].length;
-    //console.log(log_cache);
+export async function fetchTimeline() {
+    return await get_data(caches['timeline']);
+}
 
+export async function getBlogPosts() {
+    return await get_data(caches['blog']);
+}
+
+async function get_data<T>(cache: StaleCache<T>) {
     switch (cache_status(cache)) {
         case "fresh": {
             console.log(`${cache.name}: cache hit`);
@@ -96,7 +89,7 @@ async function update_cache<T>(cache: StaleCache<T>) {
     cache.last_fetched = new Date();
 }
 
-async function fetch_projects() {
+async function fetch_projects(): DataFetch<Project[]> {
     const projects_url = `https://devpad.tools/api/projects?user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
     const project_response = await fetch(projects_url);
     if (!project_response || project_response.ok == false) {
@@ -192,7 +185,7 @@ export async function fetchBlogPost(slug: string) {
     }
 }
 
-async function fetch_blog() {
+async function fetch_blog(): DataFetch<Post[]> {
     const posts: Post[] = [];
     const dev_posts_raw = await fetchDevToAPI("https://dev.to/api/articles/me");
     const dev_posts: Post[] = dev_posts_raw ? dev_posts_raw.map((p: any) => ({ ...p, group: BLOG_GROUP.DEVTO })) : [];
@@ -203,10 +196,6 @@ async function fetch_blog() {
     posts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
     console.log("BLOG: new entry");
     return { data: posts, invalid_response: false };
-}
-
-export async function getBlogPosts() {
-    return await get_data(caches['blog']);
 }
 
 export async function getBlogPost(group: BlogGroup, slug: string): Promise<Post | null> {
@@ -223,7 +212,7 @@ export async function getBlogPost(group: BlogGroup, slug: string): Promise<Post 
     }
 }
 
-async function fetch_timeline() {
+async function fetch_timeline(): DataFetch<any[]> {
     const response = await fetch(import.meta.env.POSTS_URL);
     if (!response || !response.ok) {
         console.error("TIMELINE: fetch error");
@@ -232,10 +221,6 @@ async function fetch_timeline() {
     const activity = await (await fetch(import.meta.env.POSTS_URL)).json()
     console.log("TIMELINE: new entry");
     return { data: activity as any[], invalid_response: false }
-}
-
-export async function fetchTimeline() {
-    return await get_data(caches['timeline']);
 }
 
 /** @todo fix typings */
@@ -283,3 +268,17 @@ export function getTimeline(activities: any, group_commits: any) {
 
     return event_timeline.toReversed();
 }
+
+export function formatDuration(duration: Duration) {
+    if (duration.asMonths() >= 16) {
+        return `${Math.round(duration.asYears())} years`;
+    } else if (duration.asMonths() >= 2) {
+        return `${Math.ceil(duration.asMonths())} months`;
+    } else if (duration.asDays() >= 3) {
+        return `${Math.ceil(duration.asDays())} days`;
+    } else {
+        return `${Math.ceil(duration.asHours())} hours`;
+    }
+}
+
+
