@@ -13,9 +13,11 @@ const post = await getBlogPost(group as BlogGroup, slug as string)
 const parsed = await remark().use(remarkHtml).process(post?.content ?? "no content"); 
 
 export const prerender = false
+
+const title = post.title ? post.title : "Blog Post";
 ---
 
-<Page title={slug ?? 'A blog post'} description="Blog Post">
+<Page title={title} description={post?.description ?? "Blog Post"}>
     <Navigation home={false} />
     <main class='max-w-[100ch] mx-auto px-6'>
         {
