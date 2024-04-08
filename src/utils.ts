@@ -1,6 +1,27 @@
 import type { Duration } from "moment";
 import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 
+const secrets = {
+	DEVPAD_USER_ID: process.env.VITE_DEVPAD_USER_ID ?? import.meta.env.VITE_DEVPAD_USER_ID,
+	DEVPAD_API_KEY: process.env.VITE_DEVPAD_API_KEY ?? import.meta.env.VITE_DEVPAD_API_KEY,
+	DEVTO_KEY: process.env.VITE_DEVTO_KEY ?? import.meta.env.VITE_DEVTO_KEY,
+	BLOG_URL: process.env.VITE_BLOG_URL ?? import.meta.env.VITE_BLOG_URL,
+	BLOG_TOKEN: process.env.VITE_BLOG_TOKEN ?? import.meta.env.VITE_BLOG_TOKEN,
+	POSTS_URL: process.env.VITE_POSTS_URL ?? import.meta.env.VITE_POSTS_URL,
+}
+
+let missing_secret = false;
+for (const [key, value] of Object.entries(secrets)) {
+	if (!value) {
+		console.error(`Missing secret: ${key}`);
+		missing_secret = true;
+	}
+}
+
+if (missing_secret) {
+	console.log({ "proccess": process.env, "import.meta": import.meta.env });
+}
+
 const DEFAULT_CACHE_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 // define a type for consistent cache behaviour
@@ -90,7 +111,7 @@ async function update_cache<T>(cache: StaleCache<T>) {
 }
 
 async function fetch_projects(): DataFetch<Project[]> {
-    const projects_url = `https://devpad.tools/api/projects?user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
+    const projects_url = `https://devpad.tools/api/projects?user_id=${secrets.DEVPAD_USER_ID}&api_key=${secrets.DEVPAD_API_KEY}`;
     const project_response = await fetch(projects_url);
     if (!project_response || project_response.ok == false) {
         console.error("PROJECTS: fetch error");
@@ -117,7 +138,7 @@ export async function getProject(project_id: string) {
     }
 
     // otherwise fetch directory to api
-    const project_url = `https://devpad.tools/api/project?project_id=${project_id}&user_id=${import.meta.env.DEVPAD_USER_ID}&api_key=${import.meta.env.DEVPAD_API_KEY}`;
+    const project_url = `https://devpad.tools/api/project?project_id=${project_id}&user_id=${secrets.DEVPAD_USER_ID}&api_key=${secrets.DEVPAD_API_KEY}`;
     const project_response = await fetch(project_url);
     if (!project_response || project_response.ok == false) return null;
     const project_result = (await project_response.json()) as ApiResult<Project>;
@@ -136,7 +157,7 @@ function getDevToHeaders(API_KEY: any) {
 
 export async function fetchDevToAPI(url: string) {
     try {
-        const api_key = import.meta.env.DEVTO_KEY;
+        const api_key = secrets.DEVTO_KEY;
         const response = await fetch(url, getDevToHeaders(api_key));
         if (!response || !response.ok) return null;
         const result = await response.json();
@@ -147,8 +168,8 @@ export async function fetchDevToAPI(url: string) {
 }
 
 const BLOG_ENV = {
-    url: import.meta.env.BLOG_URL,
-    key: import.meta.env.BLOG_TOKEN
+    url: secrets.BLOG_URL,
+    key: secrets.BLOG_TOKEN
 }
 
 function parseDevBlog(post: any): Post {
@@ -213,12 +234,12 @@ export async function getBlogPost(group: BlogGroup, slug: string): Promise<Post 
 }
 
 async function fetch_timeline(): DataFetch<any[]> {
-    const response = await fetch(import.meta.env.POSTS_URL);
+    const response = await fetch(secrets.POSTS_URL);
     if (!response || !response.ok) {
         console.error("TIMELINE: fetch error");
         return { data: [], invalid_response: true };
     }
-    const activity = await (await fetch(import.meta.env.POSTS_URL)).json()
+    const activity = await (await fetch(secrets.POSTS_URL)).json()
     console.log("TIMELINE: new entry");
     return { data: activity as any[], invalid_response: false }
 }
