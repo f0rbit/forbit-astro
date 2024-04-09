@@ -15,7 +15,10 @@ export const TECHNOLOGY = {
     REACT: "react",
     SOLIDJS: "solidjs",
     VUEJS: "vuejs",
-    ASTRO: "astro"
+    ASTRO: "astro",
+		TAILWIND: "tailwind",
+		NEXTJS: "nextjs",
+		PYTHON: "python"
 }
 
 export type Technology = (typeof TECHNOLOGY)[keyof typeof TECHNOLOGY];
@@ -34,8 +37,9 @@ export const TECH_MAP: Record<string, Technology[]> = {
     "forbit-dev": [TECHNOLOGY.ASTRO, TECHNOLOGY.SOLIDJS, TECHNOLOGY.TYPESCRIPT],
     "dev-blog": [TECHNOLOGY.GO, TECHNOLOGY.REACT, TECHNOLOGY.TYPESCRIPT],
     "comet-events": [TECHNOLOGY.VUEJS, TECHNOLOGY.TYPESCRIPT],
-    "todo-tracker": [TECHNOLOGY.JAVASCRIPT, TECHNOLOGY.TYPESCRIPT],
-    "java-timeline": [TECHNOLOGY.JAVA]
+    "todo-tracker": [TECHNOLOGY.JAVASCRIPT, TECHNOLOGY.GO, TECHNOLOGY.TYPESCRIPT],
+    "java-timeline": [TECHNOLOGY.JAVA],
+    "chamber": [TECHNOLOGY.NEXTJS, TECHNOLOGY.GO, TECHNOLOGY.PYTHON, TECHNOLOGY.TYPESCRIPT]
 }
 
 
