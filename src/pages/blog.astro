@@ -10,7 +10,7 @@ const posts = await getBlogPosts();
 export const prerender = false;
 ---
 
-<Page title="Blog" description="Just some of my thoughts">
+<Page title="Blog" description="Just some of my thoughts" keywords={["blog", "devblog", "programming blog"]} canonical='https://forbit.dev/blog'>
     <Navigation home={false} />
     <CenteredContainer class="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {posts.map((post) => <BlogCard post={post} />)}
