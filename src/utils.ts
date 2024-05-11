@@ -80,6 +80,7 @@ async function get_data<T>(cache: StaleCache<T>) {
     switch (cache_status(cache)) {
         case "fresh": {
             console.log(`${cache.name}: cache hit`);
+						console.log(cache.data);
             return cache.data;
         }
         case "stale": {
@@ -184,7 +185,7 @@ function parseDevBlog(post: any): Post {
 
 export async function getBlogServerPosts() {
     try {
-        const response = await fetch(`${BLOG_ENV.url}/posts`, { method: "GET", headers: { 'Auth-Token': BLOG_ENV.key } });
+        const response = await fetch(`${BLOG_ENV.url}/posts?limit=100`, { method: "GET", headers: { 'Auth-Token': BLOG_ENV.key } });
         if (!response || !response.ok) return [];
         const result = await response.json();
         if (!result || !result.posts) return [];
