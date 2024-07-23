@@ -80,7 +80,6 @@ async function get_data<T>(cache: StaleCache<T>) {
     switch (cache_status(cache)) {
         case "fresh": {
             console.log(`${cache.name}: cache hit`);
-						console.log(cache.data);
             return cache.data;
         }
         case "stale": {
