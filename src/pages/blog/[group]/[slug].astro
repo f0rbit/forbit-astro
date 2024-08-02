@@ -14,10 +14,10 @@ const parsed = await remark().use(remarkHtml).process(post?.content ?? "no conte
 
 export const prerender = false
 
-const title = post.title ? post.title : "Blog Post";
+const title = post && post.title ? post.title : "Blog Post";
 ---
 
-<Page title={title} description={post?.description ?? "Blog Post"}>
+<Page title={title} description={post?.description ?? "Blog Post"} canonical={`https://forbit.dev/blog/${group}/${slug}`}>
     <Navigation home={false} />
     <main class='max-w-[100ch] mx-auto px-6'>
         {

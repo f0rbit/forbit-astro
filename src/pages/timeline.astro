@@ -2,7 +2,7 @@
 import Page from '../layouts/Page.astro'
 import CenteredContainer from '../components/CenteredContainer.astro'
 import Navigation from '../components/Navigation.astro'
-import Timeline from "../components/activity/Timeline.astro"
+import TimelineComponent from "../components/activity/Timeline.astro"
 
 export const prerender = false;
 ---
@@ -10,6 +10,6 @@ export const prerender = false;
 <Page title="Timeline" description="All of my public recent activity on the internet" keywords={["timeline", "tweets", "commits", "log"]} canonical='https://forbit.dev/timeline'>
     <Navigation home={false} />
     <CenteredContainer class="flex justify-center">
-        <Timeline group_commits={true} limit={null} />
+        <TimelineComponent group_commits={true} limit={null} />
     </CenteredContainer>
 </Page>
