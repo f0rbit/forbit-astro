@@ -93,7 +93,7 @@ export const experience: { [id: string]: Experience } = {
         skills: [{ skill: SKILL.LEADERSHIP, events: [SKILL_EVENT_TYPE.BEGIN] }],
         awards: [{ type: AWARD_TYPE.AWARD, title: "Grill Master", description: "Awarded to the top performing staff member in kitchen over 3 months" }]
     },
-    "university": {
+    "university-cs": {
         title: "University",
         description: "I started studying Computer Science in 2021. I've always known - well at least since I was 10 - that I wanted to be a programmer. My family was always very supportive of my aspirations (my father especially, as he had already been working in this field for most of his life). University has helped me to formalise my knowledge, and gain a deeper understanding of the lower-level and foundations of programming. Before University, I only really felt confident in a couple languages, the ones that I had spent years working with; but now I believe I could pick up any new language within a day - and be able to write professional-level code within a week",
         start_date: uni_start,
