@@ -1,8 +1,9 @@
 import type { Duration } from "moment";
 import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 
+const devpad_url = "https://devpad-production-4032.up.railway.app/api/v0";
+
 const secrets = {
-  DEVPAD_USER_ID: process.env.VITE_DEVPAD_USER_ID ?? import.meta.env.VITE_DEVPAD_USER_ID,
   DEVPAD_API_KEY: process.env.VITE_DEVPAD_API_KEY ?? import.meta.env.VITE_DEVPAD_API_KEY,
   DEVTO_KEY: process.env.VITE_DEVTO_KEY ?? import.meta.env.VITE_DEVTO_KEY,
   BLOG_URL: process.env.VITE_BLOG_URL ?? import.meta.env.VITE_BLOG_URL,
@@ -110,19 +111,20 @@ async function update_cache<T>(cache: StaleCache<T>) {
   cache.last_fetched = new Date();
 }
 
+async function devpad_fetch<T>(url: string): Promise<ApiResult<T>> {
+  const response = await fetch(`${devpad_url}${url}`, { method: "GET", headers: { 'Authorization': `Bearer ${secrets.DEVPAD_API_KEY}` } });
+  if (!response || !response.ok) return { success: false, data: null } as ApiResult<T>;
+  const result = await response.json();
+  return { success: true, data: result } as ApiResult<T>;
+}
+
 async function fetch_projects(): DataFetch<Project[]> {
-  const projects_url = `https://devpad.tools/api/projects?user_id=${secrets.DEVPAD_USER_ID}&api_key=${secrets.DEVPAD_API_KEY}`;
-  const project_response = await fetch(projects_url);
-  if (!project_response || project_response.ok == false) {
+  const projects = await devpad_fetch<Project[]>("/projects");
+  if (!projects.success) {
     console.error("PROJECTS: fetch error");
     return { data: [], invalid_response: true };
   }
-  const project_result = (await project_response.json()) as ApiResult<Project[]>;
-  if (!project_result.success) {
-    console.error("PROJECTS: result error");
-    return { data: [], invalid_response: false };
-  };
-  const data = project_result.data.filter((p) => p.visibility == PROJECT_VISIBILITY.PUBLIC);
+  const data = projects.data.filter((p) => p.visibility == PROJECT_VISIBILITY.PUBLIC);
   console.log("PROJECTS: new entry");
   return { data: data, invalid_response: false };
 }
@@ -138,13 +140,10 @@ export async function getProject(project_id: string) {
   }
 
   // otherwise fetch directory to api
-  const project_url = `https://devpad.tools/api/project?project_id=${project_id}&user_id=${secrets.DEVPAD_USER_ID}&api_key=${secrets.DEVPAD_API_KEY}`;
-  const project_response = await fetch(project_url);
-  if (!project_response || project_response.ok == false) return null;
-  const project_result = (await project_response.json()) as ApiResult<Project>;
-  console.log("FETCH_PROJECT: " + project_result.success ? "success" : "failure");
-  if (!project_result.success) return null;
-  return project_result.data;
+  const project = await devpad_fetch<Project>(`/projects?name=${project_id}`);
+  console.log("FETCH_PROJECT: " + project.success ? "success" : "failure");
+  if (!project.success) return null;
+  return project.data;
 }
 
 export function isProjectCacheInvalid() {
