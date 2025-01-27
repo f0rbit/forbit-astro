@@ -1,7 +1,7 @@
 import type { Duration } from "moment";
 import { PROJECT_VISIBILITY, type ApiResult, type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 
-const devpad_url = "https://devpad-production-4032.up.railway.app/api/v0";
+const devpad_url = "https://devpad.tools/api/v0";
 
 const secrets = {
   DEVPAD_API_KEY: process.env.VITE_DEVPAD_API_KEY ?? import.meta.env.VITE_DEVPAD_API_KEY,
