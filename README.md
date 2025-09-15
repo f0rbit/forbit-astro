@@ -1,54 +1,55 @@
-# Astro Starter Kit: Basics
+# Forbit Portfolio
+
+Personal portfolio website built with Astro, showcasing my projects, experience, and blog posts. The site pulls data from external APIs including my DevPad project tracker and various blog platforms.
+
+## Tech Stack
+
+-   **Framework**: Astro with SSR (Node.js adapter)
+-   **Styling**: Tailwind CSS
+-   **UI**: Solid.js components with React components
+-   **Icons**: Astro Icon with Iconify collections
+-   **Deployment**: Static generation with dynamic routes
+
+## Project Structure
 
 ```
-npm create astro@latest -- --template basics
+src/
+├── assets/          # Static data (experience, skills, technology)
+├── components/      # Reusable UI components
+│   ├── about/       # About page components (experience, skills)
+│   ├── activity/    # Timeline and commit activity
+│   ├── blog/        # Blog post cards and listings
+│   └── projects/    # Project showcase components
+├── layouts/         # Page layouts (Home, Page)
+├── pages/           # Route definitions
+│   ├── blog/        # Dynamic blog routes [group]/[slug]
+│   ├── projects/    # Dynamic project routes [project_id]
+│   └── *.astro      # Static pages
+└── utils.ts         # API utilities and data fetching
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## Key Features
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+-   **Dynamic Content**: Projects and blog posts fetched from external APIs
+-   **Timeline View**: GitHub activity visualization with commit grouping
+-   **Skills Tracking**: Interactive experience timeline with skill progression
+-   **Multi-source Blog**: Aggregates posts from Dev.to and personal blog server
+-   **Project Showcase**: Auto-generated project pages with specifications and status
+-   **Responsive Design**: Tailwind-based responsive layouts
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## Data Sources
 
-## 🚀 Project Structure
+-   **Projects**: DevPad API for project management and tracking
+-   **Blog Posts**: Dev.to API + personal blog server
+-   **Timeline**: GitHub activity feed
+-   **Experience**: Static TypeScript data with detailed career progression
 
-Inside of your Astro project, you'll see the following folders and files:
+## Commands
 
-```
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+| Command           | Action                   |
+| ----------------- | ------------------------ |
+| `bun dev`         | Start development server |
+| `bun run build`   | Build for production     |
+| `bun run preview` | Preview production build |
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:3000`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Site deployed at [forbit.dev](https://forbit.dev)
