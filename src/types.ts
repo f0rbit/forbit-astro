@@ -51,7 +51,9 @@ export const SKILL = {
     HTML: "HTML",
     CSS: "CSS",
     LEADERSHIP: "Leadership",
-    DEPLOYMENT: "Deployment"
+    DEPLOYMENT: "Deployment",
+    AWS: "AWS",
+    AGILE: "Agile",
 }
 
 export const SKILL_EVENT_TYPE = {
