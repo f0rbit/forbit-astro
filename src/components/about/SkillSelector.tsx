@@ -38,7 +38,12 @@ function SkillComponent(props: { skills: Record<string, SkillInformation> }) {
                 {Object.entries(props.skills)
                     .filter(([id]) => id != selectedSkill())
                     .map(([id, data]) => (
-                        <button key={id} onClick={() => handleSkillClick(id)}>
+                        <button
+                            type="button"
+                            key={id}
+                            onClick={() => handleSkillClick(id)}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', width: '100%' }}
+                        >
                             <SkillCard skill={id} information={data} header={false} />
                         </button>
                     ))}
