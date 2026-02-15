@@ -129,3 +129,29 @@ article.specification h3 {
     font-weight: 600;
     color: var(--fg-muted);
 }
+
+/* Page container — replaces CenteredContainer responsive padding */
+.page-container {
+    width: 100%;
+    padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+    .page-container {
+        padding-inline: 2rem;
+    }
+}
+@media (min-width: 1024px) {
+    .page-container {
+        padding-inline: 8rem;
+    }
+}
+@media (min-width: 1280px) {
+    .page-container {
+        padding-inline: 12rem;
+    }
+}
+@media (min-width: 1700px) {
+    .page-container {
+        padding-inline: 26rem;
+    }
+}
