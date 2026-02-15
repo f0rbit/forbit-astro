@@ -1,102 +1,131 @@
-@import url('https://fonts.googleapis.com/css2?family=Sarabun&display=swap');
+/* Global element styles using @f0rbit/ui design tokens */
+
+/* Links */
 html a {
-    @apply text-blue-400 hover:text-blue-500
+    color: var(--accent);
+    text-decoration: none;
+}
+html a:hover {
+    opacity: 0.8;
 }
 
+/* Headings */
 html h1 {
-    @apply text-3xl font-bold text-base-text-primary;
-    line-height: unset;
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--fg);
 }
-
 html h2 {
-    @apply text-2xl font-bold text-base-text-primary
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--fg);
 }
-
 html h3 {
-    @apply text-xl font-bold text-base-text-secondary
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--fg-muted);
+}
+html h4,
+html h5 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--fg-muted);
 }
 
-html h4, html h5 {
-    @apply text-lg font-semibold text-base-text-secondary
+/* Article styles */
+article h1 {
+    font-size: var(--text-4xl);
+}
+article h2 {
+    font-size: var(--text-3xl);
+}
+article h3 {
+    font-size: var(--text-2xl);
+}
+article h4,
+article h5 {
+    font-size: var(--text-xl);
+}
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
 }
 
-article.specification {
-    h1 {
-        @apply text-2xl font-bold text-base-text-primary
-    }
-
-    h2 {
-        @apply text-xl font-bold text-base-text-secondary
-    }
-    h3 {
-        @apply text-lg font-semibold text-base-text-secondary
-    }
+/* Lists */
+article ul {
+    list-style: disc;
+    list-style-position: inside;
+}
+article ol {
+    list-style: decimal;
+    list-style-position: inside;
+}
+article ul > li > ul > li,
+article ol > li > ol > li {
+    margin-left: 1.5rem;
+}
+article ul > li::marker,
+article ol > li::marker {
+    color: var(--fg-faint);
 }
 
-
-article {
-    h1, h2, h3, h4, h5, h6 {
-        @apply mt-4 mb-1
-    }
-    h1 {
-        @apply text-5xl
-    }
-    h2 {
-        @apply text-3xl
-    }
-    h3 {
-        @apply text-2xl
-    }
-    h4,h5 {
-        @apply text-xl
-    }
-
-    hr {
-        @apply h-4 border-none
-    }
-    ul {
-        @apply list-disc list-inside
-    }
-    ol {
-        @apply list-decimal list-inside
-    }
-
-    ul > li > ul > li, ol > li > ol > li {
-        @apply ml-6
-    }
-    ul > li > ul > li > ul > li, ol > li > ol > li > ol > li {
-        @apply ml-6
-    }
-
-    ul > li::marker, ol > li::marker {
-        @apply text-base-text-dark
-    }
-
-    p + p {
-        @apply mt-[2ch]
-    }
-   
-    a {
-        @apply text-blue-400 hover:text-blue-500
-    }
-
-    img {
-        @apply w-full h-auto border border-borders-primary rounded p-1
-    }
-    blockquote {
-        @apply border-l-4 border-borders-primary pl-2
-    };
-    pre > code {
-        @apply flex p-3 rounded border border-borders-primary overflow-auto
-    }
-    pre {
-        @apply p-2 bg-base-bg-primary
-    }
-    code {
-        @apply text-sm bg-base-accent-primary py-[2px] px-1.5 inline-flex
-    }
+/* Spacing */
+article p + p {
+    margin-top: 2ch;
 }
 
-.tech-list li::marker {
-    @apply -mt-2    
+/* Code */
+article pre > code {
+    display: flex;
+    padding: var(--space-md);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: auto;
+}
+article pre {
+    padding: var(--space-sm);
+    background: var(--bg);
+}
+article code {
+    font-size: var(--text-sm);
+    background: var(--bg-alt);
+    padding: 2px 6px;
+    display: inline-flex;
+}
+
+/* Images */
+article img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+}
+
+/* Blockquotes */
+article blockquote {
+    border-left: 4px solid var(--border);
+    padding-left: 0.5rem;
+}
+
+/* Specification article (smaller heading scale) */
+article.specification h1 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--fg);
+}
+article.specification h2 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--fg-muted);
+}
+article.specification h3 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--fg-muted);
 }

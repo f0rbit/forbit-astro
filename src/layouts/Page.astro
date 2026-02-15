@@ -1,4 +1,6 @@
 --- 
+import "@f0rbit/ui/styles";
+
 interface Props {
 	title: string;
 	description: string;
@@ -27,8 +29,8 @@ import "../global.css";
 		{canonical ? <link rel="canonical" href={canonical} /> : null}
 		<meta name="generator" content={Astro.generator} />
 	</head>
-	<body class="text-base-text-subtlish bg-base-bg-primary">
-        <div class="pb-4" style={{minHeight: "calc(100vh - 41px)"}}>
+	<body>
+        <div style="min-height: calc(100vh - 64px); padding-bottom: 1rem;">
 		    <slot />
         </div>
         <div class="block">
