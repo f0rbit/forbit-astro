@@ -164,31 +164,31 @@ article.specification h3 {
     padding: 0.25rem 0.5rem;
 }
 
-/* Restore colored variant backgrounds (base .badge override sets transparent) */
+/* Colored variants: border + text color only, no background fill */
 .badge-success {
-    background: var(--success);
-    color: var(--success-fg);
-    border-color: transparent;
+    background: transparent;
+    color: var(--success);
+    border-color: var(--success);
 }
 .badge-error {
-    background: var(--error);
-    color: var(--error-fg);
-    border-color: transparent;
+    background: transparent;
+    color: var(--error);
+    border-color: var(--error);
 }
 .badge-warning {
-    background: var(--warning);
-    color: var(--warning-fg);
-    border-color: transparent;
+    background: transparent;
+    color: var(--warning);
+    border-color: var(--warning);
 }
 .badge-info {
-    background: var(--info);
-    color: var(--info-fg);
-    border-color: transparent;
+    background: transparent;
+    color: var(--info);
+    border-color: var(--info);
 }
 .badge-accent {
-    background: var(--accent);
-    color: var(--accent-fg);
-    border-color: transparent;
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
 /* Ensure card titles stay primary color */
