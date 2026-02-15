@@ -5,14 +5,14 @@ import { Copyright, Linkedin, Twitter, Mail } from "lucide-astro";
 <footer>
     <div class="center-wide">
         <div class="footer-content row-between">
-            <section class="row-sm text-sm text-subtle">
-                <Copyright class="h-full"/>
+            <section class="row-sm text-sm text-subtle footer-icons">
+                <Copyright />
                 <p>All Rights Reserved</p>
             </section>
-            <section class="row-sm">
-                <a href="https://twitter.com/f0rbit" class="h-full"><Twitter class="h-full" /></a>
-                <a href="https://www.linkedin.com/in/tom-materne-001" class="h-full"><Linkedin class="h-full" /></a>
-                <a href="mailto:dev@forbit.dev" class="h-full"><Mail class="h-full"/></a>
+            <section class="row-sm footer-icons">
+                <a href="https://twitter.com/f0rbit"><Twitter /></a>
+                <a href="https://www.linkedin.com/in/tom-materne-001"><Linkedin /></a>
+                <a href="mailto:dev@forbit.dev"><Mail /></a>
             </section>
         </div>
     </div>
@@ -25,5 +25,8 @@ import { Copyright, Linkedin, Twitter, Mail } from "lucide-astro";
   .footer-content {
     height: 1rem;
     padding-block: var(--space-sm);
+  }
+  .footer-icons, .footer-icons a, .footer-icons :global(svg) {
+    height: 100%;
   }
 </style>

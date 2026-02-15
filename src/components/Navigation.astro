@@ -13,10 +13,10 @@ const { home } = Astro.props;
         <div class="nav-title">
             {!home && <Image src={forbitLogo} alt="forbit logo" class="nav-logo"/>}
             <div class="menu-icon">
-                <MenuIcon class="w-4 h-4" />
+                <MenuIcon class="menu-icon-size" />
             </div>
         </div>
-        <MenuItems class="hidden lg:flex">
+        <MenuItems class="menu-items">
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/about">About</a></li>
@@ -64,6 +64,15 @@ const { home } = Astro.props;
     display: none;
   }
 
+  .menu-icon-size {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .menu-items {
+    display: none;
+  }
+
   .nav-links {
     display: flex;
     flex-direction: row;
@@ -93,6 +102,9 @@ const { home } = Astro.props;
   }
 
   @media (min-width: 1024px) {
+    .menu-items {
+      display: flex;
+    }
     .nav-title {
       width: max-content;
     }

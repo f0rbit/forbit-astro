@@ -18,32 +18,31 @@ const duration = experience.end_date ? moment.duration(moment(experience.end_dat
 const { title, awards } = experience
 ---
 
-<div class={`stack-sm relative ${['left', 'right'].includes(type) ? 'min-h-[10rem]' : ''} ${type == 'left' ? 'items-end text-right' : ''}`}>
+<div class={`stack-sm experience-card ${['left', 'right'].includes(type) ? 'experience-card--timeline' : ''} ${type == 'left' ? 'experience-card--left' : ''}`}>
     <div
-        class={`absolute 
-            ${type == 'normal' ? '-left-[16px] top-[6px]' : ''} 
-            ${type == 'right' ? 'top-[6px] -left-[23.5px]' : ''} 
-            ${type == 'left' ? 'top-[6px] -right-[23.5px]' : ''}
+        class={`experience-dot 
+            ${type == 'normal' ? 'experience-dot--normal' : ''} 
+            ${type == 'right' ? 'experience-dot--right' : ''} 
+            ${type == 'left' ? 'experience-dot--left' : ''}
         `}
-        style="width: 8px; height: 8px; border-radius: 50%; background: var(--fg-muted);"
     >
     </div>
     <div class="stack">
-        <label class="text-sm -mb-1">
+        <label class="text-sm experience-label">
             <span>{date_string}</span>
             {duration && <span class="text-subtle"> ({formatDuration(duration)})</span>}
         </label>
-        <div class={`flex ${type == 'left' ? 'flex-row-reverse' : 'flex-row'} items-center gap-0.5 `}>
+        <div class={`experience-title ${type == 'left' ? 'experience-title--reverse' : ''}`}>
             <h3 id={experience.id}>{title}</h3>
             {tags && <Badge variant="accent"><span style="text-transform: capitalize;">{experience.type}</span></Badge>}
         </div>
         {experience.company && <div class="text-xs text-subtle">{experience.company}</div>}
     </div>
-    <div class={`stack ${type == 'left' ? 'pr-3' : 'pl-3'}`}>
+    <div class={`stack ${type == 'left' ? 'experience-body--left' : 'experience-body--right'}`}>
         <Clamp client:load lines={2} showMoreText="Read More" showLessText="Read Less">
             <p class="text-muted">{experience.description}</p>
         </Clamp>
-        <div class={`cluster items-center ${type == 'left' ? 'justify-end' : ''}`}>
+        <div class={`cluster experience-awards ${type == 'left' ? 'experience-awards--left' : ''}`}>
             {
                 awards.map((award) => (
                     <Badge title={award.description}>
@@ -56,3 +55,59 @@ const { title, awards } = experience
         </div>
     </div>
 </div>
+
+<style>
+  .experience-card {
+    position: relative;
+  }
+  .experience-card--timeline {
+    min-height: 10rem;
+  }
+  .experience-card--left {
+    align-items: flex-end;
+    text-align: right;
+  }
+  .experience-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--fg-muted);
+    position: absolute;
+  }
+  .experience-dot--normal {
+    left: -16px;
+    top: 6px;
+  }
+  .experience-dot--right {
+    top: 6px;
+    left: -23.5px;
+  }
+  .experience-dot--left {
+    top: 6px;
+    right: -23.5px;
+  }
+  .experience-label {
+    margin-bottom: -0.25rem;
+  }
+  .experience-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.125rem;
+  }
+  .experience-title--reverse {
+    flex-direction: row-reverse;
+  }
+  .experience-body--left {
+    padding-right: var(--space-md);
+  }
+  .experience-body--right {
+    padding-left: var(--space-md);
+  }
+  .experience-awards {
+    align-items: center;
+  }
+  .experience-awards--left {
+    justify-content: flex-end;
+  }
+</style>
