@@ -4,8 +4,6 @@ import { devpad } from './client'
 
 const secrets = {
     DEVTO_KEY: process.env.VITE_DEVTO_KEY ?? import.meta.env.VITE_DEVTO_KEY,
-    BLOG_URL: process.env.VITE_BLOG_URL ?? import.meta.env.VITE_BLOG_URL,
-    BLOG_TOKEN: process.env.VITE_BLOG_TOKEN ?? import.meta.env.VITE_BLOG_TOKEN,
     POSTS_URL: process.env.VITE_POSTS_URL ?? import.meta.env.VITE_POSTS_URL,
 }
 
@@ -157,41 +155,45 @@ export async function fetchDevToAPI(url: string) {
     }
 }
 
-const BLOG_ENV = {
-    url: secrets.BLOG_URL,
-    key: secrets.BLOG_TOKEN,
+function devpadPostToLocal(post: any): Post {
+    const publish_at = post.publish_at
+    const published_at = publish_at ? (typeof publish_at === 'string' ? publish_at : new Date(publish_at).toISOString()) : post.created_at
+    return {
+        slug: post.slug,
+        group: BLOG_GROUP.DEV,
+        title: post.title,
+        description: post.description ?? post.content?.substring(0, 80) ?? '',
+        published: true,
+        published_at: typeof published_at === 'string' ? published_at : new Date(published_at).toISOString(),
+        tag_list: post.tags ?? [],
+        content: post.content ?? '',
+    }
 }
 
-function parseDevBlog(post: any): Post {
-    post.tag_list = post.tags
-    post.group = BLOG_GROUP.DEV
-    post.tag_list = post.tags
-    if (!post.description) post.description = post.content.substring(0, 80)
-    post.published_at = post.publish_at
-
-    return post
-}
-
-export async function getBlogServerPosts() {
+async function getDevpadBlogPosts(): Promise<Post[]> {
     try {
-        const response = await fetch(`${BLOG_ENV.url}/posts?limit=100`, { method: 'GET', headers: { 'Auth-Token': BLOG_ENV.key } })
-        if (!response || !response.ok) return []
-        const result = await response.json()
-        if (!result || !result.posts) return []
-        const filtered_result = result.posts.filter((p: any) => !p.archived)
-        return filtered_result.map(parseDevBlog) as Post[]
+        const result = await devpad.blog.posts.list({ status: 'published', limit: 100 })
+        if (!result.ok) {
+            console.error('BLOG: devpad fetch error', result.error.message)
+            return []
+        }
+        return result.value.posts.filter((p: any) => !p.archived).map(devpadPostToLocal)
     } catch (err) {
+        console.error('BLOG: devpad fetch exception', err)
         return []
     }
 }
 
-export async function fetchBlogPost(slug: string) {
+async function fetchDevpadBlogPost(slug: string): Promise<Post | null> {
     try {
-        const response = await fetch(`${BLOG_ENV.url}/post/${slug}`, { method: 'GET', headers: { 'Auth-Token': BLOG_ENV.key } })
-        if (!response || !response.ok) return null
-        const result = await response.json()
-        return parseDevBlog(result)
+        const result = await devpad.blog.posts.getBySlug(slug)
+        if (!result.ok) {
+            console.error('BLOG: devpad post fetch error', result.error.message)
+            return null
+        }
+        return devpadPostToLocal(result.value)
     } catch (err) {
+        console.error('BLOG: devpad post fetch exception', err)
         return null
     }
 }
@@ -201,7 +203,7 @@ async function fetch_blog(): DataFetch<Post[]> {
     const dev_posts_raw = await fetchDevToAPI('https://dev.to/api/articles/me')
     const dev_posts: Post[] = dev_posts_raw ? dev_posts_raw.map((p: any) => ({ ...p, group: BLOG_GROUP.DEVTO })) : []
     posts.push(...dev_posts)
-    const local_posts = await getBlogServerPosts()
+    const local_posts = await getDevpadBlogPosts()
     posts.push(...local_posts)
     // then sort
     posts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
@@ -216,7 +218,7 @@ export async function getBlogPost(group: BlogGroup, slug: string): Promise<Post 
         post['content'] = post['body_markdown']
         return post
     } else if (group == BLOG_GROUP.DEV) {
-        return await fetchBlogPost(slug)
+        return await fetchDevpadBlogPost(slug)
     } else {
         console.error(`Invalid blog group ${group}`)
         return null
