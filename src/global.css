@@ -1,102 +1,195 @@
-@import url('https://fonts.googleapis.com/css2?family=Sarabun&display=swap');
-html a {
-    @apply text-blue-400 hover:text-blue-500
+/* Global element styles using @f0rbit/ui design tokens */
+
+/* Links — @f0rbit/ui reset handles color, text-decoration, and hover filter */
+
+/* Headings */
+h1 {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--fg);
+}
+h2 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--fg);
+}
+h3 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--fg-muted);
+}
+h4,
+h5 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--fg-muted);
 }
 
-html h1 {
-    @apply text-3xl font-bold text-base-text-primary;
-    line-height: unset;
+/* Article styles */
+article h1 {
+    font-size: var(--text-4xl);
+}
+article h2 {
+    font-size: var(--text-3xl);
+}
+article h3 {
+    font-size: var(--text-2xl);
+}
+article h4,
+article h5 {
+    font-size: var(--text-xl);
+}
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
 }
 
-html h2 {
-    @apply text-2xl font-bold text-base-text-primary
+/* Lists */
+article ul {
+    list-style: disc;
+    list-style-position: inside;
+}
+article ol {
+    list-style: decimal;
+    list-style-position: inside;
+}
+article ul > li > ul > li,
+article ol > li > ol > li {
+    margin-left: 1.5rem;
+}
+article ul > li::marker,
+article ol > li::marker {
+    color: var(--fg-faint);
 }
 
-html h3 {
-    @apply text-xl font-bold text-base-text-secondary
+/* Spacing */
+article p + p {
+    margin-top: 2ch;
 }
 
-html h4, html h5 {
-    @apply text-lg font-semibold text-base-text-secondary
+/* Code */
+article pre > code {
+    display: flex;
+    padding: var(--space-md);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: auto;
+}
+article pre {
+    padding: var(--space-sm);
+    background: var(--bg);
+}
+article code {
+    font-size: var(--text-sm);
+    background: var(--bg-alt);
+    padding: 2px 6px;
+    display: inline-flex;
 }
 
-article.specification {
-    h1 {
-        @apply text-2xl font-bold text-base-text-primary
-    }
-
-    h2 {
-        @apply text-xl font-bold text-base-text-secondary
-    }
-    h3 {
-        @apply text-lg font-semibold text-base-text-secondary
-    }
+/* Images */
+article img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
 }
 
+/* Blockquotes */
+article blockquote {
+    border-left: 4px solid var(--border);
+    padding-left: 0.5rem;
+}
 
-article {
-    h1, h2, h3, h4, h5, h6 {
-        @apply mt-4 mb-1
-    }
-    h1 {
-        @apply text-5xl
-    }
-    h2 {
-        @apply text-3xl
-    }
-    h3 {
-        @apply text-2xl
-    }
-    h4,h5 {
-        @apply text-xl
-    }
+/* Specification article (smaller heading scale) */
+article.specification h1 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--fg);
+}
+article.specification h2 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--fg-muted);
+}
+article.specification h3 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--fg-muted);
+}
 
-    hr {
-        @apply h-4 border-none
+/* Page container — replaces CenteredContainer responsive padding */
+.page-container {
+    width: 100%;
+    padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+    .page-container {
+        padding-inline: 2rem;
     }
-    ul {
-        @apply list-disc list-inside
+}
+@media (min-width: 1024px) {
+    .page-container {
+        padding-inline: 8rem;
     }
-    ol {
-        @apply list-decimal list-inside
+}
+@media (min-width: 1280px) {
+    .page-container {
+        padding-inline: 12rem;
     }
-
-    ul > li > ul > li, ol > li > ol > li {
-        @apply ml-6
-    }
-    ul > li > ul > li > ul > li, ol > li > ol > li > ol > li {
-        @apply ml-6
-    }
-
-    ul > li::marker, ol > li::marker {
-        @apply text-base-text-dark
-    }
-
-    p + p {
-        @apply mt-[2ch]
-    }
-   
-    a {
-        @apply text-blue-400 hover:text-blue-500
-    }
-
-    img {
-        @apply w-full h-auto border border-borders-primary rounded p-1
-    }
-    blockquote {
-        @apply border-l-4 border-borders-primary pl-2
-    };
-    pre > code {
-        @apply flex p-3 rounded border border-borders-primary overflow-auto
-    }
-    pre {
-        @apply p-2 bg-base-bg-primary
-    }
-    code {
-        @apply text-sm bg-base-accent-primary py-[2px] px-1.5 inline-flex
+}
+@media (min-width: 1700px) {
+    .page-container {
+        padding-inline: 26rem;
     }
 }
 
-.tech-list li::marker {
-    @apply -mt-2    
+/* Badge overrides — match the live site's flat border style */
+.badge {
+    background: transparent;
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    padding: 0.125rem 0.375rem;
+}
+
+/* Colored variants: outlined style — bright fg colors for text + border, no fill */
+.badge-success {
+    background: transparent;
+    color: var(--success-fg);
+    border-color: var(--success-fg);
+}
+.badge-error {
+    background: transparent;
+    color: var(--error-fg);
+    border-color: var(--error-fg);
+}
+.badge-warning {
+    background: transparent;
+    color: var(--warning-fg);
+    border-color: var(--warning-fg);
+}
+.badge-info {
+    background: transparent;
+    color: var(--info-fg);
+    border-color: var(--info-fg);
+}
+.badge-accent {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+/* Cards — no background fill */
+.card {
+    background: transparent;
+}
+
+/* Ensure card titles stay primary color */
+.card-title {
+    color: var(--fg);
 }

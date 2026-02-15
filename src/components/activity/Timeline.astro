@@ -1,5 +1,5 @@
 ---
-import { ChevronDown, ChevronUp } from 'lucide-astro'
+import { Collapsible } from '@f0rbit/ui'
 import { fetchTimeline, getTimeline } from '../../utils'
 import moment from 'moment'
 import CommitList from './CommitList.astro'
@@ -21,19 +21,19 @@ if (project_repo) events = events.filter((event: any) => event.permalink && even
 if (limit) events = events.slice(0, limit)
 ---
 
-<div class="relative pl-10">
-    <div class="absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3"></div>
-    <div class="flex flex-col" style={{ maxWidth: 'min(100%, 90vw)', width: 'min(85vw, 35rem)' }}>
+<div class="activity-timeline">
+    <div class="activity-timeline-line"></div>
+    <div style={{ maxWidth: 'min(100%, 90vw)', width: 'min(85vw, 35rem)' }}>
         {
             events.map((event: any) => {
                 return (
-                    <div class="relative">
-                        <div class="w-2 h-2 rounded-full bg-base-text-subtlish -left-[23.5px] top-2 absolute" />
-                        <div class="flex flex-col">
-                            <label class="text-sm -mb-1">{moment(event.date).fromNow()}</label>
-                            <h3 class="text-base-text-secondary">{event.title ?? ''}</h3>
+                    <div class="activity-event">
+                        <div class="activity-dot" />
+                        <div class="activity-content">
+                            <label class="text-sm">{moment(event.date).fromNow()}</label>
+                            <h3 class="text-sm">{event.title ?? ''}</h3>
                         </div>
-                        <div class="pl-5">
+                        <div class="activity-detail">
                             {event.category == 'GITHUB' && (
                                 <p class="text-sm">
                                     <a href={event.permalink} class="font-mono">
@@ -44,16 +44,9 @@ if (limit) events = events.slice(0, limit)
                             )}
                             {event.category == 'COMMITS' &&
                                 (event.commits?.length > 5 ? (
-                                    <details>
-                                        <summary class="cursor-pointer flex border-1 border-borders-primary rounded px-2 justify-center items-center">
-                                            <span>
-                                                <ChevronDown class="down-arrow" />
-                                                <ChevronUp class="up-arrow hidden" />
-                                            </span>
-                                            <span>{event.commits.length} Commits</span>
-                                        </summary>
+                                    <Collapsible client:visible trigger={`${event.commits.length} Commits`}>
                                         <CommitList commits={event.commits} />
-                                    </details>
+                                    </Collapsible>
                                 ) : (
                                     <CommitList commits={event.commits} />
                                 ))}
@@ -65,18 +58,42 @@ if (limit) events = events.slice(0, limit)
     </div>
 </div>
 
-{/* the commits summary ::marker state should hide/show the different chevrons */}
 <style>
-    .down-arrow {
-        display: block;
+    .activity-timeline {
+        position: relative;
+        padding-left: 2.5rem;
     }
-    .up-arrow {
-        display: none;
+    .activity-timeline-line {
+        position: absolute;
+        left: 1.25rem;
+        top: 0.75rem;
+        bottom: 0;
+        width: 1px;
+        background: var(--fg-subtle);
     }
-    details[open] .down-arrow {
-        display: none;
+    .activity-dot {
+        position: absolute;
+        left: calc(-1.25rem - 8px);
+        top: calc(0.375rem - 4px);
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--fg-muted);
+        border: 4px solid var(--bg);
     }
-    details[open] .up-arrow {
-        display: block;
+    .activity-event {
+        position: relative;
+        margin-bottom: var(--space-sm);
+    }
+    .activity-detail {
+        padding-left: 1.25rem;
+    }
+    .activity-content {
+        display: flex;
+        flex-direction: column;
+    }
+    .activity-content h3 {
+        font-size: var(--text-base);
+        font-weight: 600;
     }
 </style>

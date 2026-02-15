@@ -9,20 +9,18 @@ interface Props {
 const { more } = Astro.props;
 ---
 
-<div class="flex gap-4 flex-col lg:flex-row items-center lg:items-unset">
-    <div class="lg:w-max flex items-center justify-center">
-        <div class="h-16 w-16">
-            <Image src={forbitIcon} alt="forbit logo" class="rounded-[30%]"/>
-        </div>
+<div class="about-me">
+    <div class="about-avatar">
+        <Image src={forbitIcon} alt="forbit logo" style="border-radius: 30%;" width={64} height={64} />
     </div>
-    <ul class="w-min lg:w-max whitespace-nowrap px-3 py-2 border rounded border-borders-primary">
-        <li class="flex flex-row gap-2"><Laptop2 />Software Engineer</li>
-        <li class="flex flex-row gap-2"><GraduationCap />University of Adelaide</li>
-        <li class="flex flex-row gap-2"><Camera />Hobbyist Photographer</li>
-        <li class="flex flex-row gap-2"><Fish /><span>Avid <a href="https://www.instagram.com/ninding.femo/">Snorkeller</a></span></li>
+    <ul class="about-info">
+        <li class="row"><Laptop2 size={18} />Software Engineer</li>
+        <li class="row"><GraduationCap size={18} />University of Adelaide</li>
+        <li class="row"><Camera size={18} />Hobbyist Photographer</li>
+        <li class="row"><Fish size={18} /><span>Avid <a href="https://www.instagram.com/ninding.femo/">Snorkeller</a></span></li>
     </ul>
-    <div class="lg:self-start">
-        <p>
+    <div class="about-bio">
+        <p class="text-muted">
             I am currently studying Computer Science, and making projects in my free time. Feel free to contact me about anything. My main
             project is gm-server, an open-source framework for interfacing between Java servers and Gamemaker: Studio game clients.
             Currently working on experimenting with different web-dev technologies.
@@ -30,3 +28,52 @@ const { more } = Astro.props;
         {more && <a href="/about">More Information</a>}
     </div>
 </div>
+
+<style>
+    .about-me {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    .about-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 4rem;
+        height: 4rem;
+    }
+    .about-avatar :global(img) {
+        width: 4rem;
+        height: 4rem;
+        object-fit: cover;
+    }
+    .about-info {
+        white-space: nowrap;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+        list-style: none;
+        width: min-content;
+    }
+    .about-bio {
+        /* default: stretches full width on mobile */
+    }
+
+    @media (min-width: 1024px) {
+        .about-me {
+            flex-direction: row;
+            align-items: unset;
+        }
+        .about-info {
+            width: max-content;
+        }
+        .about-bio {
+            align-self: flex-start;
+        }
+    }
+</style>

@@ -8,16 +8,16 @@ interface Props {
 const { home } = Astro.props;
 ---
 
-<div id="navbar" class={`lg:flex items-center gap-5 justify-center border-borders-primary border-b-1 mb-3 p-3 ${home == true ? "border-t-1" : ""}`}>
+<nav id="navbar" style={home ? "border-top: 1px solid var(--border)" : ""}>
     <Astronav>
-        <div class="flex w-full lg:w-max justify-between">
-            {!home && <Image src={forbitLogo} alt="forbit logo" class="rounded-[30%] w-6 h-6"/>}
-            <div class="block lg:hidden ml-auto">
-                <MenuIcon class="w-4 h-4 text-base-text-primary" />
+        <div class="nav-title">
+            {!home && <Image src={forbitLogo} alt="forbit logo" class="nav-logo"/>}
+            <div class="menu-icon">
+                <MenuIcon class="menu-icon-size" />
             </div>
         </div>
-        <MenuItems class="hidden lg:flex font-medium pt-3 lg:pt-0">
-            <ul class="flex flex-col lg:flex-row gap-2 lg:gap-5 text-lg">
+        <MenuItems class="menu-items">
+            <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/projects">Projects</a></li>
@@ -26,11 +26,92 @@ const { home } = Astro.props;
             </ul>
         </MenuItems>
     </Astronav>
-</div>
+</nav>
 
-<style scoped>
-#navbar a {
-    @apply text-white hover:text-blue-500
-}
+<style>
+  nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    justify-content: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .nav-title {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-logo {
+    border-radius: 30%;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  #navbar a {
+    color: var(--fg);
+    text-decoration: none;
+    font-weight: 600;
+    filter: none;
+    transition: color var(--transition);
+  }
+  #navbar a:hover {
+    color: var(--accent);
+    filter: none;
+  }
+
+  .menu-icon {
+    display: none;
+  }
+
+  .menu-icon-size {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .menu-items {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-lg);
+    font-size: var(--text-lg);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (max-width: 1023px) {
+    nav {
+      flex-direction: column;
+    }
+    .nav-title {
+      width: 100%;
+    }
+    .menu-icon {
+      display: block;
+      margin-left: auto;
+    }
+    .nav-links {
+      flex-direction: column;
+      gap: var(--space-sm);
+      padding-top: var(--space-sm);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .menu-items {
+      display: flex;
+    }
+    .nav-title {
+      width: max-content;
+    }
+  }
 </style>
 

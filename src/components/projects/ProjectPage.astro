@@ -6,6 +6,7 @@ import remarkHtml from 'remark-html'
 import TechnologyIcon from './TechnologyIcon.astro'
 import Status from './Status.astro'
 import { Github } from 'lucide-astro'
+import { Badge } from "@f0rbit/ui"
 import PublishTime from '../blog/PublishTime'
 import Timeline from '../activity/Timeline.astro'
 
@@ -20,45 +21,40 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 const parsed = project.specification ? await remark().use(remarkHtml).process(project.specification) : null
 ---
 
-<section class="flex-grow w-full flex flex-col">
-<div class="flex flex-row gap-3 justify-left items-center">
+<section class="stack project-main">
+<div class="row project-heading">
     <h1>{project.name}</h1>
     {
         project.current_version ? (
-            <div
-                class="flex border-1 border-accent-btn-primary h-min text-accent-btn-primary px-2 w-min rounded-md font-bold -py-1 text-sm mt-1.5"
-                title={`Current version: ${project.current_version}`}
-            >
+            <Badge variant="accent" title={`Current version: ${project.current_version}`}>
                 <span>{project.current_version}</span>
-            </div>
+            </Badge>
         ) : null
     }
 </div>
-<div class="flex flex-row gap-2 flex-wrap justify-start text-sm mt-1">
+<div class="cluster text-sm project-meta">
     <Status status={project.status} size={16} />
     {
         project.repo_url && (
-            <div class="rounded border border-borders-primary px-2 py-1 font-bold">
-                <a href={project.repo_url} class="flex flex-row gap-1 items-center">
-                    <>
-                        <Github size={16} />
-                        <p>GitHub</p>
-                    </>
+            <Badge>
+                <a href={project.repo_url} class="row row-sm">
+                    <Github size={16} />
+                    <p>GitHub</p>
                 </a>
-            </div>
+            </Badge>
         )
     }
     {
         project.link_url && (
-            <div class="rounded border border-borders-primary px-2 py-1 font-bold">
+            <Badge>
                 <a href={project.link_url}>{project.link_text}</a>
-            </div>
+            </Badge>
         )
     }
 </div>
 {
     project.updated_at ? (
-        <div class="text-sm mt-1">
+        <div class="text-sm project-meta">
             <>
                 <span>Last updated </span>
                 <PublishTime client:load date={project.updated_at} />
@@ -67,13 +63,13 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     ) : null
 }
 
-<h2 class="mt-2">Description</h2>
+<h2 class="project-section-heading">Description</h2>
 <p>{project.description}</p>
 
 {
     project.specification ? (
         <>
-            <h2 class="mt-2 -mb-2">Specification</h2>
+            <h2 class="project-spec-heading">Specification</h2>
             <article class="specification">{parsed}</article>
         </>
     ) : null
@@ -82,15 +78,15 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 {
     technologies.length > 0 ? (
         <>
-            <h2 class="mt-4">Technologies</h2>
-            <ul class="flex flex-col gap-0 tech-list mt-0.5">
+            <h2 class="project-tech-heading">Technologies</h2>
+            <ul class="stack stack-sm tech-list project-tech-list">
                 {technologies.map((tech) => (
-                    <div class="flex flex-row gap-2 items-center">
+                    <div class="row tech-item">
                         <span>•</span>
-                        <span class="mt-[2.2px]">
+                        <span class="tech-icon">
                             <TechnologyIcon tech={tech} />
                         </span>
-                        <span class="capitalize">{tech}</span>
+                        <span class="tech-name">{tech}</span>
                     </div>
                 ))}
             </ul>
@@ -99,7 +95,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 }
 </section>
 
-<section class="flex flex-col gap-2 w-[400px]" style={{ width: "min(400px, 100%)"}}>
+<section class="stack sidebar">
 {
     project.repo_url ? (
         <>
@@ -116,3 +112,41 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 
 
 <!-- TODO: roadmap -->
+
+<style>
+    .project-main {
+        flex-grow: 1;
+        width: 100%;
+    }
+    .project-heading {
+        align-items: center;
+    }
+    .project-meta {
+        margin-top: var(--space-xs);
+    }
+    .project-section-heading {
+        margin-top: var(--space-sm);
+    }
+    .project-spec-heading {
+        margin-top: var(--space-sm);
+        margin-bottom: calc(-1 * var(--space-sm));
+    }
+    .project-tech-heading {
+        margin-top: var(--space-md);
+    }
+    .project-tech-list {
+        margin-top: 0.125rem;
+    }
+    .tech-item {
+        align-items: center;
+    }
+    .tech-icon {
+        margin-top: 2.2px;
+    }
+    .tech-name {
+        text-transform: capitalize;
+    }
+    .sidebar {
+        width: min(400px, 100%);
+    }
+</style>

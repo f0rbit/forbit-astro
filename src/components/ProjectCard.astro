@@ -1,4 +1,5 @@
 ---
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Badge } from "@f0rbit/ui";
 import { Github } from 'lucide-astro'
 import type { Project } from '../types'
 import Status from './projects/Status.astro'
@@ -14,38 +15,72 @@ const { project } = Astro.props
 const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 ---
 
-<div id={project.project_id} class="flex items-center flex-col gap-4 rounded border border-borders-primary px-2 py-1 text-base-text-secondary">
-    <a href={`/projects/${project.project_id}`}><h2 class="text-2xl hover:text-blue-500">{project.name}</h2></a>
-    <p class="w-full h-full px-4">{project.description}</p>
-    <div class="flex flex-row gap-2 flex-wrap justify-center">
-        <Status status={project.status} />
-        {
-            project.repo_url && (
-                <div class="rounded border border-borders-primary px-2 py-1 font-bold">
-                    <a href={project.repo_url} class="flex flex-row gap-1">
-                        <>
-                            <Github />
-                            <p>GitHub</p>
-                        </>
-                    </a>
-                </div>
-            )
-        }
-        {
-            project.link_url && (
-                <div class="rounded border border-borders-primary px-2 py-1 font-bold">
-                    <a href={project.link_url}>{project.link_text}</a>
-                </div>
-            )
-        }
-        {
-            technologies.length > 0 && (
-                <div class="rounded border border-borders-primary px-2 py-1 font-bold flex flex-row gap-1 items-center">
-                    {technologies.map((tech: Technology) => (
-                        <TechnologyIcon tech={tech} />
-                    ))}
-                </div>
-            )
-        }
-    </div>
+<div class="project-card">
+    <Card id={project.project_id}>
+        <CardHeader>
+            <CardTitle>
+                <a href={`/projects/${project.project_id}`}>{project.name}</a>
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p class="text-muted">{project.description}</p>
+        </CardContent>
+        <CardFooter>
+            <div class="cluster" style="justify-content: center;">
+                <Status status={project.status} />
+                {
+                    project.repo_url && (
+                        <Badge>
+                            <a href={project.repo_url} class="row row-sm">
+                                <Github size={16} />
+                                GitHub
+                            </a>
+                        </Badge>
+                    )
+                }
+                {
+                    project.link_url && (
+                        <Badge>
+                            <a href={project.link_url}>{project.link_text}</a>
+                        </Badge>
+                    )
+                }
+                {
+                    technologies.length > 0 && (
+                        <Badge>
+                            <div class="row row-sm">
+                                {technologies.map((tech: Technology) => (
+                                    <TechnologyIcon tech={tech} />
+                                ))}
+                            </div>
+                        </Badge>
+                    )
+                }
+            </div>
+        </CardFooter>
+    </Card>
 </div>
+
+<style>
+    .project-card {
+        text-align: center;
+        height: 100%;
+    }
+    .project-card :global(.card) {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .project-card :global(.card-content) {
+        flex-grow: 1;
+    }
+    .project-card :global(.card-header) {
+        justify-content: center;
+    }
+    .project-card :global(.card-footer) {
+        justify-content: center;
+        border-top: none;
+        padding-top: var(--space-sm);
+        margin-top: var(--space-sm);
+    }
+</style>

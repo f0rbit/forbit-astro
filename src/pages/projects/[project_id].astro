@@ -1,5 +1,4 @@
 ---
-import CenteredContainer from '../../components/CenteredContainer.astro'
 import Navigation from '../../components/Navigation.astro'
 import ProjectPage from '../../components/projects/ProjectPage.astro'
 import Page from '../../layouts/Page.astro'
@@ -14,7 +13,20 @@ const description = project?.description ?? (project?.name ? `Project page for $
 
 <Page title={project?.name ?? '404'} description={description} canonical={`https://forbit.dev/projects/${project_id}`}>
     <Navigation home={false} />
-    <CenteredContainer tag="div" class="flex flex-col gap-2 overflow-x-hidden">
-        {project ? <main class="flex xl:flex-row flex-col gap-y-2"><ProjectPage project={project} /></main> : <p class="text-red-500 text-center">Invalid Project!</p>}
-    </CenteredContainer>
+    <div class="page-container stack" style="overflow-x: hidden;">
+        {project ? <main class="project-layout"><ProjectPage project={project} /></main> : <p style="color: var(--error); text-align: center;">Invalid Project!</p>}
+    </div>
 </Page>
+
+<style>
+    .project-layout {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+    @media (min-width: 1280px) {
+        .project-layout {
+            flex-direction: row;
+        }
+    }
+</style>

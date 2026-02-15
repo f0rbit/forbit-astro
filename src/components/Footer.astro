@@ -1,20 +1,32 @@
 ---
 import { Copyright, Linkedin, Twitter, Mail } from "lucide-astro";
-import CenteredContainer from "./CenteredContainer.astro";
 ---
 
-<footer class="border-t-1 border-borders-primary">
-    <CenteredContainer>
-        <div class="flex flex-row justify-between h-4 my-3">
-            <section class="flex flex-row gap-1 items-center">
-                <Copyright class="h-full"/>
+<footer>
+    <div class="page-container">
+        <div class="footer-content row row-between">
+            <section class="row row-sm text-sm text-subtle footer-icons">
+                <Copyright />
                 <p>All Rights Reserved</p>
             </section>
-            <section class="flex flex-row gap-1 items-center">
-                <a href="https://twitter.com/f0rbit" class="h-full"><Twitter class="h-full" /></a>     
-                <a href="https://www.linkedin.com/in/tom-materne-001" class="h-full"><Linkedin class="h-full" /></a>
-                <a href="mailto:dev@forbit.dev" class="h-full"><Mail class="h-full"/></a>
+            <section class="row row-sm footer-icons">
+                <a href="https://twitter.com/f0rbit"><Twitter /></a>
+                <a href="https://www.linkedin.com/in/tom-materne-001"><Linkedin /></a>
+                <a href="mailto:dev@forbit.dev"><Mail /></a>
             </section>
         </div>
-    </CenteredContainer>
+    </div>
 </footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+  }
+  .footer-content {
+    height: 1rem;
+    padding-block: var(--space-sm);
+  }
+  .footer-icons, .footer-icons a, .footer-icons :global(svg) {
+    height: 100%;
+  }
+</style>
