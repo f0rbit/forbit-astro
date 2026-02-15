@@ -1,5 +1,4 @@
 ---
-import CenteredContainer from '../components/CenteredContainer.astro'
 import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
@@ -13,7 +12,7 @@ export const prerender = false
 
 <Page title="Projects" description="A list of all my projects, including specifcation and recent activity" keywords={["projects", "programming", "software engineer", "side projects", "web dev side projects", "tech journey"]} canonical='https://forbit.dev/projects'>
     <Navigation home={false} />
-    <CenteredContainer tag="div" class="flex flex-col gap-2">
+    <div class="center-wide flex flex-col gap-2">
         {
             invalid ? (
                 <p class="text-red-500 text-center">Invalid response from Projects API</p>
@@ -23,5 +22,5 @@ export const prerender = false
                 </main>
             )
         }
-    </CenteredContainer>
+    </div>
 </Page>

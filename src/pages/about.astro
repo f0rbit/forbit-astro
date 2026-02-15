@@ -1,5 +1,4 @@
 ---
-import CenteredContainer from '../components/CenteredContainer.astro'
 import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro'
 import AboutMe from '../components/about/AboutMe.astro'
@@ -34,7 +33,7 @@ export const prerender = false;
 
 <Page title="About Me" description="Read to find out about what I'm currently working on, my professional experience and personal projects, and what my aspirations are for the future" keywords={["about", "resume", "hobbies", "tech journey", "minecraft plugins advanced", "becoming software engineer"]} canonical='https://forbit.dev/about'>
     <Navigation home={false} />
-    <CenteredContainer tag="main" class="flex flex-col gap-2">
+    <main class="center-wide flex flex-col gap-2">
         <section id="info">
             <h2>About Me</h2>
             <AboutMe more={false} />
@@ -71,5 +70,5 @@ export const prerender = false;
             <h2>Skills</h2>
             <SkillSelector client:load skills={skills} />
         </section>
-    </CenteredContainer>
+    </main>
 </Page>

@@ -1,6 +1,5 @@
 ---
 import Home from '../layouts/Home.astro'
-import CenteredContainer from '../components/CenteredContainer.astro'
 import Navigation from '../components/Navigation.astro'
 import AboutMe from '../components/about/AboutMe.astro'
 import Experience from '../components/about/Experience.astro'
@@ -22,23 +21,23 @@ export const prerender = false
     </header>
     <Navigation home={true} />
     <main>
-        <CenteredContainer class="flex flex-col gap-2">
+        <div class="center-wide flex flex-col gap-2">
             <section id="about-me" class="flex flex-col gap-2">
                 <h2>About Me</h2>
                 <div class="p-3 border border-borders-primary rounded">
                     <AboutMe more={true} />
                 </div>
             </section>
-        </CenteredContainer>
-        <CenteredContainer>
+        </div>
+        <div class="center-wide">
             <section id="projects">
                 <h2>Featured Projects</h2>
                 <div class="grid gap-2 grid-cols-1 xl:grid-cols-3">
                     <ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} />
                 </div>
             </section>
-        </CenteredContainer>
-        <CenteredContainer>
+        </div>
+        <div class="center-wide">
             <div class="flex gap-2">
                 <div class="w-max flex flex-col gap-2">
                     <section id="experience" class="flex gap-2 flex-col">
@@ -59,6 +58,6 @@ export const prerender = false
                     </div>
                 </section>
             </div>
-        </CenteredContainer>
+        </div>
     </main>
 </Home>

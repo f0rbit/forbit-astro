@@ -1,6 +1,5 @@
 ---
 import Page from '../layouts/Page.astro'
-import CenteredContainer from '../components/CenteredContainer.astro'
 import Navigation from '../components/Navigation.astro'
 import { getBlogPosts } from '../utils';
 import BlogCard from '../components/blog/BlogCard.astro';
@@ -12,7 +11,7 @@ export const prerender = false;
 
 <Page title="Blog" description="Just some of my thoughts" keywords={["blog", "devblog", "programming blog"]} canonical='https://forbit.dev/blog'>
     <Navigation home={false} />
-    <CenteredContainer class="grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+    <div class="center-wide grid gap-2 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {posts.map((post) => <BlogCard post={post} />)}
-    </CenteredContainer>
+    </div>
 </Page>
