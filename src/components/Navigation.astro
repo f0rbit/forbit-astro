@@ -36,7 +36,7 @@ const { home } = Astro.props;
     justify-content: center;
     border-bottom: 1px solid var(--border);
     margin-bottom: var(--space-sm);
-    padding: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
   }
 
   .nav-title {
@@ -55,9 +55,13 @@ const { home } = Astro.props;
   #navbar a {
     color: var(--fg);
     text-decoration: none;
+    font-weight: 600;
+    filter: none;
+    transition: color var(--transition);
   }
   #navbar a:hover {
     color: var(--accent);
+    filter: none;
   }
 
   .menu-icon {
