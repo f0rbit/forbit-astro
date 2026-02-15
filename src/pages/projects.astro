@@ -17,10 +17,28 @@ export const prerender = false
             invalid ? (
                 <p style="color: var(--error); text-align: center;">Invalid response from Projects API</p>
             ) : (
-                <main class="grid">
+                <main class="project-grid">
                     <ProjectList projects={projects} select={null} />
                 </main>
             )
         }
     </div>
 </Page>
+
+<style>
+    .project-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    @media (min-width: 1024px) {
+        .project-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (min-width: 1536px) {
+        .project-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>

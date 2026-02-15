@@ -35,7 +35,7 @@ export const prerender = false
         <div class="page-container">
             <section id="projects">
                 <h2>Featured Projects</h2>
-                <div class="grid">
+                <div class="featured-grid">
                     <ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} />
                 </div>
             </section>
@@ -94,6 +94,18 @@ export const prerender = false
     @media (min-width: 1280px) {
         .home-layout {
             grid-template-columns: 1fr min(400px, 30vw);
+        }
+    }
+
+    .featured-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    @media (min-width: 1280px) {
+        .featured-grid {
+            grid-template-columns: repeat(3, 1fr);
         }
     }
 

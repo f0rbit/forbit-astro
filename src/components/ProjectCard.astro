@@ -26,7 +26,7 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
             <p class="text-muted">{project.description}</p>
         </CardContent>
         <CardFooter>
-            <div class="cluster">
+            <div class="cluster" style="justify-content: center;">
                 <Status status={project.status} />
                 {
                     project.repo_url && (
@@ -62,8 +62,23 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 </div>
 
 <style>
+    .project-card {
+        text-align: center;
+        height: 100%;
+    }
+    .project-card :global(.card) {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .project-card :global(.card-content) {
+        flex-grow: 1;
+    }
+    .project-card :global(.card-header) {
+        justify-content: center;
+    }
     .project-card :global(.card-footer) {
-        justify-content: flex-start;
+        justify-content: center;
         border-top: none;
         padding-top: var(--space-sm);
         margin-top: var(--space-sm);
