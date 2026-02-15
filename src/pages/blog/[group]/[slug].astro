@@ -19,7 +19,7 @@ const title = post && post.title ? post.title : "Blog Post";
 
 <Page title={title} description={post?.description ?? "Blog Post"} canonical={`https://forbit.dev/blog/${group}/${slug}`}>
     <Navigation home={false} />
-    <main class="page-container blog-post">
+    <main class="page-container">
         {
             !post ? (
                 <p>Error fetching blog post</p>
@@ -37,9 +37,3 @@ const title = post && post.title ? post.title : "Blog Post";
     </main>
 </Page>
 
-<style>
-    .blog-post {
-        max-width: 80ch;
-        margin-inline: auto;
-    }
-</style>
