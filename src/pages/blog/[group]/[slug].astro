@@ -19,15 +19,17 @@ const title = post && post.title ? post.title : "Blog Post";
 
 <Page title={title} description={post?.description ?? "Blog Post"} canonical={`https://forbit.dev/blog/${group}/${slug}`}>
     <Navigation home={false} />
-    <main class='max-w-[100ch] mx-auto px-6'>
+    <main class="center">
         {
             !post ? (
                 <p>Error fetching blog post</p>
             ) : (
                 <>
                     <h1 class="text-4xl" transition:name={"title-"+post.slug}>{post.title}</h1>
-                    {/*<date>Published {moment(post.published_at).calendar({sameElse: "DD/MM/yyyy"})}</date>*/}
-                    <div><span>Published </span><PublishTime client:load date={post.published_at} /></div>
+                    <div class="row-sm text-muted">
+                        <span>Published </span>
+                        <PublishTime client:load date={post.published_at} />
+                    </div>
                     <article>{parsed}</article>
                 </>
             )

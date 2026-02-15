@@ -12,12 +12,12 @@ export const prerender = false
 
 <Page title="Projects" description="A list of all my projects, including specifcation and recent activity" keywords={["projects", "programming", "software engineer", "side projects", "web dev side projects", "tech journey"]} canonical='https://forbit.dev/projects'>
     <Navigation home={false} />
-    <div class="center-wide flex flex-col gap-2">
+    <div class="center-wide stack">
         {
             invalid ? (
-                <p class="text-red-500 text-center">Invalid response from Projects API</p>
+                <p style="color: var(--error); text-align: center;">Invalid response from Projects API</p>
             ) : (
-                <main class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
+                <main class="grid">
                     <ProjectList projects={projects} select={null} />
                 </main>
             )

@@ -6,14 +6,15 @@ import Experience from '../components/about/Experience.astro'
 import Timeline from '../components/activity/Timeline.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
 import RecentBlogs from '../components/blog/RecentBlogs.astro'
+import { Card, CardContent } from '@f0rbit/ui'
 import { Typewriter } from 'solidjs-typewriter'
 
 export const prerender = false
 ---
 
 <Home>
-    <header class="w-full h-screen flex justify-center items-center flex-col gap-2">
-        <h1 class="text-[4vw] font-bold">forbit</h1>
+    <header class="hero">
+        <h1 class="hero-title">forbit</h1>
         <p>
             <span>I am a </span>
             <Typewriter client:load words={['computer science student', 'software developer', 'open source contributor', 'programming enthusiast', 'creative individual' ]} cursor={true} loop={-1} />
@@ -21,43 +22,90 @@ export const prerender = false
     </header>
     <Navigation home={true} />
     <main>
-        <div class="center-wide flex flex-col gap-2">
-            <section id="about-me" class="flex flex-col gap-2">
+        <div class="center-wide stack">
+            <section id="about-me" class="stack">
                 <h2>About Me</h2>
-                <div class="p-3 border border-borders-primary rounded">
-                    <AboutMe more={true} />
-                </div>
+                <Card>
+                    <CardContent>
+                        <AboutMe more={true} />
+                    </CardContent>
+                </Card>
             </section>
         </div>
         <div class="center-wide">
             <section id="projects">
                 <h2>Featured Projects</h2>
-                <div class="grid gap-2 grid-cols-1 xl:grid-cols-3">
+                <div class="grid">
                     <ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} />
                 </div>
             </section>
         </div>
         <div class="center-wide">
-            <div class="flex gap-2">
-                <div class="w-max flex flex-col gap-2">
-                    <section id="experience" class="flex gap-2 flex-col">
+            <div class="home-layout">
+                <div class="stack">
+                    <section id="experience" class="stack">
                         <h2>Experience</h2>
-                        <div class="border border-borders-primary rounded py-3 pr-3">
-                            <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
-                        </div>
+                        <Card>
+                            <CardContent>
+                                <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
+                            </CardContent>
+                        </Card>
                     </section>
-                    <section id="recent-blogs" class="flex gap-2 flex-col">
+                    <section id="recent-blogs" class="stack">
                         <h2>Recent Blogs</h2>
                         <RecentBlogs />
                     </section>
                 </div>
-                <section id="recent-activity" class="hidden min-w-[300px] 2xl:min-w-[400px] xl:flex gap-2 flex-col">
+                <section class="stack home-sidebar">
                     <h2>Recent Activity</h2>
-                    <div class="border border-borders-primary rounded pr-3 pl-0.5 pt-2.5 pb-3">
-                        <Timeline limit={10} group_commits={false} />
-                    </div>
+                    <Card>
+                        <CardContent>
+                            <Timeline limit={10} group_commits={false} />
+                        </CardContent>
+                    </Card>
                 </section>
             </div>
         </div>
     </main>
 </Home>
+
+<style>
+    .hero {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .hero-title {
+        font-size: 4vw;
+        font-weight: bold;
+    }
+
+    .home-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    @media (min-width: 1280px) {
+        .home-layout {
+            grid-template-columns: 1fr min(400px, 30vw);
+        }
+    }
+
+    .home-sidebar {
+        display: none;
+    }
+
+    @media (min-width: 1280px) {
+        .home-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+    }
+</style>

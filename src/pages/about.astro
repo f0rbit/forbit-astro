@@ -33,38 +33,39 @@ export const prerender = false;
 
 <Page title="About Me" description="Read to find out about what I'm currently working on, my professional experience and personal projects, and what my aspirations are for the future" keywords={["about", "resume", "hobbies", "tech journey", "minecraft plugins advanced", "becoming software engineer"]} canonical='https://forbit.dev/about'>
     <Navigation home={false} />
-    <main class="center-wide flex flex-col gap-2">
+    <main class="center-wide stack">
         <section id="info">
             <h2>About Me</h2>
             <AboutMe more={false} />
         </section>
         <section id="experience">
             <h2>My Journey</h2>
-            <div class="hidden lg:block">
+            <div class="hide-mobile">
                 <Experience types={['learning', 'hobby', 'professional']} sort={'earliest'} mode={'middle'} />
             </div>
-            <div class="block lg:hidden">
+            <div class="hide-desktop">
                 <Experience types={['learning', 'hobby', 'professional']} sort={'earliest'} mode={'left'} />
             </div>
         </section>
         <section id="working-on">
             <h2>Recent Projects</h2>
-            <div class="grid gap-2 p-2 grid-cols-1 xl:grid-cols-3">
+            <div class="grid" style="padding: var(--space-sm);">
                 <RecentProjects />
             </div>
         </section>
         <section id="hobbies">
             <h2>Hobbies</h2>
-            <div class="grid gap-2 p-2 grid-cols-2 xl:grid-cols-4">
+            <div class="grid grid-4" style="padding: var(--space-sm);">
             {Object.values(hobbies).map(({ title, background, url }) => (
             <a href={url}>
-                <div class="flex justify-center items-center rounded border-borders-primary border bg-cover h-24"}} style={{backgroundImage: `url(${background})`}}>
-                    <div class="w-full h-full bg-[rgba(0,0,0,0.5)] flex justify-center items-center">
-                        <h3 class="text-2xl drop-shadow-sm text-white text-center">{title}</h3>
+                <div class="hobby-card" style={`background-image: url(${background});`}>
+                    <div class="hobby-overlay">
+                        <h3>{title}</h3>
                     </div>
                 </div>
             </a>
             ))}
+            </div>
         </section>
         <section id="skillset">
             <h2>Skills</h2>
@@ -72,3 +73,48 @@ export const prerender = false;
         </section>
     </main>
 </Page>
+
+<style>
+    .hide-mobile {
+        display: none;
+    }
+    .hide-desktop {
+        display: block;
+    }
+    @media (min-width: 1024px) {
+        .hide-mobile {
+            display: block;
+        }
+        .hide-desktop {
+            display: none;
+        }
+    }
+
+    .hobby-card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: var(--radius-md, 0.25rem);
+        border: 1px solid var(--borders-primary);
+        background-size: cover;
+        background-position: center;
+        height: 6rem;
+    }
+
+    .hobby-overlay {
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: var(--radius-md, 0.25rem);
+    }
+
+    .hobby-overlay h3 {
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+    }
+</style>
