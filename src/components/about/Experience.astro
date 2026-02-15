@@ -41,19 +41,52 @@ moment.locale('en-au')
 
 {
     mode == 'left' ? (
-        <div class="pl-[32px] relative flex flex-col gap-5">
-            <div class="absolute left-[19.5px] h-[calc(100%-15px)] w-[1px] bg-base-text-subtle mt-[10px]" />
+        <div class="experience-left stack-lg">
+            <div class="experience-line-left" />
             {experiences.map((experience) => <ExperienceCard experience={experience} type={"normal"} tags={tags} />)}
         </div>
     ) : (
-        <div class="relative grid gap-5 w-full" style={{gridTemplateColumns: "minmax(0, 1fr) 1px minmax(0,1fr)"}}>
-            <div id="timeline-left" class="flex flex-grow flex-col gap-16 w-full">
+        <div class="experience-middle" style={{gridTemplateColumns: "minmax(0, 1fr) 1px minmax(0,1fr)"}}>
+            <div id="timeline-left" class="experience-column">
                 {experiences.filter((_, index) => index % 2 == 0).map((e) => <ExperienceCard experience={e} type={"left"} tags={tags} />)}
             </div>
-            <div class="min-h-full min-w-[1px] w-[1px] bg-gray-50 mt-[10px]" />
-            <div id="timeline-right" class="mt-[7rem] flex-grow flex flex-col gap-16 w-full">
+            <div class="experience-line-middle" style="margin-top: 10px;" />
+            <div id="timeline-right" class="experience-column" style="margin-top: 7rem;">
                 {experiences.filter((_, index) => index % 2 == 1).map((e) => <ExperienceCard experience={e} type={"right"} tags={tags}/>)}
             </div>
         </div>
     )
 }
+
+<style>
+  .experience-left {
+    position: relative;
+    padding-left: 32px;
+  }
+  .experience-line-left {
+    position: absolute;
+    left: 19.5px;
+    top: 10px;
+    bottom: 15px;
+    width: 1px;
+    background: var(--fg-subtle);
+  }
+  .experience-middle {
+    position: relative;
+    display: grid;
+    gap: var(--space-lg);
+    width: 100%;
+  }
+  .experience-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    flex-grow: 1;
+    width: 100%;
+  }
+  .experience-line-middle {
+    min-height: 100%;
+    width: 1px;
+    background: var(--fg-subtle);
+  }
+</style>

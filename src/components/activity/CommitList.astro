@@ -6,9 +6,9 @@ interface Props {
 const { commits } = Astro.props;
 ---
 
-<div class="flex flex-row gap-3 p-2">
-    <div class="w-[1px] bg-borders-primary"></div>
-    <div>
+<div class="row" style="padding: var(--space-sm);">
+    <div style="width: 1px; background: var(--border); align-self: stretch;"></div>
+    <div class="stack-sm">
         {
             commits.map((commit: any) => (
                 <p>
