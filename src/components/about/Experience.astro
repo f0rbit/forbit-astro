@@ -41,9 +41,8 @@ moment.locale('en-au')
 
 {
     mode == 'left' ? (
-        <div class="experience-left stack stack-lg">
-            <div class="experience-line-left" />
-            {experiences.map((experience) => <ExperienceCard experience={experience} type={"normal"} tags={tags} />)}
+        <div class="experience-left">
+            {experiences.map((experience, i) => <ExperienceCard experience={experience} type={"normal"} tags={tags} isLast={i === experiences.length - 1} />)}
         </div>
     ) : (
         <div class="experience-middle" style={{gridTemplateColumns: "minmax(0, 1fr) 1px minmax(0,1fr)"}}>
@@ -60,16 +59,8 @@ moment.locale('en-au')
 
 <style>
   .experience-left {
-    position: relative;
-    padding-left: 32px;
-  }
-  .experience-line-left {
-    position: absolute;
-    left: 19.5px;
-    top: 10px;
-    bottom: 15px;
-    width: 1px;
-    background: var(--fg-subtle);
+    display: flex;
+    flex-direction: column;
   }
   .experience-middle {
     position: relative;
