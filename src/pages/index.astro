@@ -21,50 +21,44 @@ export const prerender = false
         </p>
     </header>
     <Navigation home={true} />
-    <main>
-        <div class="page-container stack">
-            <section id="about-me" class="stack">
-                <h2>About Me</h2>
-                <Card>
-                    <CardContent>
-                        <AboutMe more={true} />
-                    </CardContent>
-                </Card>
-            </section>
-        </div>
-        <div class="page-container">
-            <section id="projects">
-                <h2>Featured Projects</h2>
-                <div class="featured-grid">
-                    <ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} />
-                </div>
-            </section>
-        </div>
-        <div class="page-container">
-            <div class="home-layout">
-                <div class="stack">
-                    <section id="experience" class="stack">
-                        <h2>Experience</h2>
-                        <Card>
-                            <CardContent>
-                                <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
-                            </CardContent>
-                        </Card>
-                    </section>
-                    <section id="recent-blogs" class="stack">
-                        <h2>Recent Blogs</h2>
-                        <RecentBlogs />
-                    </section>
-                </div>
-                <section class="stack home-sidebar">
-                    <h2>Recent Activity</h2>
+    <main class="page-container home-sections">
+        <section id="about-me" class="stack">
+            <h2>About Me</h2>
+            <Card>
+                <CardContent>
+                    <AboutMe more={true} />
+                </CardContent>
+            </Card>
+        </section>
+        <section id="projects" class="stack">
+            <h2>Featured Projects</h2>
+            <div class="featured-grid">
+                <ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} />
+            </div>
+        </section>
+        <div class="home-layout">
+            <div class="stack">
+                <section id="experience" class="stack">
+                    <h2>Experience</h2>
                     <Card>
                         <CardContent>
-                            <Timeline limit={10} group_commits={false} />
+                            <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
                         </CardContent>
                     </Card>
                 </section>
+                <section id="recent-blogs" class="stack">
+                    <h2>Recent Blogs</h2>
+                    <RecentBlogs />
+                </section>
             </div>
+            <section class="stack home-sidebar">
+                <h2>Recent Activity</h2>
+                <Card>
+                    <CardContent>
+                        <Timeline limit={10} group_commits={false} />
+                    </CardContent>
+                </Card>
+            </section>
         </div>
     </main>
 </Home>
@@ -85,10 +79,17 @@ export const prerender = false
         font-weight: bold;
     }
 
+    .home-sections {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+
     .home-layout {
         display: grid;
         grid-template-columns: 1fr;
         gap: var(--space-sm);
+        align-items: start;
     }
 
     @media (min-width: 1280px) {
