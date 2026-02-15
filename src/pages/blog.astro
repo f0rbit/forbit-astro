@@ -11,7 +11,7 @@ export const prerender = false;
 
 <Page title="Blog" description="Just some of my thoughts" keywords={["blog", "devblog", "programming blog"]} canonical='https://forbit.dev/blog'>
     <Navigation home={false} />
-    <div class="center-wide grid">
+    <div class="center center-wide grid">
         {posts.map((post) => <BlogCard post={post} />)}
     </div>
 </Page>

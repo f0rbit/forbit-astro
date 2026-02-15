@@ -13,7 +13,7 @@ const description = project?.description ?? (project?.name ? `Project page for $
 
 <Page title={project?.name ?? '404'} description={description} canonical={`https://forbit.dev/projects/${project_id}`}>
     <Navigation home={false} />
-    <div class="center-wide stack" style="overflow-x: hidden;">
+    <div class="center center-wide stack" style="overflow-x: hidden;">
         {project ? <main class="project-layout"><ProjectPage project={project} /></main> : <p style="color: var(--error); text-align: center;">Invalid Project!</p>}
     </div>
 </Page>

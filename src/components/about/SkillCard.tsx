@@ -11,12 +11,12 @@ export function SkillSubheading(props: { information: SkillInformation }) {
     const { information } = props
     const { experience, projects } = information
     return (
-        <div class="row-sm">
-            <div class="row-sm">
+        <div class="row row-sm">
+            <div class="row row-sm">
                 <span class="text-muted font-bold">{Array.from(experience).length}</span>
                 <span class="text-subtle">Relevant Experiences</span>
             </div>
-            <div class="row-sm">
+            <div class="row row-sm">
                 <span class="text-muted font-bold">{Array.from(projects).length}</span>
                 <span class="text-subtle">Projects</span>
             </div>
@@ -29,7 +29,7 @@ export default function SkillCard(props: Props) {
     return (
         <Card interactive={!header}>
             <CardContent>
-                <div class="stack-sm" style={{ 'text-align': 'center' }}>
+                <div class="stack stack-sm" style={{ 'text-align': 'center' }}>
                     <h3>{skill}</h3>
                     <SkillSubheading information={information} />
                 </div>

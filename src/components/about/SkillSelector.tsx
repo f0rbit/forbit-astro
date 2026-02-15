@@ -18,14 +18,14 @@ function SkillComponent(props: { skills: Record<string, SkillInformation> }) {
                 .map((selected) => {
                     return (
                         <div class="stack">
-                            <div class="stack-sm" style={{ 'align-items': 'center' }}>
+                            <div class="stack stack-sm" style={{ 'align-items': 'center' }}>
                                 <h3>{selected[0]}</h3>
                                 <SkillSubheading information={selected[1]} />
                             </div>
                             <p>{selected[1].description}</p>
                             <div class="row">
                                 <h5>Experience</h5>
-                                <div class="row-sm">
+                                <div class="row row-sm">
                                     {Array.from(selected[1].experience).map((exp) => (
                                         <a href={`#${exp}`}>{exp}</a>
                                     ))}

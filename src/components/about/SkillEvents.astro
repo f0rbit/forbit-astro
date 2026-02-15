@@ -27,7 +27,7 @@ title += (title.length > 1 ? ' ' : '') + (skill ? skill + " skills" : "")
 ---
 
 <Badge title={title}>
-    <span class="row-sm">
+    <span class="row row-sm">
         {events.sort(sortSkillEvent).map((t) => <EventTypeIcon type={t} size={16} />)}
     </span>
     <span>{skill}</span>

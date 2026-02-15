@@ -10,15 +10,15 @@ interface Props {
 const { more } = Astro.props;
 ---
 
-<div class="row-lg" style="flex-wrap: wrap; align-items: start;">
+<div class="row row-lg" style="flex-wrap: wrap; align-items: start;">
     <div>
         <div style="height: 4rem; width: 4rem;">
-            <Image src={forbitIcon} alt="forbit logo" style="border-radius: 30%;" />
+            <Image src={forbitIcon} alt="forbit logo" style="border-radius: 30%; width: 100%; height: 100%; object-fit: cover;" />
         </div>
     </div>
     <Card>
         <CardContent>
-            <ul class="stack-sm" style="white-space: nowrap;">
+            <ul class="stack stack-sm" style="white-space: nowrap;">
                 <li class="row"><Laptop2 size={18} />Software Engineer</li>
                 <li class="row"><GraduationCap size={18} />University of Adelaide</li>
                 <li class="row"><Camera size={18} />Hobbyist Photographer</li>

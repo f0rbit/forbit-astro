@@ -30,7 +30,7 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
             {
                 project.repo_url && (
                     <Badge>
-                        <a href={project.repo_url} class="row-sm">
+                        <a href={project.repo_url} class="row row-sm">
                             <Github size={16} />
                             GitHub
                         </a>
@@ -47,7 +47,7 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
             {
                 technologies.length > 0 && (
                     <Badge>
-                        <div class="row-sm">
+                        <div class="row row-sm">
                             {technologies.map((tech: Technology) => (
                                 <TechnologyIcon tech={tech} />
                             ))}

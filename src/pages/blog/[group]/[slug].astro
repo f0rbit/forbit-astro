@@ -26,7 +26,7 @@ const title = post && post.title ? post.title : "Blog Post";
             ) : (
                 <>
                     <h1 class="text-4xl" transition:name={"title-"+post.slug}>{post.title}</h1>
-                    <div class="row-sm text-muted">
+                    <div class="row row-sm text-muted">
                         <span>Published </span>
                         <PublishTime client:load date={post.published_at} />
                     </div>

@@ -37,7 +37,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     {
         project.repo_url && (
             <Badge>
-                <a href={project.repo_url} class="row-sm">
+                <a href={project.repo_url} class="row row-sm">
                     <Github size={16} />
                     <p>GitHub</p>
                 </a>
@@ -79,7 +79,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     technologies.length > 0 ? (
         <>
             <h2 class="project-tech-heading">Technologies</h2>
-            <ul class="stack-sm tech-list project-tech-list">
+            <ul class="stack stack-sm tech-list project-tech-list">
                 {technologies.map((tech) => (
                     <div class="row tech-item">
                         <span>•</span>

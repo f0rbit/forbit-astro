@@ -18,7 +18,7 @@ const duration = experience.end_date ? moment.duration(moment(experience.end_dat
 const { title, awards } = experience
 ---
 
-<div class={`stack-sm experience-card ${['left', 'right'].includes(type) ? 'experience-card--timeline' : ''} ${type == 'left' ? 'experience-card--left' : ''}`}>
+<div class={`stack stack-sm experience-card ${['left', 'right'].includes(type) ? 'experience-card--timeline' : ''} ${type == 'left' ? 'experience-card--left' : ''}`}>
     <div
         class={`experience-dot 
             ${type == 'normal' ? 'experience-dot--normal' : ''} 
