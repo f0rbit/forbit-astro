@@ -34,6 +34,17 @@ const relative_url = `${post.group}/${post.slug}`
 </div>
 
 <style>
+    .blog-card {
+        height: 100%;
+    }
+    .blog-card :global(.card) {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .blog-card :global(.card-content) {
+        flex-grow: 1;
+    }
     .blog-card :global(.card-footer) {
         justify-content: center;
         border-top: none;
