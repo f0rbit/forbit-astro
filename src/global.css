@@ -1,13 +1,6 @@
 /* Global element styles using @f0rbit/ui design tokens */
 
-/* Links */
-html a {
-    color: var(--accent);
-    text-decoration: none;
-}
-html a:hover {
-    opacity: 0.8;
-}
+/* Links — @f0rbit/ui reset handles color, text-decoration, and hover filter */
 
 /* Headings */
 html h1 {

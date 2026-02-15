@@ -11,7 +11,27 @@ export const prerender = false;
 
 <Page title="Blog" description="Just some of my thoughts" keywords={["blog", "devblog", "programming blog"]} canonical='https://forbit.dev/blog'>
     <Navigation home={false} />
-    <div class="page-container grid">
-        {posts.map((post) => <BlogCard post={post} />)}
+    <div class="page-container">
+        <div class="blog-grid">
+            {posts.map((post) => <BlogCard post={post} />)}
+        </div>
     </div>
 </Page>
+
+<style>
+    .blog-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    @media (min-width: 1024px) {
+        .blog-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (min-width: 1536px) {
+        .blog-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
