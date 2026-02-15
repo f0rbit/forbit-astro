@@ -2,6 +2,7 @@
 import type { SkillEvent } from '../../types';
 import { SKILL_EVENT_TYPE, sortSkillEvent } from '../../types'
 import EventTypeIcon from "../projects/EventTypeIcon.astro";
+import { Badge } from "@f0rbit/ui";
 
 interface Props {
     event: SkillEvent
@@ -25,9 +26,9 @@ if (events.includes(SKILL_EVENT_TYPE.BEGIN) && events.includes(SKILL_EVENT_TYPE.
 title += (title.length > 1 ? ' ' : '') + (skill ? skill + " skills" : "")
 ---
 
-<div class="flex flex-row gap-2 border border-borders-primary rounded px-2 py-1" title={title}>
-    <span class="flex flex-row gap-1 items-center">
-        {events.sort(sortSkillEvent).map((t) => <EventTypeIcon type={t} size={18} />)}
+<Badge title={title}>
+    <span class="row-sm">
+        {events.sort(sortSkillEvent).map((t) => <EventTypeIcon type={t} size={16} />)}
     </span>
     <span>{skill}</span>
-</div>
+</Badge>

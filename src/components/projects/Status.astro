@@ -1,26 +1,32 @@
 ---
+import { Badge } from "@f0rbit/ui"
 import { Hammer, MonitorX, Pause, Radio, Rocket, Trash2, Zap } from 'lucide-astro'
 import type { PROJECT_STATUS } from '../../types'
+
 interface Props {
     status: PROJECT_STATUS,
     size?: number
 }
-const { status } = Astro.props
 
+const { status } = Astro.props
 const size = Astro.props.size ?? 24;
 
-const getColour = (status: PROJECT_STATUS) => {
-    if (status == "DEVELOPMENT") return "#a25fed";
-    if (status == "LIVE" || status == "FINISHED" || status == "RELEASED") return "#5fed84";
-    if (status == "STOPPED" || status == "ABANDONED") return "#ed5f5f";
-    if (status == "PAUSED") return "#eda75f";
-    return "white";
+function getVariant(status: PROJECT_STATUS) {
+    switch (status) {
+        case "DEVELOPMENT": return "accent";
+        case "LIVE":
+        case "FINISHED":
+        case "RELEASED": return "success";
+        case "STOPPED":
+        case "ABANDONED": return "error";
+        case "PAUSED": return "warning";
+        default: return "default";
+    }
 }
-
-const colour = getColour(status);
 ---
-<div class="flex flex-row gap-1 border border-borders-primary rounded w-max px-2 py-1 items-center" style={{color: colour}}>
-    <span>
+
+<Badge variant={getVariant(status)}>
+    <span class="row-sm">
         {
             [status].map((s: PROJECT_STATUS) => {
                 switch (s) {
@@ -42,8 +48,6 @@ const colour = getColour(status);
                 return <div>N/A</div>
             })
         }
+        <span style="text-transform: capitalize;">{status.toLowerCase()}</span>
     </span>
-    <span class="font-bold capitalize">
-        {status.toLowerCase()}
-    </span>
-</div>
+</Badge>
