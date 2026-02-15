@@ -10,23 +10,34 @@ const { post } = Astro.props
 const relative_url = `${post.group}/${post.slug}`
 ---
 
-<Card>
-    <CardHeader>
-        <CardTitle><span transition:name={'title-' + post.slug}>{post.title}</span></CardTitle>
-    </CardHeader>
-    <CardContent>
-        <p class="text-subtle">{post.description}</p>
-    </CardContent>
-    <CardFooter>
-        <div class="row">
-            <a href={`/blog/${relative_url}`}>
-                <Button variant="secondary" size="sm">Read</Button>
-            </a>
-            {!!post.url && (
-                <a href={post.url}>
-                    <Button variant="ghost" size="sm">Visit</Button>
+<div class="blog-card">
+    <Card>
+        <CardHeader>
+            <CardTitle><span transition:name={'title-' + post.slug}>{post.title}</span></CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p class="text-subtle">{post.description}</p>
+        </CardContent>
+        <CardFooter>
+            <div class="row" style="justify-content: center;">
+                <a href={`/blog/${relative_url}`}>
+                    <Button variant="secondary">Read</Button>
                 </a>
-            )}
-        </div>
-    </CardFooter>
-</Card>
+                {!!post.url && (
+                    <a href={post.url}>
+                        <Button variant="ghost">Visit</Button>
+                    </a>
+                )}
+            </div>
+        </CardFooter>
+    </Card>
+</div>
+
+<style>
+    .blog-card :global(.card-footer) {
+        justify-content: center;
+        border-top: none;
+        padding-top: 0;
+        margin-top: var(--space-sm);
+    }
+</style>

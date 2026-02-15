@@ -27,7 +27,7 @@ const { title, awards } = experience
         `}
     >
     </div>
-    <div class="stack">
+    <div class="stack stack-sm">
         <label class="text-sm experience-label">
             <span>{date_string}</span>
             {duration && <span class="text-subtle"> ({formatDuration(duration)})</span>}
@@ -38,7 +38,7 @@ const { title, awards } = experience
         </div>
         {experience.company && <div class="text-xs text-subtle">{experience.company}</div>}
     </div>
-    <div class={`stack ${type == 'left' ? 'experience-body--left' : 'experience-body--right'}`}>
+    <div class={`stack stack-sm ${type == 'left' ? 'experience-body--left' : 'experience-body--right'}`}>
         <Clamp client:load lines={2} showMoreText="Read More" showLessText="Read Less">
             <p class="text-muted">{experience.description}</p>
         </Clamp>

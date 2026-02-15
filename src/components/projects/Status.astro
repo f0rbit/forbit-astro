@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { status } = Astro.props
-const size = Astro.props.size ?? 24;
+const size = Astro.props.size ?? 16;
 
 function getVariant(status: PROJECT_STATUS) {
     switch (status) {

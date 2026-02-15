@@ -155,3 +155,25 @@ article.specification h3 {
         padding-inline: 26rem;
     }
 }
+
+/* Badge overrides — match the live site's flat border style */
+.badge {
+    background: transparent;
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    padding: 0.25rem 0.5rem;
+}
+
+/* Keep colored variants' backgrounds for status badges */
+.badge-success,
+.badge-error,
+.badge-warning,
+.badge-info,
+.badge-accent {
+    border-color: transparent;
+}
+
+/* Ensure card titles stay primary color */
+.card-title {
+    color: var(--fg);
+}

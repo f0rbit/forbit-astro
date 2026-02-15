@@ -21,19 +21,19 @@ if (project_repo) events = events.filter((event: any) => event.permalink && even
 if (limit) events = events.slice(0, limit)
 ---
 
-<div class="timeline">
-    <div class="timeline-line"></div>
-    <div class="stack" style={{ maxWidth: 'min(100%, 90vw)', width: 'min(85vw, 35rem)' }}>
+<div class="activity-timeline">
+    <div class="activity-timeline-line"></div>
+    <div style={{ maxWidth: 'min(100%, 90vw)', width: 'min(85vw, 35rem)' }}>
         {
             events.map((event: any) => {
                 return (
-                    <div class="timeline-event">
-                        <div class="timeline-dot" />
-                        <div class="stack">
+                    <div class="activity-event">
+                        <div class="activity-dot" />
+                        <div class="activity-content">
                             <label class="text-sm">{moment(event.date).fromNow()}</label>
                             <h3>{event.title ?? ''}</h3>
                         </div>
-                        <div class="timeline-detail">
+                        <div class="activity-detail">
                             {event.category == 'GITHUB' && (
                                 <p class="text-sm">
                                     <a href={event.permalink} class="font-mono">
@@ -59,11 +59,11 @@ if (limit) events = events.slice(0, limit)
 </div>
 
 <style>
-    .timeline {
+    .activity-timeline {
         position: relative;
         padding-left: 2.5rem;
     }
-    .timeline-line {
+    .activity-timeline-line {
         position: absolute;
         left: 1.25rem;
         top: 0.75rem;
@@ -71,7 +71,7 @@ if (limit) events = events.slice(0, limit)
         width: 1px;
         background: var(--fg-subtle);
     }
-    .timeline-dot {
+    .activity-dot {
         position: absolute;
         left: -1.75rem;
         top: 0.35rem;
@@ -80,11 +80,15 @@ if (limit) events = events.slice(0, limit)
         border-radius: 50%;
         background: var(--fg-muted);
     }
-    .timeline-event {
+    .activity-event {
         position: relative;
-        margin-bottom: var(--space-md);
+        margin-bottom: var(--space-sm);
     }
-    .timeline-detail {
+    .activity-detail {
         padding-left: 1.25rem;
+    }
+    .activity-content {
+        display: flex;
+        flex-direction: column;
     }
 </style>

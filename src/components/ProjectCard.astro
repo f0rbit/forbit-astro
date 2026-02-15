@@ -15,46 +15,57 @@ const { project } = Astro.props
 const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 ---
 
-<Card id={project.project_id}>
-    <CardHeader>
-        <CardTitle>
-            <a href={`/projects/${project.project_id}`}>{project.name}</a>
-        </CardTitle>
-    </CardHeader>
-    <CardContent>
-        <p class="text-muted">{project.description}</p>
-    </CardContent>
-    <CardFooter>
-        <div class="cluster">
-            <Status status={project.status} />
-            {
-                project.repo_url && (
-                    <Badge>
-                        <a href={project.repo_url} class="row row-sm">
-                            <Github size={16} />
-                            GitHub
-                        </a>
-                    </Badge>
-                )
-            }
-            {
-                project.link_url && (
-                    <Badge>
-                        <a href={project.link_url}>{project.link_text}</a>
-                    </Badge>
-                )
-            }
-            {
-                technologies.length > 0 && (
-                    <Badge>
-                        <div class="row row-sm">
-                            {technologies.map((tech: Technology) => (
-                                <TechnologyIcon tech={tech} />
-                            ))}
-                        </div>
-                    </Badge>
-                )
-            }
-        </div>
-    </CardFooter>
-</Card>
+<div class="project-card">
+    <Card id={project.project_id}>
+        <CardHeader>
+            <CardTitle>
+                <a href={`/projects/${project.project_id}`}>{project.name}</a>
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p class="text-muted">{project.description}</p>
+        </CardContent>
+        <CardFooter>
+            <div class="cluster">
+                <Status status={project.status} />
+                {
+                    project.repo_url && (
+                        <Badge>
+                            <a href={project.repo_url} class="row row-sm">
+                                <Github size={16} />
+                                GitHub
+                            </a>
+                        </Badge>
+                    )
+                }
+                {
+                    project.link_url && (
+                        <Badge>
+                            <a href={project.link_url}>{project.link_text}</a>
+                        </Badge>
+                    )
+                }
+                {
+                    technologies.length > 0 && (
+                        <Badge>
+                            <div class="row row-sm">
+                                {technologies.map((tech: Technology) => (
+                                    <TechnologyIcon tech={tech} />
+                                ))}
+                            </div>
+                        </Badge>
+                    )
+                }
+            </div>
+        </CardFooter>
+    </Card>
+</div>
+
+<style>
+    .project-card :global(.card-footer) {
+        justify-content: flex-start;
+        border-top: none;
+        padding-top: var(--space-sm);
+        margin-top: var(--space-sm);
+    }
+</style>
