@@ -6,6 +6,7 @@ import remarkHtml from 'remark-html'
 import TechnologyIcon from './TechnologyIcon.astro'
 import Status from './Status.astro'
 import { Github } from 'lucide-astro'
+import { Badge } from "@f0rbit/ui"
 import PublishTime from '../blog/PublishTime'
 import Timeline from '../activity/Timeline.astro'
 
@@ -20,39 +21,34 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 const parsed = project.specification ? await remark().use(remarkHtml).process(project.specification) : null
 ---
 
-<section class="flex-grow w-full flex flex-col">
-<div class="flex flex-row gap-3 justify-left items-center">
+<section class="stack flex-grow w-full">
+<div class="row items-center">
     <h1>{project.name}</h1>
     {
         project.current_version ? (
-            <div
-                class="flex border-1 border-accent-btn-primary h-min text-accent-btn-primary px-2 w-min rounded-md font-bold -py-1 text-sm mt-1.5"
-                title={`Current version: ${project.current_version}`}
-            >
+            <Badge variant="accent" title={`Current version: ${project.current_version}`}>
                 <span>{project.current_version}</span>
-            </div>
+            </Badge>
         ) : null
     }
 </div>
-<div class="flex flex-row gap-2 flex-wrap justify-start text-sm mt-1">
+<div class="cluster text-sm mt-1">
     <Status status={project.status} size={16} />
     {
         project.repo_url && (
-            <div class="rounded border border-borders-primary px-2 py-1 font-bold">
-                <a href={project.repo_url} class="flex flex-row gap-1 items-center">
-                    <>
-                        <Github size={16} />
-                        <p>GitHub</p>
-                    </>
+            <Badge>
+                <a href={project.repo_url} class="row-sm">
+                    <Github size={16} />
+                    <p>GitHub</p>
                 </a>
-            </div>
+            </Badge>
         )
     }
     {
         project.link_url && (
-            <div class="rounded border border-borders-primary px-2 py-1 font-bold">
+            <Badge>
                 <a href={project.link_url}>{project.link_text}</a>
-            </div>
+            </Badge>
         )
     }
 </div>
@@ -83,9 +79,9 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     technologies.length > 0 ? (
         <>
             <h2 class="mt-4">Technologies</h2>
-            <ul class="flex flex-col gap-0 tech-list mt-0.5">
+            <ul class="stack-sm tech-list mt-0.5">
                 {technologies.map((tech) => (
-                    <div class="flex flex-row gap-2 items-center">
+                    <div class="row items-center">
                         <span>•</span>
                         <span class="mt-[2.2px]">
                             <TechnologyIcon tech={tech} />
@@ -99,7 +95,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 }
 </section>
 
-<section class="flex flex-col gap-2 w-[400px]" style={{ width: "min(400px, 100%)"}}>
+<section class="stack sidebar">
 {
     project.repo_url ? (
         <>
@@ -116,3 +112,9 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 
 
 <!-- TODO: roadmap -->
+
+<style>
+    .sidebar {
+        width: min(400px, 100%);
+    }
+</style>

@@ -4,7 +4,7 @@ import type { Experience } from '../../assets/experience'
 import { formatDuration } from '../../utils'
 import SkillEvents from '../about/SkillEvents.astro'
 import AwardTypeIcon from '../projects/AwardTypeIcon.astro'
-import CompactText from '../CompactText.astro'
+import { Badge, Clamp } from "@f0rbit/ui"
 interface Props {
     experience: Experience & { id: string }
     type: 'left' | 'right' | 'normal'
@@ -18,35 +18,38 @@ const duration = experience.end_date ? moment.duration(moment(experience.end_dat
 const { title, awards } = experience
 ---
 
-<div class={`flex flex-col gap-1 relative ${['left', 'right'].includes(type) ? 'min-h-[10rem]' : ''} ${type == 'left' ? 'items-end text-right' : ''}`}>
+<div class={`stack-sm relative ${['left', 'right'].includes(type) ? 'min-h-[10rem]' : ''} ${type == 'left' ? 'items-end text-right' : ''}`}>
     <div
-        class={`w-2 h-2 rounded-full absolute bg-base-text-subtlish 
+        class={`absolute 
             ${type == 'normal' ? '-left-[16px] top-[6px]' : ''} 
             ${type == 'right' ? 'top-[6px] -left-[23.5px]' : ''} 
             ${type == 'left' ? 'top-[6px] -right-[23.5px]' : ''}
         `}
+        style="width: 8px; height: 8px; border-radius: 50%; background: var(--fg-muted);"
     >
     </div>
-    <div class="flex flex-col">
+    <div class="stack">
         <label class="text-sm -mb-1">
             <span>{date_string}</span>
-            {duration && <span class="text-base-text-subtle"> ({formatDuration(duration)})</span>}
+            {duration && <span class="text-subtle"> ({formatDuration(duration)})</span>}
         </label>
         <div class={`flex ${type == 'left' ? 'flex-row-reverse' : 'flex-row'} items-center gap-0.5 `}>
             <h3 id={experience.id}>{title}</h3>
-            {tags && <div class="text-sm scale-[0.75] pb-1 mt-[2px] border border-base-accent-tertiary px-2 rounded capitalize flex">{experience.type}</div>}
+            {tags && <Badge variant="accent"><span style="text-transform: capitalize;">{experience.type}</span></Badge>}
         </div>
-        {experience.company && <div class="text-xs text-base-text-subtle">{experience.company}</div>}
+        {experience.company && <div class="text-xs text-subtle">{experience.company}</div>}
     </div>
-    <div class={`flex flex-col gap-2 ${type == 'left' ? 'pr-3' : 'pl-3'}`}>
-        <div><CompactText text={experience.description} id={experience.title.toLowerCase().replaceAll(' ', '_')} /></div>
-        <div class={`flex flex-row gap-3 items-center flex-wrap ${type == 'left' ? 'justify-end' : ''}`}>
+    <div class={`stack ${type == 'left' ? 'pr-3' : 'pl-3'}`}>
+        <Clamp client:load lines={2} showMoreText="Read More" showLessText="Read Less">
+            <p class="text-muted">{experience.description}</p>
+        </Clamp>
+        <div class={`cluster items-center ${type == 'left' ? 'justify-end' : ''}`}>
             {
                 awards.map((award) => (
-                    <div class="flex flex-row items-center gap-2 border border-borders-primary rounded px-2 py-1" title={award.description}>
+                    <Badge title={award.description}>
                         <AwardTypeIcon type={award.type} size={20} />
                         <span>{award.title}</span>
-                    </div>
+                    </Badge>
                 ))
             }
             {experience.skills.map((event) => <SkillEvents event={event} />)}
