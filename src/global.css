@@ -164,26 +164,26 @@ article.specification h3 {
     padding: 0.25rem 0.5rem;
 }
 
-/* Colored variants: border + text color only, no background fill */
+/* Colored variants: outlined style — bright fg colors for text + border, no fill */
 .badge-success {
     background: transparent;
-    color: var(--success);
-    border-color: var(--success);
+    color: var(--success-fg);
+    border-color: var(--success-fg);
 }
 .badge-error {
     background: transparent;
-    color: var(--error);
-    border-color: var(--error);
+    color: var(--error-fg);
+    border-color: var(--error-fg);
 }
 .badge-warning {
     background: transparent;
-    color: var(--warning);
-    border-color: var(--warning);
+    color: var(--warning-fg);
+    border-color: var(--warning-fg);
 }
 .badge-info {
     background: transparent;
-    color: var(--info);
-    border-color: var(--info);
+    color: var(--info-fg);
+    border-color: var(--info-fg);
 }
 .badge-accent {
     background: transparent;
