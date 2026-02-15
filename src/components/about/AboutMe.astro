@@ -40,6 +40,14 @@ const { more } = Astro.props;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
+        width: 4rem;
+        height: 4rem;
+    }
+    .about-avatar :global(img) {
+        width: 4rem;
+        height: 4rem;
+        object-fit: cover;
     }
     .about-info {
         white-space: nowrap;
