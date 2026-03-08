@@ -5,11 +5,6 @@ import { renderOgImage, ogResponse, OG } from '../../../../lib/og-image'
 
 export const prerender = false
 
-function formatDate(iso: string): string {
-    const d = new Date(iso)
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
 function truncate(str: string, max: number): string {
     return str.length > max ? str.slice(0, max).trimEnd() + '...' : str
 }
@@ -48,7 +43,6 @@ export async function GET({ params }: APIContext) {
 
     const title = truncate(post.title ?? 'Untitled', 80)
     const description = truncate(post.description ?? '', 150)
-    const date = post.published_at ? formatDate(post.published_at) : ''
     const tags = (post.tag_list ?? []).slice(0, 5)
 
     const tag_pills = tags.map((tag) => ({
@@ -59,8 +53,8 @@ export async function GET({ params }: APIContext) {
                 background: OG.bgAlt,
                 border: `1px solid ${OG.border}`,
                 borderRadius: 6,
-                padding: '4px 10px',
-                fontSize: 16,
+                padding: '6px 16px',
+                fontSize: 22,
                 color: OG.fgSubtle,
             },
             children: tag,
@@ -117,7 +111,7 @@ export async function GET({ params }: APIContext) {
                                             props: {
                                                 style: {
                                                     display: 'flex',
-                                                    fontSize: 48,
+                                                    fontSize: 72,
                                                     fontWeight: 700,
                                                     color: OG.fg,
                                                     lineHeight: 1.2,
@@ -132,28 +126,12 @@ export async function GET({ params }: APIContext) {
                                                       props: {
                                                           style: {
                                                               display: 'flex',
-                                                              fontSize: 22,
+                                                              fontSize: 36,
                                                               color: OG.fgMuted,
-                                                              marginTop: 16,
+                                                              marginTop: 24,
                                                               lineHeight: 1.4,
                                                           },
                                                           children: description,
-                                                      },
-                                                  },
-                                              ]
-                                            : []),
-                                        ...(date
-                                            ? [
-                                                  {
-                                                      type: 'div',
-                                                      props: {
-                                                          style: {
-                                                              display: 'flex',
-                                                              fontSize: 20,
-                                                              color: OG.fgSubtle,
-                                                              marginTop: 12,
-                                                          },
-                                                          children: date,
                                                       },
                                                   },
                                               ]
@@ -177,7 +155,7 @@ export async function GET({ params }: APIContext) {
                                             props: {
                                                 style: {
                                                     display: 'flex',
-                                                    gap: 8,
+                                                    gap: 12,
                                                     flexWrap: 'wrap',
                                                 },
                                                 children: tag_pills,
@@ -189,7 +167,7 @@ export async function GET({ params }: APIContext) {
                                             props: {
                                                 style: {
                                                     display: 'flex',
-                                                    fontSize: 18,
+                                                    fontSize: 24,
                                                     color: OG.fgSubtle,
                                                 },
                                                 children: 'forbit.dev',
