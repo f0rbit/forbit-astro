@@ -1,6 +1,7 @@
 --- 
 import Page from './Page.astro'
+import { websiteJsonLd } from '../lib/json-ld'
 ---
-<Page title="Home" description="Look at my featured projects, recent commits, recent blog posts and recent professional experience" keywords={["developer", "portfolio", "blogger", "software", "forbit"]} canonical='https://forbit.dev'>
+<Page title="Home" description="Look at my featured projects, recent commits, recent blog posts and recent professional experience" keywords={["developer", "portfolio", "blogger", "software", "forbit"]} canonical='https://forbit.dev' ogImage="https://forbit.dev/og/default.png" jsonLd={websiteJsonLd()}>
 	<slot />
 </Page>
