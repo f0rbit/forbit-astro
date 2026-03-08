@@ -9,9 +9,10 @@ const { project_id } = Astro.params
 const project = project_id ? await getProject(project_id) : null
 
 const description = project?.description ?? (project?.name ? `Project page for ${project.name}` : `Invalid project`)
+const ogImage = `https://forbit.dev/og/project/${project_id}.png`
 ---
 
-<Page title={project?.name ?? '404'} description={description} canonical={`https://forbit.dev/projects/${project_id}`}>
+<Page title={project?.name ?? '404'} description={description} canonical={`https://forbit.dev/projects/${project_id}`} ogImage={ogImage}>
     <Navigation home={false} />
     <div class="page-container stack" style="overflow-x: hidden;">
         {project ? <main class="project-layout"><ProjectPage project={project} /></main> : <p style="color: var(--error); text-align: center;">Invalid Project!</p>}

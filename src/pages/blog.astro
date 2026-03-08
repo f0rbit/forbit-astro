@@ -9,7 +9,7 @@ const posts = await getBlogPosts();
 export const prerender = false;
 ---
 
-<Page title="Blog" description="Just some of my thoughts" keywords={["blog", "devblog", "programming blog"]} canonical='https://forbit.dev/blog'>
+<Page title="Blog" description="Just some of my thoughts" keywords={["blog", "devblog", "programming blog"]} canonical='https://forbit.dev/blog' ogImage="https://forbit.dev/og/default.png">
     <Navigation home={false} />
     <div class="page-container">
         <div class="blog-grid">

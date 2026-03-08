@@ -7,6 +7,7 @@ const { group, slug } = Astro.params
 import { getBlogPost } from '../../../utils'
 import { remark } from 'remark';
 import PublishTime from "../../../components/blog/PublishTime.tsx";
+import { articleJsonLd } from '../../../lib/json-ld'
 
 const post = await getBlogPost(group as BlogGroup, slug as string)
 
@@ -15,9 +16,12 @@ const parsed = await remark().use(remarkHtml).process(post?.content ?? "no conte
 export const prerender = false
 
 const title = post && post.title ? post.title : "Blog Post";
+const canonical = `https://forbit.dev/blog/${group}/${slug}`
+const ogImage = `https://forbit.dev/og/blog/${group}/${slug}.png`
+const jsonLd = post ? articleJsonLd(post, canonical, ogImage) : undefined
 ---
 
-<Page title={title} description={post?.description ?? "Blog Post"} canonical={`https://forbit.dev/blog/${group}/${slug}`}>
+<Page title={title} description={post?.description ?? "Blog Post"} canonical={canonical} ogImage={ogImage} ogType="article" jsonLd={jsonLd}>
     <Navigation home={false} />
     <main class="blog-post">
         {
