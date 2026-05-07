@@ -1,12 +1,12 @@
-import { defineConfig } from 'astro/config'
+import { defineConfig, envField } from 'astro/config'
 import solid from '@astrojs/solid-js'
-import node from '@astrojs/node'
+import cloudflare from '@astrojs/cloudflare'
 import sitemap from '@astrojs/sitemap'
 import icon from 'astro-icon'
-import { getBlogPosts, getProjects } from './src/utils'
+import { getBuildBlogPosts, getBuildProjects } from './src/lib/build-data'
 
-const blog_posts = await getBlogPosts()
-const projects = await getProjects()
+const blog_posts = await getBuildBlogPosts()
+const projects = await getBuildProjects()
 
 const site = 'https://forbit.dev'
 
@@ -23,8 +23,33 @@ export default defineConfig({
         }),
     ],
     output: 'server',
-    adapter: node({
-        mode: 'standalone',
+    adapter: cloudflare({
+        platformProxy: {
+            enabled: true,
+        },
     }),
     site,
+    experimental: {
+        env: {
+            schema: {
+                DEVPAD_API_KEY: envField.string({
+                    context: 'server',
+                    access: 'secret',
+                }),
+                DEVTO_KEY: envField.string({
+                    context: 'server',
+                    access: 'secret',
+                }),
+                POSTS_URL: envField.string({
+                    context: 'server',
+                    access: 'secret',
+                }),
+                DEVPAD_URL: envField.string({
+                    context: 'server',
+                    access: 'secret',
+                    default: 'https://devpad.tools/api/v1',
+                }),
+            },
+        },
+    },
 })

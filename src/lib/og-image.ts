@@ -1,5 +1,14 @@
-import satori from 'satori'
-import { Resvg } from '@resvg/resvg-js'
+/**
+ * TEMPORARY STUB — Phase 1 of Cloudflare migration.
+ *
+ * The previous implementation used `satori + @resvg/resvg-js` (native binary,
+ * incompatible with Workers). Phase 3 re-implements this via `workers-og`.
+ * See .plans/cloudflare-migration.md tasks 3.1-3.6.
+ *
+ * Constants and `statusColor` are kept as-is so callers can still import them
+ * during Phase 1; the rendering functions are stubbed and the OG endpoints
+ * return 503 until Phase 3.
+ */
 
 export const OG = {
     bg: '#1a1a2e',
@@ -31,41 +40,10 @@ export function statusColor(status: string): string {
     return STATUS_COLORS[status] ?? OG.fgSubtle
 }
 
-const FONT_URLS = {
-    regular: 'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf',
-    bold: 'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf',
-} as const
-
-let fonts_promise: Promise<{ name: string; data: ArrayBuffer; weight: 400 | 700 }[]> | null = null
-
-export async function loadFonts() {
-    if (!fonts_promise) {
-        fonts_promise = Promise.all([fetch(FONT_URLS.regular).then((r) => r.arrayBuffer()), fetch(FONT_URLS.bold).then((r) => r.arrayBuffer())]).then(
-            ([regular, bold]) => [
-                { name: 'Inter', data: regular, weight: 400 as const },
-                { name: 'Inter', data: bold, weight: 700 as const },
-            ]
-        )
-    }
-    return fonts_promise
+export async function renderOgImage(_element: unknown): Promise<Uint8Array> {
+    throw new Error('OG image generation pending Phase 3 (workers-og)')
 }
 
-export async function renderOgImage(element: any): Promise<Buffer> {
-    const fonts = await loadFonts()
-    const svg = await satori(element, {
-        width: OG.width,
-        height: OG.height,
-        fonts,
-    })
-    const resvg = new Resvg(svg)
-    return resvg.render().asPng() as Buffer
-}
-
-export function ogResponse(buffer: Buffer, maxAge?: number): Response {
-    return new Response(buffer, {
-        headers: {
-            'Content-Type': 'image/png',
-            'Cache-Control': `public, max-age=${maxAge ?? 86400}`,
-        },
-    })
+export function ogResponse(_buffer: Uint8Array, _maxAge?: number): Response {
+    return new Response('OG image generation pending Phase 3', { status: 503 })
 }

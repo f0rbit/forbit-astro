@@ -1,22 +1,11 @@
 import type { Duration } from 'moment'
 import { PROJECT_VISIBILITY, type Project, type BlogGroup, BLOG_GROUP, type Post } from './types'
 import { devpad } from './client'
+import { DEVTO_KEY, POSTS_URL } from 'astro:env/server'
 
 const secrets = {
-    DEVTO_KEY: process.env.VITE_DEVTO_KEY ?? import.meta.env.VITE_DEVTO_KEY,
-    POSTS_URL: process.env.VITE_POSTS_URL ?? import.meta.env.VITE_POSTS_URL,
-}
-
-let missing_secret = false
-for (const [key, value] of Object.entries(secrets)) {
-    if (!value) {
-        console.error(`Missing secret: ${key}`)
-        missing_secret = true
-    }
-}
-
-if (missing_secret) {
-    console.log({ proccess: process.env, 'import.meta': import.meta.env })
+    DEVTO_KEY,
+    POSTS_URL,
 }
 
 const DEFAULT_CACHE_INTERVAL = 10 * 60 * 1000 // 10 minutes
@@ -143,7 +132,7 @@ function getDevToHeaders(API_KEY: any) {
     return { headers: { 'api-key': API_KEY, accept: 'application/vnd.forem.api-v1+json' } }
 }
 
-export async function fetchDevToAPI(url: string) {
+export async function fetchDevToAPI(url: string): Promise<any> {
     try {
         const api_key = secrets.DEVTO_KEY
         const response = await fetch(url, getDevToHeaders(api_key))

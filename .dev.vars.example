@@ -1,0 +1,6 @@
+# Local secrets for `wrangler dev`. Copy to `.dev.vars` (gitignored) and fill in.
+# Production secrets are managed in the Cloudflare dashboard.
+DEVPAD_API_KEY=<devpad api key>
+DEVTO_KEY=<devto api key>
+POSTS_URL=<media-timeline url>
+DEVPAD_URL=https://devpad.tools/api/v1

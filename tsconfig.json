@@ -1,8 +1,8 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "jsx": "preserve"
-  }
-
+    "extends": "astro/tsconfigs/strict",
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "jsx": "preserve",
+        "types": ["./worker-configuration.d.ts"]
+    }
 }
