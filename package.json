@@ -17,7 +17,7 @@
     },
     "dependencies": {
         "@astrojs/cloudflare": "^11.2.0",
-        "@astrojs/sitemap": "^3.1.2",
+        "@astrojs/sitemap": "3.6.0",
         "@astrojs/solid-js": "^3.0.2",
         "@devpad/api": "^2.1.11",
         "@f0rbit/ui": "^0.1.9",
