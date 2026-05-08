@@ -52,4 +52,11 @@ src/
 | `bun run build`   | Build for production     |
 | `bun run preview` | Preview production build |
 
-Site deployed at [forbit.dev](https://forbit.dev)
+## Deployment
+
+Deployed at [forbit.dev](https://forbit.dev) on Cloudflare Workers via
+Workers Builds. Pushing to `main` auto-deploys; PRs get preview URLs.
+
+See `docs/deploy.md` for the Workers Builds setup runbook,
+`docs/content-publishing.md` for the DevPad publish hook story, and
+`docs/rollback.md` for the cutover and rollback procedure.

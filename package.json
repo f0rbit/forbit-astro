@@ -12,6 +12,7 @@
         "typecheck": "astro check",
         "test": "bun test",
         "check": "rm -rf dist && bun run typecheck && bun run test",
+        "smoke": "bun run scripts/smoke.ts",
         "postinstall": "wrangler types"
     },
     "dependencies": {
