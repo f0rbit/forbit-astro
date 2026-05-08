@@ -2,11 +2,11 @@
 import Navigation from '../../components/Navigation.astro'
 import ProjectPage from '../../components/projects/ProjectPage.astro'
 import Page from '../../layouts/Page.astro'
-import { getProject } from '../../utils'
+import { getProject, type AppLocals } from '../../utils'
 const { project_id } = Astro.params
 
 // fetch the project from api
-const project = project_id ? await getProject(project_id) : null
+const project = project_id ? await getProject(Astro.locals as AppLocals, project_id) : null
 
 const description = project?.description ?? (project?.name ? `Project page for ${project.name}` : `Invalid project`)
 const ogImage = `https://forbit.dev/og/project/${project_id}.png`

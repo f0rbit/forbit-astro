@@ -1,8 +1,8 @@
 ---
-import { getBlogPosts } from '../../utils'
+import { getBlogPosts, type AppLocals } from '../../utils'
 import BlogCard from './BlogCard.astro'
 
-const posts = (await getBlogPosts()).slice(0, 3)
+const posts = (await getBlogPosts(Astro.locals as AppLocals)).slice(0, 3)
 ---
 
 <div class="grid">

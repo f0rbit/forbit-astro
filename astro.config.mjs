@@ -13,6 +13,8 @@ const site = 'https://forbit.dev'
 const blog_urls = blog_posts.map((post) => `${site}/blog/${post.group}/${post.slug}`)
 const project_urls = projects.map((project) => `${site}/projects/${project.project_id}`)
 
+const BUILD_SHA = process.env.WORKERS_CI_COMMIT_SHA ?? process.env.GITHUB_SHA ?? 'dev'
+
 // https://astro.build/config
 export default defineConfig({
     integrations: [
@@ -28,6 +30,11 @@ export default defineConfig({
             enabled: true,
         },
     }),
+    vite: {
+        define: {
+            'import.meta.env.BUILD_SHA': JSON.stringify(BUILD_SHA),
+        },
+    },
     site,
     experimental: {
         env: {

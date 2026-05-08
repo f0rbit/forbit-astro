@@ -2,10 +2,10 @@
 import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
-import { getProjects, isProjectCacheInvalid } from '../utils'
+import { getProjects, type AppLocals } from '../utils'
 
-const projects = (await getProjects()).sort((a,b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()) || null;
-const invalid = isProjectCacheInvalid()
+const projects = (await getProjects(Astro.locals as AppLocals)).sort((a,b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()) || null;
+const invalid = projects.length === 0
 
 export const prerender = false
 ---

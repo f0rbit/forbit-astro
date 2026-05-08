@@ -1,10 +1,10 @@
 ---
 import Page from '../layouts/Page.astro'
 import Navigation from '../components/Navigation.astro'
-import { getBlogPosts } from '../utils';
+import { getBlogPosts, type AppLocals } from '../utils';
 import BlogCard from '../components/blog/BlogCard.astro';
 
-const posts = await getBlogPosts();
+const posts = await getBlogPosts(Astro.locals as AppLocals);
 
 export const prerender = false;
 ---

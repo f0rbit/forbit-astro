@@ -1,6 +1,6 @@
 ---
 import { Collapsible } from '@f0rbit/ui'
-import { fetchTimeline, getTimeline } from '../../utils'
+import { fetchTimeline, getTimeline, type AppLocals } from '../../utils'
 import moment from 'moment'
 import CommitList from './CommitList.astro'
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 
 const { limit, group_commits, project_repo = null } = Astro.props
 
-const activity = await fetchTimeline()
+const activity = await fetchTimeline(Astro.locals as AppLocals)
 
 let events = getTimeline(activity, group_commits)
 
