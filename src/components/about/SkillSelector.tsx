@@ -40,7 +40,6 @@ function SkillComponent(props: { skills: Record<string, SkillInformation> }) {
                     .map(([id, data]) => (
                         <button
                             type="button"
-                            key={id}
                             onClick={() => handleSkillClick(id)}
                             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', width: '100%' }}
                         >

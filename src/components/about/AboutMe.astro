@@ -1,7 +1,9 @@
 ---
+import type { ImageMetadata } from 'astro'
 import { Laptop2, GraduationCap, Camera, Fish } from 'lucide-astro'
 import { Image } from 'astro:assets';
-import forbitIcon from "../../assets/forbit-icon.png"
+import forbitIconImport from "../../assets/forbit-icon.png"
+const forbitIcon = forbitIconImport as unknown as ImageMetadata;
 interface Props {
     more: boolean
 }

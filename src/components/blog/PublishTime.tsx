@@ -20,7 +20,7 @@ export default function PublishTime(props: Props) {
 
     return (
         <>
-            <time dateTime={date} className="text-sm" style={{ textTransform: 'lowercase' }} title={title}>
+            <time datetime={date} class="text-sm" style={{ 'text-transform': 'lowercase' }} title={title}>
                 {time}
             </time>
         </>

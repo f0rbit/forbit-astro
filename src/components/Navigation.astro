@@ -1,7 +1,9 @@
 ---
+import type { ImageMetadata } from 'astro'
 import { Astronav, MenuItems, MenuIcon} from 'astro-navbar'
 import { Image } from 'astro:assets';
-import forbitLogo from "../assets/forbit-icon.png";
+import forbitLogoImport from "../assets/forbit-icon.png";
+const forbitLogo = forbitLogoImport as unknown as ImageMetadata;
 interface Props {
     home: boolean | null
 }

@@ -3,6 +3,7 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "jsx": "preserve",
+        "jsxImportSource": "solid-js",
         "types": ["./worker-configuration.d.ts"]
     }
 }
