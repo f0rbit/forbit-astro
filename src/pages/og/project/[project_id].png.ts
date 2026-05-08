@@ -1,9 +1,13 @@
 import type { APIRoute } from 'astro'
+import { ogResponse, projectLayout, projectFallbackLayout } from '../../../lib/og-image'
+import { getProject } from '../../../utils'
+import type { AppLocals } from '../../../utils'
 
 export const prerender = false
 
-// TEMPORARY STUB — Phase 1 of Cloudflare migration. Re-implemented via
-// `workers-og` in Phase 3. See .plans/cloudflare-migration.md task 1.11.
-export const GET: APIRoute = async () => {
-    return new Response('OG image generation pending Phase 3', { status: 503 })
+export const GET: APIRoute = async ({ params, locals }) => {
+    const project_id = params.project_id!
+    const project = await getProject(locals as AppLocals, project_id)
+    const element = project ? projectLayout(project) : projectFallbackLayout()
+    return await ogResponse(element, project ? 3600 : 60)
 }

@@ -28,9 +28,9 @@
         "moment": "^2.29.4",
         "remark": "^14.0.3",
         "remark-html": "^15.0.2",
-        "satori": "^0.25.0",
         "solid-js": "^1.7.11",
-        "solidjs-typewriter": "^0.0.8"
+        "solidjs-typewriter": "^0.0.8",
+        "workers-og": "^0.0.27"
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.9",
