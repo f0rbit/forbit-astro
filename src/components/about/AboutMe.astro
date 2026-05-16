@@ -52,12 +52,18 @@ const { more } = Astro.props;
     }
     .about-info {
         white-space: nowrap;
+        padding: var(--space-md);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
         display: flex;
         flex-direction: column;
         gap: var(--space-xs);
         list-style: none;
+        width: max-content;
         margin: 0;
-        padding: 0;
+    }
+    .about-info .row {
+        padding-inline-end: var(--space-md);
     }
 
     @media (min-width: 1024px) {
