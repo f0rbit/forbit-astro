@@ -1,9 +1,8 @@
 ---
-import type { ImageMetadata } from 'astro'
+import type { ImageMetadata as AstroImageMetadata } from 'astro'
 import { Laptop2, GraduationCap, Camera, Fish } from 'lucide-astro'
-import { Image } from 'astro:assets';
 import forbitIconImport from "../../assets/forbit-icon.png"
-const forbitIcon = forbitIconImport as unknown as ImageMetadata;
+const forbitIcon = forbitIconImport as unknown as AstroImageMetadata;
 interface Props {
     more: boolean
 }
@@ -13,7 +12,7 @@ const { more } = Astro.props;
 
 <div class="about-me">
     <div class="about-avatar">
-        <Image src={forbitIcon} alt="forbit logo" style="border-radius: 30%;" width={64} height={64} />
+        <img src={forbitIcon.src} alt="forbit logo" style="border-radius: 30%;" width={64} height={64} />
     </div>
     <ul class="about-info">
         <li class="row"><Laptop2 size={18} />Software Engineer</li>
