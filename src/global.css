@@ -193,3 +193,11 @@ article.specification h3 {
 .card-title {
     color: var(--fg);
 }
+
+/* Keep lucide icons at their declared dimensions inside @f0rbit/ui's .row
+   flex utility — pure-path SVGs (e.g. GraduationCap, Camera) have no
+   drawn bounds equal to their viewBox, so flex would otherwise shrink
+   them to their drawn extent (or to 0). */
+.row svg {
+    flex-shrink: 0;
+}
