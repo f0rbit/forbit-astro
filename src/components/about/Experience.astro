@@ -1,5 +1,4 @@
 ---
-import moment from 'moment'
 import { experience } from '../../assets/experience'
 import type { Experience } from '../../assets/experience'
 import ExperienceCard from "./ExperienceCard.astro";
@@ -35,8 +34,6 @@ if (sort == 'latest') {
 }
 
 const tags = !(types.length == 1 && types[0] == "professional");
-
-moment.locale('en-au')
 ---
 
 {

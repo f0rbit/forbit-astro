@@ -1,118 +1,140 @@
 ---
-import type { ImageMetadata as AstroImageMetadata } from 'astro'
-import { Astronav, MenuItems, MenuIcon} from 'astro-navbar'
-import forbitLogoImport from "../assets/forbit-icon.png";
-const forbitLogo = forbitLogoImport as unknown as AstroImageMetadata;
+import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
+import { Github, Twitter, Mail } from "lucide-astro";
+import { PATH_TABS, is_active_path } from "../lib/path-nav";
+
 interface Props {
-    home: boolean | null
+	// kept for backward compatibility with existing call sites; active-tab
+	// detection is derived from the URL, not this prop.
+	home?: boolean | null;
 }
-const { home } = Astro.props;
+
+const pathname = Astro.url.pathname;
 ---
 
-<nav id="navbar" style={home ? "border-top: 1px solid var(--border)" : ""}>
-    <Astronav>
-        <div class="nav-title">
-            {!home && <img src={forbitLogo.src} alt="forbit logo" class="nav-logo" width={forbitLogo.width} height={forbitLogo.height} />}
-            <div class="menu-icon">
-                <MenuIcon class="menu-icon-size" />
-            </div>
-        </div>
-        <MenuItems class="menu-items">
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/projects">Projects</a></li>
-                <li><a href="/blog">Blog</a></li>
-                <li><a href="/timeline">Timeline</a></li>
-            </ul>
-        </MenuItems>
-    </Astronav>
-</nav>
+<Astronav>
+	<nav class="path-nav row row-sm" aria-label="Primary">
+		{
+			PATH_TABS.map((tab) => (
+				<a href={tab.href} class:list={["path-tab", { "path-tab--active": is_active_path(tab.href, pathname) }]}>
+					{tab.label}
+				</a>
+			))
+		}
+	</nav>
+	<div class="mobile-menu">
+		<div class="menu-icon">
+			<MenuIcon class="menu-icon-size" />
+		</div>
+		<MenuItems class="path-menu hidden">
+			<div class="path-menu-inner stack">
+				<p class="path-menu-heading font-mono text-accent">$ cd ~/</p>
+				<div class="stack stack-sm path-menu-rows">
+					{
+						PATH_TABS.map((tab) => (
+							<a href={tab.href} class:list={["path-menu-row font-mono", { "path-tab--active": is_active_path(tab.href, pathname) }]}>
+								{"→ "}
+								{tab.label}
+							</a>
+						))
+					}
+				</div>
+				<div class="row row-sm path-menu-socials">
+					<a href="https://github.com/f0rbit" aria-label="GitHub"><Github size={18} /></a>
+					<a href="https://twitter.com/f0rbit" aria-label="Twitter"><Twitter size={18} /></a>
+					<a href="mailto:dev@forbit.dev" aria-label="Email"><Mail size={18} /></a>
+				</div>
+			</div>
+		</MenuItems>
+	</div>
+</Astronav>
 
 <style>
-  #navbar {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    justify-content: center;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: var(--space-sm);
-    padding: var(--space-md) var(--space-lg);
-  }
+	.path-nav {
+		display: none;
+	}
 
-  .nav-title {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-  }
+	.path-tab {
+		color: var(--fg-faint);
+		text-decoration: none;
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		filter: none;
+		transition: color var(--transition);
+	}
+	.path-tab:hover {
+		color: var(--fg-muted);
+		filter: none;
+	}
+	.path-tab--active {
+		color: var(--term-link);
+	}
 
-  .nav-logo {
-    border-radius: 30%;
-    width: 1.5rem;
-    height: 1.5rem;
-  }
+	.mobile-menu {
+		position: relative;
+	}
+	.menu-icon {
+		display: flex;
+		align-items: center;
+	}
+	.menu-icon-size {
+		width: 1.25rem;
+		height: 1.25rem;
+		color: var(--fg-muted);
+	}
+	/* the close (×) glyph is the same button, swapped in by astro-navbar's script */
+	:global(.astronav-close-icon) {
+		fill: var(--term-link);
+	}
 
-  #navbar a {
-    color: var(--fg);
-    text-decoration: none;
-    font-weight: 600;
-    filter: none;
-    transition: color var(--transition);
-  }
-  #navbar a:hover {
-    color: var(--accent);
-    filter: none;
-  }
+	/*
+	 * astro-navbar toggles the shared `.hidden` utility on click (see
+	 * astro-navbar's Astronav script) — these two rules are unlayered so they
+	 * outrank @f0rbit/ui's layered `.hidden { display: none }` utility either way,
+	 * and `.path-menu.hidden` (2 classes) outranks plain `.path-menu` (1 class)
+	 * so the closed state always wins until the class is removed on toggle.
+	 */
+	:global(.path-menu) {
+		display: block;
+		position: absolute;
+		inset-inline: 0;
+		top: 100%;
+		z-index: 20;
+		background: var(--term-panel);
+		border: 1px solid var(--term-border);
+		border-radius: var(--radius);
+		margin: var(--space-sm);
+	}
+	:global(.path-menu.hidden) {
+		display: none;
+	}
+	.path-menu-inner {
+		padding: var(--space-lg);
+	}
+	.path-menu-heading {
+		margin: 0;
+	}
+	.path-menu-row {
+		color: var(--fg-muted);
+		text-decoration: none;
+		filter: none;
+	}
+	.path-menu-row.path-tab--active {
+		color: var(--term-link);
+	}
+	.path-menu-socials a {
+		color: var(--fg-muted);
+	}
+	.path-menu-socials a:hover {
+		color: var(--term-link);
+	}
 
-  .menu-icon {
-    display: none;
-  }
-
-  .menu-icon-size {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  .menu-items {
-    display: none;
-  }
-
-  .nav-links {
-    display: flex;
-    flex-direction: row;
-    gap: var(--space-lg);
-    font-size: var(--text-lg);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  @media (max-width: 1023px) {
-    #navbar {
-      flex-direction: column;
-    }
-    .nav-title {
-      width: 100%;
-    }
-    .menu-icon {
-      display: block;
-      margin-left: auto;
-    }
-    .nav-links {
-      flex-direction: column;
-      gap: var(--space-sm);
-      padding-top: var(--space-sm);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .menu-items {
-      display: flex;
-    }
-    .nav-title {
-      width: max-content;
-    }
-  }
+	@media (min-width: 1024px) {
+		.path-nav {
+			display: flex;
+		}
+		.mobile-menu {
+			display: none;
+		}
+	}
 </style>
-

@@ -1,7 +1,7 @@
 ---
-import moment from 'moment'
 import type { Experience } from '../../assets/experience'
 import { format_duration } from '../../utils'
+import { format_calendar } from '../../lib/time'
 import SkillEvents from '../about/SkillEvents.astro'
 import AwardTypeIcon from '../projects/AwardTypeIcon.astro'
 import { Badge, Clamp } from "@f0rbit/ui"
@@ -14,8 +14,9 @@ interface Props {
 
 const { experience, type, tags, isLast = false } = Astro.props
 
-const date_string = `${moment(experience.start_date).calendar()} - ${experience.end_date ? moment(experience.end_date).calendar() : 'Present'}`
-const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : moment.duration(moment().diff(experience.start_date))
+const end_date = experience.end_date ?? new Date()
+const date_string = `${format_calendar(experience.start_date)} - ${experience.end_date ? format_calendar(experience.end_date) : 'Present'}`
+const duration = format_duration(experience.start_date, end_date)
 const { title, awards } = experience
 ---
 
@@ -28,7 +29,7 @@ const { title, awards } = experience
         <div class="experience-content stack stack-sm">
             <label class="text-sm experience-label">
                 <span>{date_string}</span>
-                {duration && <span class="text-subtle"> ({format_duration(duration)})</span>}
+                {duration && <span class="text-subtle"> ({duration})</span>}
             </label>
             <div class="experience-title">
                 <h3 id={experience.id}>{title}</h3>
@@ -63,7 +64,7 @@ const { title, awards } = experience
         <div class="stack stack-sm">
             <label class="text-sm experience-label">
                 <span>{date_string}</span>
-                {duration && <span class="text-subtle"> ({format_duration(duration)})</span>}
+                {duration && <span class="text-subtle"> ({duration})</span>}
             </label>
             <div class={`experience-title ${type == 'left' ? 'experience-title--reverse' : ''}`}>
                 <h3 id={experience.id}>{title}</h3>

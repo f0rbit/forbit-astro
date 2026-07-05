@@ -1,5 +1,6 @@
---- 
+---
 import "@f0rbit/ui/styles";
+import "../styles/terminal.css";
 
 interface Props {
 	title: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 import Footer from "../components/Footer.astro";
+import TerminalWindow from "../components/TerminalWindow.astro";
 
 const { title, description, keywords = [], canonical = null, ogImage = null, ogType = 'website', jsonLd = null } = Astro.props;
 import "../global.css";
@@ -52,11 +54,19 @@ import "../global.css";
 		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 	</head>
 	<body>
-        <div style="min-height: calc(100vh - 64px); padding-bottom: 1rem;">
-		    <slot />
+        <div class="page-shell page-container" style="min-height: calc(100vh - 64px); padding-block: 1rem;">
+            <TerminalWindow>
+                <slot />
+            </TerminalWindow>
         </div>
         <div class="block">
             <Footer />
         </div>
 	</body>
 </html>
+
+<style>
+	.page-shell {
+		margin-inline: auto;
+	}
+</style>

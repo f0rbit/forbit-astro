@@ -1,7 +1,8 @@
-import type { Duration } from "moment";
 import { type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 import { cached_fetch, type CacheCtx } from "./lib/cache";
 import type { AppProviders, ProviderError, Result } from "./providers/types";
+
+export { format_duration } from "./lib/time";
 
 const DEFAULT_TTL_SECONDS = 10 * 60; // 10 minutes
 
@@ -141,14 +142,3 @@ export function get_timeline(activities: any, group_commits: any) {
 	return event_timeline.toReversed();
 }
 /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/restrict-template-expressions */
-
-export function format_duration(duration: Duration) {
-	if (duration.asMonths() >= 16) {
-		return `${Math.round(duration.asYears()).toString()} years`;
-	} else if (duration.asMonths() >= 2) {
-		return `${Math.ceil(duration.asMonths()).toString()} months`;
-	} else if (duration.asDays() >= 3) {
-		return `${Math.ceil(duration.asDays()).toString()} days`;
-	}
-	return `${Math.ceil(duration.asHours()).toString()} hours`;
-}

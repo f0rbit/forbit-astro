@@ -1189,7 +1189,7 @@ $ bun run build
 					<article class="task" id="task-2-1">
 						<header>
 							<h3>Task 2.1: Tokyo Night token layer <code>src/styles/terminal.css</code> + font @font-face/preload</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -1295,14 +1295,40 @@ bun run fmt:check &amp;&amp; bun run lint     # clean
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">
+								<p>
+									Palette lives in exactly one place: <code>src/styles/terminal.css</code>
+									<code>:root</code>, intentionally NOT wrapped in <code>@layer</code>. Verified
+									<code>@f0rbit/ui</code>'s tokens live inside <code>@layer tokens</code> (<code
+										>node_modules/@f0rbit/ui/dist/styles.css:1,5</code
+									>
+									declares <code>@layer reset, tokens, components, utilities;</code> then
+									<code>@layer tokens { ... }</code>) — per the CSS Cascade Layers spec, unlayered rules always beat
+									layered rules regardless of import order or specificity, so <code>terminal.css</code>'s over
+									rides win unconditionally. No webfont was required (mockup mono stack is
+									system-only: <code>ui-monospace, "SF Mono", Menlo, monospace</code>) so no
+									<code>@font-face</code>/preload was added — recorded as a comment in
+									<code>terminal.css:59-67</code>. <code>grep -rl "oklch(" src/components src/layouts src/pages</code>
+									returns nothing — zero OKLCH literals outside <code>terminal.css</code>.
+								</p>
+								<pre>
+$ bun run typecheck
+Result (64 files): 0 errors, 0 warnings, 2 hints (pre-existing)
+
+$ bun run build
+[build] Complete!
+
+$ bun run lint &amp;&amp; bun run fmt:check
+(0 errors, 0 warnings; all matched files use the correct format)</pre
+								>
+							</div>
 						</section>
 					</article>
 
 					<article class="task" id="task-2-2">
 						<header>
 							<h3>Task 2.2: Shared terminal shell — TerminalWindow + PromptLine + path-nav + footer</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -1408,14 +1434,49 @@ bun run lint &amp;&amp; bun run fmt:check
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">
+								<p>
+									Shell API: <code>TerminalWindow.astro</code> takes optional <code>{ path }</code>, defaulting
+									to <code>derive_path(Astro.url.pathname)</code> from the new
+									<code>src/lib/path-nav.ts</code> (single source of the route→path map: <code>PATH_TABS</code>,
+									<code>is_active_path</code>, <code>derive_path</code>). Renders the panel, titlebar (3 traffic-light
+									dots, centered <code>forbit@dev — {path} — zsh</code>, right-aligned <code>&lt;Navigation/&gt;</code>),
+									and a body slot. <code>PromptLine.astro</code> takes
+									<code>{ path?, cmd, cursor? }</code>. <code>Navigation.astro</code> reworked into the path-nav tab
+									strip driven by the same <code>PATH_TABS</code>/<code>is_active_path</code> — five tabs, active
+									derived from <code>Astro.url.pathname</code>, mobile hamburger (astro-navbar
+									<code>Astronav</code>/<code>MenuIcon</code>/<code>MenuItems</code>) kept intact as the "path menu."
+									<code>Footer.astro</code> now renders <code>&lt;PromptLine path="~" cmd="contact" cursor /&gt;</code>.
+									<code>Page.astro</code> wraps <code>&lt;slot/&gt;</code> in <code>&lt;TerminalWindow&gt;</code>; SEO/OG/
+									JSON-LD head block diff-verified unchanged (only the two new imports + the wrapper div/style were
+									added — <code>git diff src/layouts/Page.astro</code> shows no head changes).
+									<strong>Transitional double-nav (see note below):</strong> the 7 route files still call
+									<code>&lt;Navigation /&gt;</code> directly in their bodies in addition to the one rendered inside
+									<code>TerminalWindow</code>'s titlebar, so every page currently renders the path-nav TWICE. This is
+									purely visual duplication (confirmed the build still succeeds) and is explicitly deferred to Phase 3 —
+									see the <code>PHASE3-TODO</code> note added below.
+								</p>
+								<pre>
+$ bun run typecheck &amp;&amp; bun run build
+Result (64 files): 0 errors, 0 warnings, 2 hints (pre-existing) / [build] Complete!
+
+$ bun run lint &amp;&amp; bun run fmt:check
+(0 errors, 0 warnings; all matched files use the correct format)
+
+$ grep -rln "&lt;Navigation" src/pages src/layouts
+src/pages/about.astro src/pages/timeline.astro src/pages/index.astro
+src/pages/projects.astro src/pages/projects/[project_id].astro
+src/pages/blog.astro src/pages/blog/[group]/[slug].astro
+(7 routes — confirms the double-nav; TerminalWindow is the 8th render site)</pre
+								>
+							</div>
 						</section>
 					</article>
 
 					<article class="task" id="task-2-3">
 						<header>
 							<h3>Task 2.3: Replace moment.js with native Intl/date math (shared util + PublishTime)</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -1506,7 +1567,47 @@ bun run lint &amp;&amp; bun run fmt:check</pre
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">
+								<p>
+									New <code>src/lib/time.ts</code>: native replacement — <code>format_duration(start, end)</code>
+									(replaces the moment-<code>Duration</code>-based signature; the one caller,
+									<code>ExperienceCard.astro</code>, updated to pass <code>start_date</code>/<code>end_date ?? new
+									Date()</code>), <code>format_relative_time</code> (≈ <code>moment().fromNow()</code>, thresholds
+									mirror moment's English locale ss:44/m:45/h:22/d:26/M:11), <code>format_calendar</code> (≈
+									<code>moment().calendar()</code>, "Today at…"/"Yesterday at…"/weekday-within-week, else
+									<code>format_ddmmyyyy</code>), <code>format_full_date_time</code> (≈
+									<code>moment().format("dddd, MMMM Do YYYY, h:mm:ss a")</code>). All six original moment call
+									sites (<code>utils.ts</code> <code>format_duration</code>, <code>ExperienceCard.astro</code>,
+									<code>Experience.astro</code>, <code>Timeline.astro</code>, <code>PublishTime.tsx</code> ×2 calls)
+									migrated; <code>skills.ts</code> never actually used moment (plan's file list was a superset — no
+									change needed there). <code>moment</code> removed from <code>package.json</code> dependencies.
+									<code>grep -rn "moment" src</code> returns zero code references (only the unrelated English word
+									"moment" in prose strings and this file's own doc comments describing the migration).
+									<strong>Deliberate behavior change</strong> (accepted, not a regression): old
+									<code>PublishTime.tsx</code> called moment's <code>calendar({ sameElse: "DD/MM/yyyy" })</code> —
+									lowercase <code>yyyy</code> is an invalid moment format token, so it rendered the literal string
+									<code>"DD/MM/yyyy"</code> for any date &gt;1 week away. The new <code>format_ddmmyyyy</code> renders
+									a real <code>DD/MM/YYYY</code> date. Called out explicitly in the Phase 2 commit body.
+								</p>
+								<pre>
+$ grep -rn "moment" src && echo FAIL || echo "moment gone"
+moment gone
+
+$ grep -q '"moment"' package.json && echo FAIL || echo "dep removed"
+dep removed
+
+$ bun run typecheck &amp;&amp; bun test &amp;&amp; bun run build
+Result (64 files): 0 errors, 0 warnings, 2 hints (pre-existing)
+56 pass, 0 fail, 143 expect() calls, 4 files
+[build] Complete!
+
+$ bun run lint &amp;&amp; bun run fmt:check
+(0 errors, 0 warnings; all matched files use the correct format)
+
+$ grep -rl "moment" dist/_astro/*.js
+(no matches — moment does not ship to the client, incl. PublishTime's chunk)</pre
+								>
+							</div>
 						</section>
 					</article>
 				</section>
@@ -1514,6 +1615,14 @@ bun run lint &amp;&amp; bun run fmt:check</pre
 				<!-- ===================== PHASE 3 ===================== -->
 				<section class="phase" id="phase-3">
 					<h3>Phase 3: Page-by-page terminal redesign (parallel via worktrees)</h3>
+					<!-- PHASE3-TODO: Phase 2 wired TerminalWindow to render <Navigation/> in its titlebar,
+					     but the 7 existing route files (index/projects/projects/[project_id]/about/blog/
+					     blog/[group]/[slug]/timeline) still ALSO call <Navigation/> directly in their own
+					     bodies (pre-existing markup untouched by Phase 2 to keep worktree contention down).
+					     Every page currently renders the path-nav TWICE. This is purely transitional/visual
+					     (build succeeds, nothing is broken) — each Phase 3 page task MUST remove its own
+					     page's redundant <Navigation/> call when restyling that page's body, since
+					     TerminalWindow (Page.astro) already renders the single canonical instance. -->
 					<p>
 						With the token layer, shared shell, and prompt primitives in place, redesign each page's body to its mockup.
 						Each task owns a distinct set of page + component files, so they run as parallel
@@ -2423,6 +2532,67 @@ test -f docs/perf-ttfb.md &amp;&amp; echo "doc exists"
 						<strong>Visual verification gotcha:</strong> chrome-devtools/playwright MCP expects chromium-1217 but 1223
 						is installed — run <code>bunx playwright install chromium</code> or fall back to <code>astro build</code> +
 						<code>astro preview</code> + manual screenshot for visual review.
+					</li>
+					<li>
+						<strong>(Phase 2) Terminal token layer mechanics:</strong> <code>src/styles/terminal.css</code>'s
+						<code>:root</code> is intentionally NOT wrapped in <code>@layer</code> — <code>@f0rbit/ui</code> declares
+						<code>@layer reset, tokens, components, utilities;</code> and puts its semantic tokens inside
+						<code>@layer tokens</code>, and per the CSS Cascade Layers spec any unlayered rule always beats every
+						layered rule regardless of import order or specificity. Shadowed upstream tokens:
+						<code>--bg</code>, <code>--bg-alt</code>, <code>--border</code>, <code>--fg</code>,
+						<code>--fg-muted</code>, <code>--fg-subtle</code>, <code>--fg-faint</code>, <code>--accent</code>,
+						<code>--font-mono</code>. Net-new <code>--term-*</code> vocabulary: <code>--term-panel</code>,
+						<code>--term-titlebar</code>, <code>--term-border</code>, <code>--term-border-inner</code>,
+						<code>--term-gray-{30,45,58,72,85,97}</code>, <code>--term-prompt-user</code>/<code
+							>--term-status-finished</code
+						>
+						(green), <code>--term-link</code>/<code>--term-status-dev</code> (blue), <code>--term-keyword</code>
+						(purple). No webfont: the mono stack is 100% system fonts, so there's no
+						<code>@font-face</code>/preload.
+					</li>
+					<li>
+						<strong>(Phase 2) Terminal shell files:</strong> <code>src/lib/path-nav.ts</code> is the single source of
+						the route→path map (<code>PATH_TABS</code>, <code>is_active_path</code>, <code>derive_path</code>),
+						consumed by both <code>Navigation.astro</code> (tab strip + mobile path menu) and
+						<code>TerminalWindow.astro</code> (titlebar label, defaults to <code>derive_path(Astro.url.pathname)</code>
+						when no <code>path</code> prop is passed). <code>PromptLine.astro</code> is the
+						<code>forbit@dev:&lt;path&gt;$ &lt;cmd&gt;</code> primitive used across the shell and pages.
+					</li>
+					<li>
+						<strong>(Phase 2) PHASE3-TODO — transitional double nav:</strong>
+						<code>TerminalWindow.astro</code> now renders <code>&lt;Navigation/&gt;</code> in its titlebar, but the 7
+						route files (<code>index</code>, <code>projects</code>, <code>projects/[project_id]</code>,
+						<code>about</code>, <code>blog</code>, <code>blog/[group]/[slug]</code>, <code>timeline</code>) still
+						ALSO call <code>&lt;Navigation/&gt;</code> directly in their own bodies (left untouched in Phase 2 to
+						avoid Phase 3 worktree contention). Every page currently renders the path-nav TWICE — purely visual/
+						transitional, the build is green. <strong>Each Phase 3 page task must delete its own page's redundant
+						<code>&lt;Navigation/&gt;</code> call</strong> when it restyles that page's body.
+					</li>
+					<li>
+						<strong>(Phase 2) moment.js removed:</strong> replaced by <code>src/lib/time.ts</code> (native
+						<code>Intl</code> + ms math): <code>format_duration(start, end)</code>, <code>format_relative_time</code>,
+						<code>format_calendar</code>, <code>format_full_date_time</code>. Re-exported from
+						<code>src/utils.ts</code> as <code>format_duration</code> for existing callers. Client-safe — no
+						dependency, so <code>PublishTime.tsx</code> (a Solid client island) no longer ships moment to the browser.
+						<strong>Deliberate behavior fix:</strong> old <code>PublishTime.tsx</code> passed moment
+						<code>calendar({ sameElse: "DD/MM/yyyy" })</code> — lowercase <code>yyyy</code> is an invalid moment
+						token, so dates &gt;1 week away rendered the literal string <code>"DD/MM/yyyy"</code>. The new
+						<code>format_ddmmyyyy</code> renders a real formatted date. This is a behavior change, landed
+						deliberately in the Phase 2 commit (not a silent side effect).
+					</li>
+					<li>
+						<strong>(Phase 2) fmt:check ignore decisions:</strong> <code>.plans/**</code> (working plan HTML
+						artifacts, not source) is added to <code>ignorePatterns</code> in <code>.oxfmtrc.json</code> — these are
+						hand-authored/generator-produced documents with their own structure; running oxfmt over them adds no
+						value and risks mangling the template. <code>AGENTS.md</code>, by contrast, IS formatted by oxfmt (its
+						markdown support is safe — the only change it made was normalizing <code>*emphasis*</code> to
+						<code>_emphasis_</code>) — so it stays in the formatted set rather than being ignored. Two
+						<code>new Date()</code> default-parameter/boundary-read call sites (<code>src/lib/time.ts</code>,
+						<code>src/components/blog/PublishTime.tsx</code>) are added to <code>ambient_effect_files</code> in
+						<code>eslint.config.ts</code>, alongside the pre-existing <code>src/lib/cache.ts</code> entry — these are
+						the clock-injection pattern (explicit <code>now</code> parameter defaulting to a fresh <code>Date</code>,
+						or a single ambient read threaded explicitly downstream), which the rule can't distinguish from a truly
+						hidden ambient effect.
 					</li>
 				</ul>
 			</section>

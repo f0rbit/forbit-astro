@@ -1,18 +1,16 @@
 ---
-import { Copyright, Linkedin, Twitter, Mail } from "lucide-astro";
+import { Github, Twitter, Mail } from "lucide-astro";
+import PromptLine from "./PromptLine.astro";
 ---
 
 <footer>
     <div class="page-container">
         <div class="footer-content row row-between">
-            <section class="row row-sm text-sm text-subtle footer-icons">
-                <Copyright size={18} />
-                <p>All Rights Reserved</p>
-            </section>
+            <PromptLine path="~" cmd="contact" cursor={true} />
             <section class="row row-sm footer-icons">
-                <a href="https://twitter.com/f0rbit"><Twitter size={18} /></a>
-                <a href="https://www.linkedin.com/in/tom-materne-001"><Linkedin size={18} /></a>
-                <a href="mailto:dev@forbit.dev"><Mail size={18} /></a>
+                <a href="https://github.com/f0rbit" aria-label="GitHub"><Github size={18} /></a>
+                <a href="https://twitter.com/f0rbit" aria-label="Twitter"><Twitter size={18} /></a>
+                <a href="mailto:dev@forbit.dev" aria-label="Email"><Mail size={18} /></a>
             </section>
         </div>
     </div>
@@ -20,9 +18,16 @@ import { Copyright, Linkedin, Twitter, Mail } from "lucide-astro";
 
 <style>
   footer {
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--term-border);
   }
   .footer-content {
     padding-block: var(--space-sm);
+  }
+  .footer-icons a {
+    color: var(--fg-muted);
+    transition: color var(--transition);
+  }
+  .footer-icons a:hover {
+    color: var(--term-link);
   }
 </style>

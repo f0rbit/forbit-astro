@@ -1,7 +1,7 @@
 ---
 import { Collapsible } from '@f0rbit/ui'
 import { fetch_timeline, get_timeline, type AppLocals } from '../../utils'
-import moment from 'moment'
+import { format_relative_time } from '../../lib/time'
 import CommitList from './CommitList.astro'
 interface Props {
     limit: number | null
@@ -31,7 +31,7 @@ if (limit) events = events.slice(0, limit)
                     <div class="activity-event">
                         <div class="activity-dot" />
                         <div class="activity-content">
-                            <label class="text-sm">{moment(event.date).fromNow()}</label>
+                            <label class="text-sm">{format_relative_time(new Date(event.date))}</label>
                             <h3 class="text-sm">{event.title ?? ''}</h3>
                         </div>
                         <div class="activity-detail">

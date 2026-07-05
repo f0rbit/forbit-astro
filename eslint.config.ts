@@ -20,7 +20,17 @@ export default define_lint_config({
 	// __tests__/integration/cache.test.ts, not dependency injection) —
 	// documented ambient-effect exception rather than a clock-provider
 	// refactor in this lint-adoption pass.
-	ambient_effect_files: ["src/lib/cache.ts"],
+	// lib/time.ts's `now: Date = new Date()` default parameters ARE the
+	// clock-provider pattern (every formatter takes `now` explicitly and
+	// only defaults to a fresh Date for real call sites; tests always pass
+	// an explicit `now`) — the rule can't distinguish an injectable default
+	// from a truly hidden ambient read, so it's listed here rather than
+	// forced into a required param for no testability gain.
+	// components/blog/PublishTime.tsx reads `new Date()` ONCE at the top of
+	// the component and threads it explicitly into every lib/time.ts call —
+	// the single-ambient-read-at-the-boundary shape this rule exists to
+	// encourage, just not automatically recognised as such.
+	ambient_effect_files: ["src/lib/cache.ts", "src/lib/time.ts", "src/components/blog/PublishTime.tsx"],
 	// IMPORTANT: point the ESLint<->oxlint rule dedupe at the CANONICAL
 	// oxlint config, not the repo's `.oxlintrc.json`. Our `.oxlintrc.json`
 	// adds `files`-scoped overrides for `**/*.astro` (see that file) so
