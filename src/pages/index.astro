@@ -151,32 +151,97 @@ export const prerender = false;
 	}
 
 	/*
-	 * Home-only: bring the `cat experience.log` column's scale down to match
-	 * the compact `git log --oneline` column next to it. ExperienceCard is
-	 * shared with /about (where its default prominence is correct), so this
-	 * is scoped to .recent-columns rather than changed globally. See
-	 * AGENTS.md for the full note.
+	 * Home-only: unify the two `.recent-columns` rails (`git log --oneline`
+	 * vs `cat experience.log`) into one visual system — same dot size/color,
+	 * same meta-line size/color/placement, same headline size/weight/color,
+	 * same secondary-text size, same vertical rhythm, same rail offset.
+	 * Timeline/CommitList and Experience/ExperienceCard are shared with
+	 * /timeline and /about (where their original, fuller scale is correct),
+	 * so every rule below is scoped under .recent-columns rather than
+	 * changed on the components themselves. See AGENTS.md for the full spec.
 	 */
-	.recent-columns :global(.experience-content) {
-		padding-bottom: var(--space-sm);
+
+	/* dot: 10px solid, single shared color, no ring, same 20px rail offset */
+	.recent-columns :global(.activity-dot) {
+		width: 10px;
+		height: 10px;
+		left: calc(-1.25rem - 5px);
+		top: 0.35rem;
+		border: none;
+		background: var(--term-gray-58);
 	}
 
-	.recent-columns :global(.experience-label) {
-		font-size: var(--text-xs);
+	.recent-columns :global(.experience-indicator) {
+		width: 2.5rem;
 	}
 
-	.recent-columns :global(.experience-title h3) {
-		font-size: var(--text-sm);
-		font-weight: 600;
-	}
-
-	.recent-columns :global(.experience-content .text-muted) {
-		font-size: var(--text-sm);
+	.recent-columns :global(.experience-row) {
+		gap: 0;
 	}
 
 	.recent-columns :global(.experience-dot) {
-		width: 16px;
-		height: 16px;
+		width: 10px;
+		height: 10px;
+		background: var(--term-gray-58);
+	}
+
+	/* meta line: date/time onto its own line, top of entry, same size/color */
+	.recent-columns :global(.activity-content) {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.15rem;
+	}
+
+	.recent-columns :global(.activity-time),
+	.recent-columns :global(.experience-label) {
+		font-size: var(--text-xs);
+		color: var(--term-gray-58);
+	}
+
+	.recent-columns :global(.experience-label) {
+		margin-bottom: 0;
+	}
+
+	/* headline: same size/weight/color in both columns */
+	.recent-columns :global(.activity-title),
+	.recent-columns :global(.experience-title h3) {
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--fg);
+	}
+
+	.recent-columns :global(.experience-company) {
+		font-size: var(--text-xs);
+	}
+
+	/* secondary/body text: same size, muted, in both columns */
+	.recent-columns :global(.activity-commit),
+	.recent-columns :global(.commit-entry) {
+		font-size: var(--text-xs);
+	}
+
+	.recent-columns :global(.experience-content .text-muted) {
+		font-size: var(--text-xs);
+	}
+
+	.recent-columns :global(.clamp-toggle) {
+		font-size: var(--text-xs);
+		color: var(--term-gray-72);
+	}
+
+	/* vertical rhythm: identical gap between entries in both columns */
+	.recent-columns :global(.activity-event) {
+		margin-bottom: var(--space-md);
+	}
+
+	.recent-columns :global(.experience-content) {
+		padding-bottom: var(--space-md);
+	}
+
+	/* font-mono: Timeline is already mono; Experience needs it explicitly on home */
+	.recent-columns :global(.experience-timeline),
+	.recent-columns :global(.experience-legend) {
+		font-family: var(--font-mono);
 	}
 
 	@media (min-width: 1024px) {
