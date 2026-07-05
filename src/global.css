@@ -201,3 +201,21 @@ article.specification h3 {
 .row svg {
 	flex-shrink: 0;
 }
+
+/* Grid overrides — @f0rbit/ui's .grid-2/-3/-4 use bare `1fr` tracks, whose
+   minimum width defaults to the content's min-content size. Wide, unwrappable
+   card content (long repo names, tag rows) can then force a track wider than
+   its share of the container, overflowing the terminal panel's
+   `overflow:hidden` on the right edge. `minmax(0, 1fr)` lets the track shrink
+   below its content's min-content size so wrapping/truncation inside the
+   card takes over instead of the track itself overflowing. Single override
+   here covers every page that uses these utilities (projects, about). */
+.grid-2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.grid-4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}

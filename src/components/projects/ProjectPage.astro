@@ -172,7 +172,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     }
     @media (min-width: 1024px) {
         .project-body {
-            grid-template-columns: 1fr 280px;
+            grid-template-columns: minmax(0, 1fr) 280px;
         }
     }
     .project-readme-prompt {

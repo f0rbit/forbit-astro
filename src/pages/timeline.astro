@@ -68,19 +68,21 @@ const heatmap_weeks = Array.from({ length: WEEKS }, (_, week) => heatmap_days.sl
         </header>
 
         <div class="heatmap-panel stack stack-sm">
-            <div class="heatmap-grid">
-                {
-                    heatmap_weeks.map((week) => (
-                        <div class="heatmap-week">
-                            {week.map((day) => (
-                                <span
-                                    class={`heatmap-cell heatmap-cell--${day.level.toString()}`}
-                                    title={`${day.count.toString()} commit${day.count === 1 ? '' : 's'} on ${new Date(day.day_start).toDateString()}`}
-                                />
-                            ))}
-                        </div>
-                    ))
-                }
+            <div class="heatmap-scroll">
+                <div class="heatmap-grid">
+                    {
+                        heatmap_weeks.map((week) => (
+                            <div class="heatmap-week">
+                                {week.map((day) => (
+                                    <span
+                                        class={`heatmap-cell heatmap-cell--${day.level.toString()}`}
+                                        title={`${day.count.toString()} commit${day.count === 1 ? '' : 's'} on ${new Date(day.day_start).toDateString()}`}
+                                    />
+                                ))}
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
             <div class="row row-between heatmap-legend text-xs text-muted">
                 <span>52 weeks</span>
@@ -120,6 +122,10 @@ const heatmap_weeks = Array.from({ length: WEEKS }, (_, week) => heatmap_days.sl
         padding: var(--space-md);
     }
 
+    .heatmap-scroll {
+        overflow-x: auto;
+    }
+
     .heatmap-grid {
         display: flex;
         gap: 3px;
@@ -137,6 +143,21 @@ const heatmap_weeks = Array.from({ length: WEEKS }, (_, week) => heatmap_days.sl
         height: 9px;
         border-radius: 2px;
         display: inline-block;
+    }
+
+    /* Compact horizontal strip on mobile: force a single scrollable row
+       (own overflow-x container, never the page body) instead of the
+       desktop's wrapped multi-row block. */
+    @media (max-width: 640px) {
+        .heatmap-grid {
+            flex-wrap: nowrap;
+            width: max-content;
+        }
+
+        .heatmap-cell {
+            width: 7px;
+            height: 7px;
+        }
     }
     .heatmap-cell--0 {
         background: var(--term-gray-30);

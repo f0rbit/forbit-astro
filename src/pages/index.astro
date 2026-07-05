@@ -145,13 +145,32 @@ export const prerender = false;
 
 	.recent-columns {
 		display: grid;
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--space-lg);
+	}
+
+	.recent-columns > section {
+		min-width: 0;
 	}
 
 	@media (min-width: 1024px) {
 		.recent-columns {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.home-sections {
+			gap: var(--space-lg);
+			padding-block: var(--space-md);
+		}
+
+		.hero-name {
+			font-size: var(--text-3xl);
+		}
+
+		.hero-tagline {
+			font-size: var(--text-base);
 		}
 	}
 </style>

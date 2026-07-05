@@ -34,6 +34,8 @@ const { path = derive_path(Astro.url.pathname) } = Astro.props;
 	}
 
 	.terminal-titlebar {
+		position: relative;
+		z-index: 30;
 		background: var(--term-titlebar);
 		border-bottom: 1px solid var(--term-border-inner);
 		padding: var(--space-sm) var(--space-md);
@@ -41,6 +43,8 @@ const { path = derive_path(Astro.url.pathname) } = Astro.props;
 	}
 
 	.terminal-dots {
+		position: relative;
+		z-index: 21;
 		flex-shrink: 0;
 	}
 	.terminal-dot {

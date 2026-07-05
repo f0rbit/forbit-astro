@@ -74,6 +74,12 @@ const pathname = Astro.url.pathname;
 		position: relative;
 	}
 	.menu-icon {
+		/* Stacked above `.path-menu` (z-index 20, a descendant of the same
+		   `.terminal-titlebar` stacking context) so the toggle button — which
+		   swaps to the × glyph — stays visible and clickable while the
+		   full-screen menu is open. */
+		position: relative;
+		z-index: 21;
 		display: flex;
 		align-items: center;
 	}
@@ -93,23 +99,34 @@ const pathname = Astro.url.pathname;
 	 * outrank @f0rbit/ui's layered `.hidden { display: none }` utility either way,
 	 * and `.path-menu.hidden` (2 classes) outranks plain `.path-menu` (1 class)
 	 * so the closed state always wins until the class is removed on toggle.
+	 *
+	 * `position: fixed; inset: 0` makes this a true full-screen overlay (per
+	 * the mobile sketch) rather than being scoped to `.mobile-menu`'s own box
+	 * (which is just the hamburger button's hit area) — an absolutely
+	 * positioned menu would otherwise inherit that tiny container as its
+	 * containing block and render as a sliver. `.terminal-titlebar` carries a
+	 * higher z-index (see TerminalWindow.astro) so the titlebar — including
+	 * this same toggle button, now showing the × — stays visible above the
+	 * overlay, matching the sketch's "titlebar stays, body becomes the menu".
 	 */
 	:global(.path-menu) {
 		display: block;
-		position: absolute;
-		inset-inline: 0;
-		top: 100%;
+		position: fixed;
+		inset: 0;
 		z-index: 20;
 		background: var(--term-panel);
-		border: 1px solid var(--term-border);
-		border-radius: var(--radius);
-		margin: var(--space-sm);
+		overflow-y: auto;
 	}
 	:global(.path-menu.hidden) {
 		display: none;
 	}
 	.path-menu-inner {
-		padding: var(--space-lg);
+		/* Top padding clears the titlebar (which paints above this overlay,
+		   see TerminalWindow.astro's z-index) plus the page shell's own top
+		   padding — both are small, roughly-constant chrome heights, so a
+		   fixed multiple of --space-lg is enough clearance without needing
+		   exact measurement. */
+		padding: calc(var(--space-lg) * 3) var(--space-lg) var(--space-lg);
 	}
 	.path-menu-heading {
 		margin: 0;

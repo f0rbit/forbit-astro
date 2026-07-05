@@ -2102,7 +2102,7 @@ bun run build
 					<article class="task" id="task-4-1">
 						<header>
 							<h3>Task 4.1: Responsive terminal shell + per-page mobile layouts (2h)</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -2179,7 +2179,61 @@ bun run build
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">
+								<p>
+									<strong>Desktop overflow bug fixed:</strong> home's <code>.recent-columns</code> (git-log ×
+									experience two-col section) changed from bare <code>1fr 1fr</code> to
+									<code>minmax(0, 1fr) minmax(0, 1fr)</code> + <code>min-width: 0</code> on the section children —
+									confirmed via screenshot at 1360px that <code>ExperienceCard</code> tags no longer clip against the
+									panel's <code>overflow: hidden</code> right edge. Audited and fixed the same bare-<code>1fr</code>
+									class of bug in <code>global.css</code>'s <code>.grid-2/-3/-4</code> override (covers
+									<code>projects.astro</code>, <code>about.astro</code>'s two grids), <code>blog.astro</code>'s
+									<code>.blog-layout</code>, <code>ProjectPage.astro</code>'s <code>.project-body</code>, and
+									<code>AboutMe.astro</code>'s <code>.about-me</code>.
+								</p>
+								<p>
+									<strong>Mobile pass:</strong> confirmed the collapsed titlebar (path-nav hidden, hamburger shown
+									&lt;1024px) was already wired from Phase 2. Found and fixed a real bug in the mobile path menu: it
+									was <code>position: absolute</code> scoped to the hamburger button's own tiny box (rendered as a
+									one-column sliver, not full-screen) — changed to <code>position: fixed; inset: 0</code>, with the
+									titlebar's dots/toggle button raised to a higher <code>z-index</code> so they stay visible/clickable
+									above the open overlay. Verified at 360px the menu now matches the 2h sketch exactly (<code
+										>$ cd ~/</code
+									>
+									heading, stacked <code>→ ~/home … ~/timeline</code> rows with active-tab highlight, socials row, ×
+									close, dots still visible). Collapsed every multi-column grid to one column at mobile (home featured
+									list already single-column, projects/about grids via the existing <code>@f0rbit/ui</code>
+									768px collapse, blog sidebar already stacks below the list). Scaled the home hero
+									(<code>.hero-name</code>/<code>.hero-tagline</code>) and section padding down at &lt;640px. Timeline
+									heatmap wrapped in its own <code>overflow-x: auto</code> strip, forced to a single scrollable row with
+									smaller cells at &lt;640px instead of the desktop's wrapped multi-row block.
+								</p>
+								<pre>
+$ bun run typecheck   → 0 errors, 0 warnings (1 pre-existing hint, unrelated)
+$ bun run build       → Complete!
+$ bun run lint        → oxlint . && eslint .  (zero findings)
+$ bun run fmt:check   → All matched files use the correct format.
+$ bun test            → 56 pass, 0 fail, 143 expect() calls</pre
+								>
+								<p>
+									Visual review (Playwright + <code>wrangler dev --port 8788</code> serving <code>dist/</code>,
+									per AGENTS.md): desktop 1360px screenshots of <code>/</code>, <code>/projects</code>,
+									<code>/about</code>, <code>/blog</code>, <code>/timeline</code> — home overflow fixed, all other
+									desktop layouts visually unchanged from Phase 3. Mobile 360px screenshots of the same five routes —
+									<code>document.documentElement.scrollWidth &gt; clientWidth</code> is <code>false</code> on every
+									route (no horizontal overflow); about's populated static data confirms cards/skills/experience/hobby
+									grids all stack correctly; projects/blog/timeline correctly render their empty/error states (no live
+									API creds in this sandbox — data layer untouched, per plan scope). Screenshots saved under
+									<code
+										>/private/tmp/claude-501/-Users-tom-dev-forbit-astro/63e8a367-e2ba-441e-95ae-34545ca1c53b/scratchpad/</code
+									>
+									(<code>home-desktop.png</code>, <code>about-desktop.png</code>, <code>timeline-desktop.png</code>,
+									<code>blog-desktop.png</code>, <code>projects-desktop.png</code>,
+									<code>home-mobile.png</code>, <code>projects-mobile.png</code>, <code>about-mobile.png</code>,
+									<code>blog-mobile.png</code>, <code>timeline-mobile.png</code>,
+									<code>home-mobile-menu-viewport.png</code>).
+								</p>
+							</div>
 						</section>
 					</article>
 				</section>
