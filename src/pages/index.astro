@@ -1,7 +1,6 @@
 ---
 import Home from "../layouts/Home.astro";
 import PromptLine from "../components/PromptLine.astro";
-import AboutMe from "../components/about/AboutMe.astro";
 import Experience from "../components/about/Experience.astro";
 import Timeline from "../components/activity/Timeline.astro";
 import ProjectList from "../components/projects/ProjectList.astro";
@@ -66,11 +65,6 @@ export const prerender = false;
 				<Experience types={["professional"]} sort={"reverse_position"} mode={"left"} />
 			</section>
 		</div>
-
-		<section id="about-me" class="stack">
-			<PromptLine path="~" cmd="cat about.md" />
-			<AboutMe more={true} />
-		</section>
 
 		<section id="recent-blogs" class="stack">
 			<PromptLine path="~/blog" cmd="ls -lt --posts | head -3" />
@@ -141,9 +135,9 @@ export const prerender = false;
 	}
 
 	.featured-list {
-		border: 1px solid var(--term-border-inner);
-		border-radius: var(--radius);
-		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
 	}
 
 	.recent-columns {
@@ -154,6 +148,35 @@ export const prerender = false;
 
 	.recent-columns > section {
 		min-width: 0;
+	}
+
+	/*
+	 * Home-only: bring the `cat experience.log` column's scale down to match
+	 * the compact `git log --oneline` column next to it. ExperienceCard is
+	 * shared with /about (where its default prominence is correct), so this
+	 * is scoped to .recent-columns rather than changed globally. See
+	 * AGENTS.md for the full note.
+	 */
+	.recent-columns :global(.experience-content) {
+		padding-bottom: var(--space-sm);
+	}
+
+	.recent-columns :global(.experience-label) {
+		font-size: var(--text-xs);
+	}
+
+	.recent-columns :global(.experience-title h3) {
+		font-size: var(--text-sm);
+		font-weight: 600;
+	}
+
+	.recent-columns :global(.experience-content .text-muted) {
+		font-size: var(--text-sm);
+	}
+
+	.recent-columns :global(.experience-dot) {
+		width: 16px;
+		height: 16px;
 	}
 
 	@media (min-width: 1024px) {
