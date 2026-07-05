@@ -91,11 +91,11 @@ secrets object:
 
 Key differences:
 
--   `tags` vs `tag_list` — field rename
--   `publish_at: Date | null` vs `published_at: string` — type + name change
--   `description?: string` vs `description: string` — optionality
--   Local has `group`, `published`, `url` — not in devpad schema
--   Devpad has `id`, `uuid`, `author_id`, `format`, `category`, etc. — not needed for display
+- `tags` vs `tag_list` — field rename
+- `publish_at: Date | null` vs `published_at: string` — type + name change
+- `description?: string` vs `description: string` — optionality
+- Local has `group`, `published`, `url` — not in devpad schema
+- Devpad has `id`, `uuid`, `author_id`, `format`, `category`, etc. — not needed for display
 
 Strategy: Keep local `Post` type as the display type. Write a `devpadPostToDisplayPost()` adapter function. No consumer changes needed.
 
@@ -130,14 +130,14 @@ Replace:
 
 ```typescript
 async function fetch_timeline(): DataFetch<any[]> {
-    const response = await fetch(secrets.POSTS_URL)
-    if (!response || !response.ok) {
-        console.error('TIMELINE: fetch error')
-        return { data: [], invalid_response: true }
-    }
-    const activity = await (await fetch(secrets.POSTS_URL)).json() // double-fetch bug
-    console.log('TIMELINE: new entry')
-    return { data: activity as any[], invalid_response: false }
+	const response = await fetch(secrets.POSTS_URL);
+	if (!response || !response.ok) {
+		console.error("TIMELINE: fetch error");
+		return { data: [], invalid_response: true };
+	}
+	const activity = await (await fetch(secrets.POSTS_URL)).json(); // double-fetch bug
+	console.log("TIMELINE: new entry");
+	return { data: activity as any[], invalid_response: false };
 }
 ```
 
@@ -145,13 +145,13 @@ With:
 
 ```typescript
 async function fetch_timeline(): DataFetch<any[]> {
-    const result = await devpad.user.history()
-    if (!result.ok) {
-        console.error('TIMELINE: fetch error', result.error.message)
-        return { data: [], invalid_response: true }
-    }
-    console.log('TIMELINE: new entry')
-    return { data: result.value, invalid_response: false }
+	const result = await devpad.user.history();
+	if (!result.ok) {
+		console.error("TIMELINE: fetch error", result.error.message);
+		return { data: [], invalid_response: true };
+	}
+	console.log("TIMELINE: new entry");
+	return { data: result.value, invalid_response: false };
 }
 ```
 
@@ -167,28 +167,28 @@ Replace `getBlogServerPosts()`:
 
 ```typescript
 async function getBlogServerPosts(): Promise<Post[]> {
-    const result = await devpad.blog.posts.list({ status: 'published', archived: false, limit: 100 })
-    if (!result.ok) return []
-    return result.value.posts.map(devpadPostToDisplayPost)
+	const result = await devpad.blog.posts.list({ status: "published", archived: false, limit: 100 });
+	if (!result.ok) return [];
+	return result.value.posts.map(devpadPostToDisplayPost);
 }
 ```
 
 Add adapter function:
 
 ```typescript
-import type { Post as DevpadPost } from '@devpad/api'
+import type { Post as DevpadPost } from "@devpad/api";
 
 function devpadPostToDisplayPost(post: DevpadPost): Post {
-    return {
-        slug: post.slug,
-        group: BLOG_GROUP.DEV,
-        title: post.title,
-        description: post.description ?? post.content.substring(0, 80),
-        published: post.publish_at != null,
-        published_at: post.publish_at?.toISOString() ?? post.created_at.toISOString(),
-        tag_list: post.tags,
-        content: post.content,
-    }
+	return {
+		slug: post.slug,
+		group: BLOG_GROUP.DEV,
+		title: post.title,
+		description: post.description ?? post.content.substring(0, 80),
+		published: post.publish_at != null,
+		published_at: post.publish_at?.toISOString() ?? post.created_at.toISOString(),
+		tag_list: post.tags,
+		content: post.content,
+	};
 }
 ```
 
@@ -216,9 +216,9 @@ With:
 
 ```typescript
 async function fetchBlogPost(slug: string): Promise<Post | null> {
-    const result = await devpad.blog.posts.getBySlug(slug)
-    if (!result.ok) return null
-    return devpadPostToDisplayPost(result.value)
+	const result = await devpad.blog.posts.getBySlug(slug);
+	if (!result.ok) return null;
+	return devpadPostToDisplayPost(result.value);
 }
 ```
 
@@ -228,10 +228,10 @@ async function fetchBlogPost(slug: string): Promise<Post | null> {
 **LOC**: ~15 removed
 **Dependencies**: Tasks 1.1–1.3
 
--   Remove `BLOG_URL`, `BLOG_TOKEN`, `POSTS_URL` from `secrets` object
--   Remove `BLOG_ENV` object
--   Remove `parseDevBlog()` function
--   Secrets object becomes just `{ DEVTO_KEY }` — simplify the validation loop
+- Remove `BLOG_URL`, `BLOG_TOKEN`, `POSTS_URL` from `secrets` object
+- Remove `BLOG_ENV` object
+- Remove `parseDevBlog()` function
+- Secrets object becomes just `{ DEVTO_KEY }` — simplify the validation loop
 
 All of Phase 1 is **one agent, one file** (`src/utils.ts`). Tasks 1.1–1.4 are listed separately for clarity but execute as a single implementation pass.
 
@@ -251,14 +251,14 @@ All of Phase 1 is **one agent, one file** (`src/utils.ts`). Tasks 1.1–1.4 are 
 Replace:
 
 ```javascript
-const blog_posts = await getBlogPosts()
-const projects = await getProjects()
+const blog_posts = await getBlogPosts();
+const projects = await getProjects();
 ```
 
 With:
 
 ```javascript
-const [blog_posts, projects] = await Promise.all([getBlogPosts(), getProjects()])
+const [blog_posts, projects] = await Promise.all([getBlogPosts(), getProjects()]);
 ```
 
 This saves one full round-trip time on startup. After Phase 1 fix, both should be fast (~1-2s each), but parallelizing is free and correct.
@@ -273,24 +273,24 @@ This saves one full round-trip time on startup. After Phase 1 fix, both should b
 Wrap `fetchDevToAPI` with a timeout to prevent future dead-host scenarios:
 
 ```typescript
-const FETCH_TIMEOUT_MS = 10_000 // 10 seconds
+const FETCH_TIMEOUT_MS = 10_000; // 10 seconds
 
 export async function fetchDevToAPI(url: string) {
-    try {
-        const api_key = secrets.DEVTO_KEY
-        const controller = new AbortController()
-        const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
-        const response = await fetch(url, {
-            ...getDevToHeaders(api_key),
-            signal: controller.signal,
-        })
-        clearTimeout(timeout)
-        if (!response || !response.ok) return null
-        const result = await response.json()
-        return result
-    } catch (err) {
-        return null
-    }
+	try {
+		const api_key = secrets.DEVTO_KEY;
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+		const response = await fetch(url, {
+			...getDevToHeaders(api_key),
+			signal: controller.signal,
+		});
+		clearTimeout(timeout);
+		if (!response || !response.ok) return null;
+		const result = await response.json();
+		return result;
+	} catch (err) {
+		return null;
+	}
 }
 ```
 
@@ -303,12 +303,12 @@ export async function fetchDevToAPI(url: string) {
 
 In `.env.example`:
 
--   Remove `VITE_POSTS_URL`, `VITE_BLOG_TOKEN`, `VITE_BLOG_URL`
--   Add optional `VITE_DEVPAD_URL` with comment
+- Remove `VITE_POSTS_URL`, `VITE_BLOG_TOKEN`, `VITE_BLOG_URL`
+- Add optional `VITE_DEVPAD_URL` with comment
 
 In `.env`:
 
--   Remove the three dead env vars (they're harmless but misleading)
+- Remove the three dead env vars (they're harmless but misleading)
 
 **Verification**: typecheck, build succeeds, dev server starts fast, blog/timeline pages work. Commit.
 
@@ -352,9 +352,9 @@ In `.env`:
 
 **Phase 2 — can be 3 parallel agents**:
 
--   Agent A: `astro.config.mjs` only — Promise.all
--   Agent B: `src/utils.ts` only — AbortController on fetchDevToAPI
--   Agent C: `.env.example` + `.env` only — remove dead vars
+- Agent A: `astro.config.mjs` only — Promise.all
+- Agent B: `src/utils.ts` only — AbortController on fetchDevToAPI
+- Agent C: `.env.example` + `.env` only — remove dead vars
 
 ---
 
@@ -367,16 +367,16 @@ After completion, add:
 
 All API calls now go through `@devpad/api` client in `src/client.ts`. No more raw fetch() to devpad endpoints.
 
--   Blog posts: `devpad.blog.posts.list()` + `devpad.blog.posts.getBySlug()` with `devpadPostToDisplayPost` adapter
--   Timeline: `devpad.user.history()`
--   Projects: `devpad.projects.list()` + `devpad.projects.getByName()` (migrated earlier)
--   Dev.to: Still raw fetch with AbortController timeout
+- Blog posts: `devpad.blog.posts.list()` + `devpad.blog.posts.getBySlug()` with `devpadPostToDisplayPost` adapter
+- Timeline: `devpad.user.history()`
+- Projects: `devpad.projects.list()` + `devpad.projects.getByName()` (migrated earlier)
+- Dev.to: Still raw fetch with AbortController timeout
 
 Only remaining env vars: `VITE_DEVPAD_API_KEY`, `VITE_DEVTO_KEY`, optional `VITE_DEVPAD_URL`
 
 ## Gotchas
 
--   `astro.config.mjs` has top-level awaits for sitemap generation — these run at import time, must be fast
--   Blog `Post` type (local in `src/types.ts`) is the display type; devpad `Post` (from `@devpad/api`) is the API type. Adapter function bridges them.
--   `publish_at` (devpad, Date|null) vs `published_at` (display, string) — note the field name AND type difference
+- `astro.config.mjs` has top-level awaits for sitemap generation — these run at import time, must be fast
+- Blog `Post` type (local in `src/types.ts`) is the display type; devpad `Post` (from `@devpad/api`) is the API type. Adapter function bridges them.
+- `publish_at` (devpad, Date|null) vs `published_at` (display, string) — note the field name AND type difference
 ```

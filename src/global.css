@@ -4,40 +4,40 @@
 
 /* Headings */
 h1 {
-    font-size: var(--text-3xl);
-    font-weight: 700;
-    color: var(--fg);
+	font-size: var(--text-3xl);
+	font-weight: 700;
+	color: var(--fg);
 }
 h2 {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: var(--fg);
+	font-size: var(--text-2xl);
+	font-weight: 700;
+	color: var(--fg);
 }
 h3 {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--fg-muted);
+	font-size: var(--text-xl);
+	font-weight: 700;
+	color: var(--fg-muted);
 }
 h4,
 h5 {
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--fg-muted);
+	font-size: var(--text-lg);
+	font-weight: 600;
+	color: var(--fg-muted);
 }
 
 /* Article styles */
 article h1 {
-    font-size: var(--text-4xl);
+	font-size: var(--text-4xl);
 }
 article h2 {
-    font-size: var(--text-3xl);
+	font-size: var(--text-3xl);
 }
 article h3 {
-    font-size: var(--text-2xl);
+	font-size: var(--text-2xl);
 }
 article h4,
 article h5 {
-    font-size: var(--text-xl);
+	font-size: var(--text-xl);
 }
 article h1,
 article h2,
@@ -45,153 +45,153 @@ article h3,
 article h4,
 article h5,
 article h6 {
-    margin-top: 1rem;
-    margin-bottom: 0.25rem;
+	margin-top: 1rem;
+	margin-bottom: 0.25rem;
 }
 
 /* Lists */
 article ul {
-    list-style: disc;
-    list-style-position: inside;
+	list-style: disc;
+	list-style-position: inside;
 }
 article ol {
-    list-style: decimal;
-    list-style-position: inside;
+	list-style: decimal;
+	list-style-position: inside;
 }
 article ul > li > ul > li,
 article ol > li > ol > li {
-    margin-left: 1.5rem;
+	margin-left: 1.5rem;
 }
 article ul > li::marker,
 article ol > li::marker {
-    color: var(--fg-faint);
+	color: var(--fg-faint);
 }
 
 /* Spacing */
 article p + p {
-    margin-top: 2ch;
+	margin-top: 2ch;
 }
 
 /* Code */
 article pre > code {
-    display: flex;
-    padding: var(--space-md);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    overflow: auto;
+	display: flex;
+	padding: var(--space-md);
+	border-radius: var(--radius);
+	border: 1px solid var(--border);
+	overflow: auto;
 }
 article pre {
-    padding: var(--space-sm);
-    background: var(--bg);
+	padding: var(--space-sm);
+	background: var(--bg);
 }
 article code {
-    font-size: var(--text-sm);
-    background: var(--bg-alt);
-    padding: 2px 6px;
-    display: inline-flex;
+	font-size: var(--text-sm);
+	background: var(--bg-alt);
+	padding: 2px 6px;
+	display: inline-flex;
 }
 
 /* Images */
 article img {
-    width: 100%;
-    height: auto;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 4px;
+	width: 100%;
+	height: auto;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 4px;
 }
 
 /* Blockquotes */
 article blockquote {
-    border-left: 4px solid var(--border);
-    padding-left: 0.5rem;
+	border-left: 4px solid var(--border);
+	padding-left: 0.5rem;
 }
 
 /* Specification article (smaller heading scale) */
 article.specification h1 {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: var(--fg);
+	font-size: var(--text-2xl);
+	font-weight: 700;
+	color: var(--fg);
 }
 article.specification h2 {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--fg-muted);
+	font-size: var(--text-xl);
+	font-weight: 700;
+	color: var(--fg-muted);
 }
 article.specification h3 {
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--fg-muted);
+	font-size: var(--text-lg);
+	font-weight: 600;
+	color: var(--fg-muted);
 }
 
 /* Page container — replaces CenteredContainer responsive padding */
 .page-container {
-    width: 100%;
-    padding-inline: 1rem;
+	width: 100%;
+	padding-inline: 1rem;
 }
 @media (min-width: 640px) {
-    .page-container {
-        padding-inline: 2rem;
-    }
+	.page-container {
+		padding-inline: 2rem;
+	}
 }
 @media (min-width: 1024px) {
-    .page-container {
-        padding-inline: 8rem;
-    }
+	.page-container {
+		padding-inline: 8rem;
+	}
 }
 @media (min-width: 1280px) {
-    .page-container {
-        padding-inline: 12rem;
-    }
+	.page-container {
+		padding-inline: 12rem;
+	}
 }
 @media (min-width: 1700px) {
-    .page-container {
-        padding-inline: 26rem;
-    }
+	.page-container {
+		padding-inline: 26rem;
+	}
 }
 
 /* Badge overrides — match the live site's flat border style */
 .badge {
-    background: transparent;
-    border-radius: var(--radius);
-    font-size: var(--text-sm);
-    padding: 0.125rem 0.375rem;
+	background: transparent;
+	border-radius: var(--radius);
+	font-size: var(--text-sm);
+	padding: 0.125rem 0.375rem;
 }
 
 /* Colored variants: outlined style — bright fg colors for text + border, no fill */
 .badge-success {
-    background: transparent;
-    color: var(--success-fg);
-    border-color: var(--success-fg);
+	background: transparent;
+	color: var(--success-fg);
+	border-color: var(--success-fg);
 }
 .badge-error {
-    background: transparent;
-    color: var(--error-fg);
-    border-color: var(--error-fg);
+	background: transparent;
+	color: var(--error-fg);
+	border-color: var(--error-fg);
 }
 .badge-warning {
-    background: transparent;
-    color: var(--warning-fg);
-    border-color: var(--warning-fg);
+	background: transparent;
+	color: var(--warning-fg);
+	border-color: var(--warning-fg);
 }
 .badge-info {
-    background: transparent;
-    color: var(--info-fg);
-    border-color: var(--info-fg);
+	background: transparent;
+	color: var(--info-fg);
+	border-color: var(--info-fg);
 }
 .badge-accent {
-    background: transparent;
-    color: var(--accent);
-    border-color: var(--accent);
+	background: transparent;
+	color: var(--accent);
+	border-color: var(--accent);
 }
 
 /* Cards — no background fill */
 .card {
-    background: transparent;
+	background: transparent;
 }
 
 /* Ensure card titles stay primary color */
 .card-title {
-    color: var(--fg);
+	color: var(--fg);
 }
 
 /* Keep lucide icons at their declared dimensions inside @f0rbit/ui's .row
@@ -199,5 +199,5 @@ article.specification h3 {
    drawn bounds equal to their viewBox, so flex would otherwise shrink
    them to their drawn extent (or to 0). */
 .row svg {
-    flex-shrink: 0;
+	flex-shrink: 0;
 }

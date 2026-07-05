@@ -1,0 +1,2431 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Plan: Terminal redesign + lint adoption + perf safe-wins</title>
+		<style>
+			:root {
+				--bg: #0d1117;
+				--panel: #161b22;
+				--border: #30363d;
+				--text: #c9d1d9;
+				--muted: #8b949e;
+				--accent: #58a6ff;
+				--todo: #6e7681;
+				--doing: #d29922;
+				--done: #2ea043;
+				--blocked: #f85149;
+				--decision: #db61a2;
+			}
+			html,
+			body {
+				background: var(--bg);
+				color: var(--text);
+				font:
+					14px/1.55 -apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					sans-serif;
+				margin: 0;
+				padding: 2rem;
+			}
+			main {
+				max-width: 1100px;
+				margin: 0 auto;
+			}
+			h1,
+			h2,
+			h3 {
+				color: var(--text);
+				border-bottom: 1px solid var(--border);
+				padding-bottom: 0.3em;
+			}
+			h1 {
+				font-size: 1.8rem;
+			}
+			h2 {
+				font-size: 1.4rem;
+				margin-top: 2.5rem;
+			}
+			h3 {
+				font-size: 1.1rem;
+				border: none;
+				padding: 0;
+				margin-top: 1.5rem;
+			}
+			h4 {
+				font-size: 0.8em;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				color: var(--muted);
+				margin: 0 0 0.3em 0;
+			}
+			code,
+			pre {
+				font-family: "SF Mono", Menlo, monospace;
+				font-size: 0.9em;
+			}
+			code {
+				background: var(--panel);
+				padding: 1px 6px;
+				border-radius: 4px;
+			}
+			pre {
+				background: var(--panel);
+				padding: 12px;
+				border-radius: 6px;
+				overflow-x: auto;
+				border: 1px solid var(--border);
+			}
+			.badge {
+				display: inline-block;
+				padding: 2px 8px;
+				border-radius: 999px;
+				font-size: 0.75em;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+			}
+			.badge.todo {
+				background: var(--todo);
+				color: #fff;
+			}
+			.badge.doing {
+				background: var(--doing);
+				color: #000;
+			}
+			.badge.done {
+				background: var(--done);
+				color: #fff;
+			}
+			.badge.blocked {
+				background: var(--blocked);
+				color: #fff;
+			}
+			.badge.decision {
+				background: var(--decision);
+				color: #fff;
+			}
+			.badge.recommended {
+				background: var(--accent);
+				color: #000;
+			}
+			.root-cause {
+				background: var(--panel);
+				border-left: 3px solid var(--accent);
+				padding: 0.75rem 1rem;
+				border-radius: 0 6px 6px 0;
+				margin: 1rem 0;
+			}
+			.root-cause p {
+				margin: 0.4em 0;
+			}
+			.option {
+				background: var(--panel);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 1rem 1.25rem;
+				margin: 1rem 0;
+				opacity: 0.85;
+			}
+			.option.recommended {
+				opacity: 1;
+				border-color: var(--accent);
+				box-shadow: 0 0 0 1px var(--accent) inset;
+			}
+			.option > header {
+				display: flex;
+				gap: 0.75rem;
+				align-items: center;
+				margin-bottom: 0.5rem;
+			}
+			.option h3 {
+				margin: 0;
+				flex: 1;
+			}
+			.option h4 {
+				margin-top: 0.9rem;
+			}
+			.philosophy-score th:first-child,
+			.philosophy-score td:first-child {
+				width: 35%;
+			}
+			.philosophy-score td:nth-child(2) {
+				font-family: "SF Mono", Menlo, monospace;
+				font-weight: 600;
+				width: 60px;
+				text-align: center;
+			}
+			.recommendation {
+				background: rgba(88, 166, 255, 0.08);
+				border-left: 3px solid var(--accent);
+				padding: 0.75rem 1rem;
+				border-radius: 0 6px 6px 0;
+				margin: 1.5rem 0;
+			}
+			.recommendation h3 {
+				margin-top: 0;
+				border: none;
+				padding: 0;
+			}
+			.task {
+				background: var(--panel);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 1rem 1.25rem;
+				margin: 1rem 0;
+			}
+			.task > header {
+				display: flex;
+				gap: 0.75rem;
+				align-items: center;
+				margin-bottom: 0.75rem;
+			}
+			.task h3 {
+				margin: 0;
+				flex: 1;
+			}
+			.meta {
+				display: grid;
+				grid-template-columns: max-content 1fr;
+				gap: 0.4em 1em;
+				font-size: 0.85em;
+				color: var(--muted);
+				margin: 0 0 0.75rem 0;
+			}
+			.meta dt {
+				font-weight: 600;
+				color: var(--text);
+			}
+			.meta dd {
+				margin: 0;
+			}
+			.task section {
+				margin-top: 0.75rem;
+			}
+			.proof {
+				background: rgba(46, 160, 67, 0.08);
+				border-left: 3px solid var(--done);
+				padding: 0.5rem 0.75rem;
+				border-radius: 0 6px 6px 0;
+			}
+			.empty-proof {
+				background: rgba(110, 118, 129, 0.08);
+				border-left: 3px solid var(--todo);
+				padding: 0.5rem 0.75rem;
+				color: var(--muted);
+				font-style: italic;
+				border-radius: 0 6px 6px 0;
+			}
+			.adversary {
+				background: rgba(219, 97, 162, 0.08);
+				border-left: 3px solid var(--decision);
+				padding: 0.5rem 0.75rem;
+				border-radius: 0 6px 6px 0;
+			}
+			.adversary ul {
+				margin: 0.3em 0;
+				padding-left: 1.5em;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 1em 0;
+			}
+			th,
+			td {
+				padding: 0.5em 0.75em;
+				text-align: left;
+				border-bottom: 1px solid var(--border);
+			}
+			th {
+				font-weight: 600;
+				color: var(--muted);
+				font-size: 0.8em;
+				text-transform: uppercase;
+			}
+			a {
+				color: var(--accent);
+			}
+			.phase {
+				margin: 2rem 0;
+				padding-left: 1rem;
+				border-left: 3px solid var(--accent);
+			}
+			.depgraph {
+				background: var(--panel);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 1rem;
+				overflow-x: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<header>
+				<h1>Plan: Terminal redesign + lint adoption + perf safe-wins</h1>
+				<span class="badge todo">todo</span>
+				<p>
+					A three-workstream initiative on the <code>forbit-astro</code> personal portfolio (Astro 4 SSR on Cloudflare
+					Workers). (1) Adopt the <code>@f0rbit/lint</code> toolchain and land a clean baseline reformat BEFORE any
+					redesign, so the "fix all lint/formatting" requirement is satisfied continuously. (2) Restyle every page into
+					the "Turn 2 · Tokyo Night, restrained" terminal direction — a shared terminal-window shell (titlebar + traffic
+					lights + path-nav) at the layout level, plus per-page redesign of home, projects, about, blog, timeline,
+					project-detail and blog-post, and a mobile responsive pass. (3) Fold safe TTFB wins into the redesign phases
+					and add a dedicated perf phase + a written <code>docs/perf-ttfb.md</code> analysis. Scope is a
+					<strong>restyle</strong>: the data/provider layer and component data contracts stay intact.
+				</p>
+			</header>
+
+			<section id="root-cause">
+				<h2>Root cause</h2>
+				<div class="root-cause">
+					<p>
+						<strong>Stated goal:</strong> Adopt <code>@f0rbit/lint</code>, restyle the whole site to the terminal
+						mockup, and implement safe TTFB wins + a perf report.
+					</p>
+					<p>
+						<strong>Underlying need:</strong> A portfolio that (a) reads as "this person builds developer tools" through
+						a coherent terminal aesthetic on every surface, (b) has an enforced, single-source code-quality baseline so
+						future changes stay clean, and (c) is fast to first byte on Workers without an SSR re-architecture.
+					</p>
+					<p>
+						<strong>Why this matters:</strong> Doing the restyle before the lint baseline would bury a repo-wide
+						reformat inside redesign diffs, making review impossible and the "fix formatting" requirement a moving
+						target. Splitting the terminal chrome per-page (instead of a shared shell) would duplicate the
+						titlebar/path-nav five-plus times — the single-source-of-truth smell. And spreading the Tokyo Night palette
+						as inline OKLCH across every component (as the mockup does) would make the theme un-maintainable. The
+						ordering and the shared-shell / single-token-layer decisions ARE the substance of this plan.
+					</p>
+				</div>
+			</section>
+
+			<section id="alternatives">
+				<h2>Alternatives considered — where the Tokyo Night terminal tokens live</h2>
+				<p>
+					The redesign's one genuine architectural decision. Everything else (shell placement, page mapping, perf wins)
+					is fixed by the brief. The current design tokens are OKLCH custom properties defined in the <em>external</em>
+					<code>@f0rbit/ui</code> package (<code>node_modules/@f0rbit/ui/src/styles/tokens.css</code>), imported via
+					<code>Page.astro</code>'s <code>import "@f0rbit/ui/styles"</code>. <code>src/global.css</code> already
+					overrides a handful of <code>@f0rbit/ui</code> tokens/classes (<code>.badge</code>, <code>.card</code>). The
+					site's components consume semantic tokens (<code>--bg</code>, <code>--fg</code>, <code>--fg-muted</code>,
+					<code>--fg-faint</code>, <code>--border</code>, <code>--accent</code>, <code>--space-*</code>,
+					<code>--text-*</code>, <code>--radius</code>). We must not edit <code>node_modules</code>.
+				</p>
+
+				<article class="option recommended" id="option-1">
+					<header>
+						<h3>
+							Option 1: In-repo terminal token layer — one <code>:root</code> file overriding @f0rbit/ui semantic tokens
+						</h3>
+						<span class="badge recommended">recommended</span>
+					</header>
+					<p>
+						Add a single new in-repo file <code>src/styles/terminal.css</code> that (a) re-points the
+						<code>@f0rbit/ui</code> semantic tokens the components already use (<code>--bg</code>→<code
+							>oklch(19% 0.03 274)</code
+						>, <code>--fg</code>→<code>oklch(97% 0.015 270)</code>, <code>--fg-muted</code>→<code
+							>oklch(72% 0.016 274)</code
+						>, <code>--border</code>→<code>oklch(31% 0.035 270)</code>, <code>--accent</code>→<code
+							>oklch(70% 0.12 258)</code
+						>, etc.) to the Tokyo Night ramp, and (b) declares terminal-specific tokens the mockup needs but the library
+						lacks (<code>--term-panel</code>, <code>--term-titlebar</code>, <code>--term-border</code>,
+						<code>--term-prompt-user</code> green <code>oklch(74% 0.11 150)</code>, <code>--term-link</code> blue,
+						<code>--term-keyword</code> purple <code>oklch(71% 0.11 300)</code>,
+						<code>--term-gray-30/45/58/72/85/97</code>, <code>--font-mono</code>). Imported once in
+						<code>Page.astro</code> immediately after <code>@f0rbit/ui/styles</code>, so the cascade overrides cleanly.
+						The palette lives in exactly one place; every component reads it via tokens.
+					</p>
+					<h4>Real-world examples</h4>
+					<ul>
+						<li>
+							<strong>GitHub Primer</strong> — ships base primitives, and product surfaces re-theme by overriding the
+							same CSS custom properties in a downstream <code>:root</code> layer rather than forking Primer.
+							<a href="https://primer.style/foundations/css-utilities/theming">source</a>
+						</li>
+						<li>
+							<strong>Radix Themes / shadcn-ui</strong> — components consume semantic CSS variables
+							(<code>--background</code>, <code>--foreground</code>, <code>--border</code>); a project retints the whole
+							app by redefining those variables in one root stylesheet.
+							<a href="https://ui.shadcn.com/docs/theming">source</a>
+						</li>
+					</ul>
+					<h4>Pros</h4>
+					<ul>
+						<li>
+							Single source of truth for the palette: one file, one <code>:root</code> block. Change a hue once, every
+							page updates.
+						</li>
+						<li>
+							Zero cross-repo blast radius — <code>@f0rbit/ui</code> stays generic; devpad and other consumers are
+							unaffected.
+						</li>
+						<li>
+							Components already read semantic tokens, so most restyle work is "point tokens at Tokyo Night," not
+							per-component rewrites.
+						</li>
+						<li>
+							Keeps the palette OUT of <code>global.css</code> (which holds element/type rules) — clean separation:
+							<code>terminal.css</code> = colour/theme, <code>global.css</code> = element styles.
+						</li>
+					</ul>
+					<h4>Cons</h4>
+					<ul>
+						<li>
+							Terminal-specific tokens (prompt-user green, keyword purple, gray ramp) have no
+							<code>@f0rbit/ui</code> equivalent, so they're net-new names — a small vocabulary to document in
+							AGENTS.md.
+						</li>
+						<li>
+							Overriding library tokens means a future <code>@f0rbit/ui</code> token rename could silently drop an
+							override — mitigated by a comment block listing which upstream tokens we shadow.
+						</li>
+					</ul>
+					<h4>Philosophy alignment</h4>
+					<table class="philosophy-score">
+						<thead>
+							<tr>
+								<th>Principle</th>
+								<th>Score</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Single source of truth</td>
+								<td>5/5</td>
+								<td>
+									One <code>:root</code> file owns the entire palette; components derive colour from tokens, never
+									literals.
+								</td>
+							</tr>
+							<tr>
+								<td>Strictest types possible</td>
+								<td>3/5</td>
+								<td>CSS tokens are untyped by nature; N/A engineering-wise, neutral.</td>
+							</tr>
+							<tr>
+								<td>Compiler catches bugs</td>
+								<td>3/5</td>
+								<td>No TS surface. A missing token falls back visibly in dev, caught by visual review.</td>
+							</tr>
+							<tr>
+								<td>Inferred types propagate</td>
+								<td>3/5</td>
+								<td>N/A to CSS theming; neutral.</td>
+							</tr>
+							<tr>
+								<td>In-memory repositories</td>
+								<td>3/5</td>
+								<td>No data layer touched; restyle only. Neutral.</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+
+				<article class="option" id="option-2">
+					<header>
+						<h3>Option 2: Fork/patch <code>@f0rbit/ui</code> tokens upstream at <code>~/dev/ui</code></h3>
+					</header>
+					<p>
+						Change <code>tokens.css</code> in the user's own <code>@f0rbit/ui</code> package to Tokyo Night, publish a
+						new version, bump the dependency here. Because <code>@f0rbit/ui</code> is a singleton in the user's
+						devpad/pipelines stack, this is a cross-repo change (load <code>pipelines-setup</code>, gradual rollout).
+					</p>
+					<h4>Real-world examples</h4>
+					<ul>
+						<li>
+							<strong>Bootstrap Sass forks</strong> — teams historically forked Bootstrap's variables to retheme, then
+							fought every upstream release. Widely regarded as an anti-pattern once theming variables existed.
+							<a href="https://getbootstrap.com/docs/5.3/customize/sass/">source</a>
+						</li>
+						<li>
+							<strong>Material UI theme vs fork</strong> — MUI explicitly steers consumers to
+							<code>createTheme</code> overrides rather than forking <code>@mui/material</code>, precisely to avoid a
+							per-app fork of a shared library. <a href="https://mui.com/material-ui/customization/theming/">source</a>
+						</li>
+					</ul>
+					<h4>Pros</h4>
+					<ul>
+						<li>If every consumer wanted Tokyo Night, this would be the true single source.</li>
+						<li>No override layer — components ship the palette natively.</li>
+					</ul>
+					<h4>Cons</h4>
+					<ul>
+						<li>
+							The palette is portfolio-specific; forcing it into a shared library couples unrelated apps (devpad) to
+							this site's aesthetic — the opposite of single-source-of-truth at the right granularity.
+						</li>
+						<li>
+							Cross-repo publish + version bump + rollout for a change that is purely local to this repo — large process
+							cost for zero shared benefit.
+						</li>
+					</ul>
+					<h4>Philosophy alignment</h4>
+					<table class="philosophy-score">
+						<thead>
+							<tr>
+								<th>Principle</th>
+								<th>Score</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Single source of truth</td>
+								<td>2/5</td>
+								<td>Puts a site-specific palette in a shared package — wrong ownership boundary, couples consumers.</td>
+							</tr>
+							<tr>
+								<td>Strictest types possible</td>
+								<td>3/5</td>
+								<td>N/A CSS.</td>
+							</tr>
+							<tr>
+								<td>Compiler catches bugs</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>Inferred types propagate</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>In-memory repositories</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+
+				<article class="option" id="option-3">
+					<header>
+						<h3>
+							Option 3: Split palette across <code>global.css</code> <code>:root</code> + per-page scoped overrides
+						</h3>
+					</header>
+					<p>
+						Put shared tokens in <code>global.css</code> and let each page/component declare its own scoped
+						<code>:root</code>-ish overrides where the mockup diverges, rather than a single dedicated theme file.
+					</p>
+					<h4>Real-world examples</h4>
+					<ul>
+						<li>
+							<strong>Astro scoped styles</strong> — Astro encourages component-scoped <code>&lt;style&gt;</code>; some
+							sites lean on this for per-page theming. <a href="https://docs.astro.build/en/guides/styling/">source</a>
+						</li>
+						<li>
+							<strong>CSS Modules per-component theming</strong> — common in Next.js apps, but well-documented to drift
+							when a colour must be consistent across many modules.
+							<a href="https://nextjs.org/docs/app/building-your-application/styling/css-modules">source</a>
+						</li>
+					</ul>
+					<h4>Pros</h4>
+					<ul>
+						<li>Maximum per-page flexibility; a page can diverge without touching a global file.</li>
+					</ul>
+					<h4>Cons</h4>
+					<ul>
+						<li>
+							The palette ends up defined in several places — the exact sync smell the philosophy forbids. A hue tweak
+							becomes a multi-file grep.
+						</li>
+						<li>
+							The mockup is uniform across pages; per-page divergence is unnecessary and invites inconsistency between
+							surfaces.
+						</li>
+					</ul>
+					<h4>Philosophy alignment</h4>
+					<table class="philosophy-score">
+						<thead>
+							<tr>
+								<th>Principle</th>
+								<th>Score</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Single source of truth</td>
+								<td>2/5</td>
+								<td>Palette scattered across pages; consistency between surfaces is manual.</td>
+							</tr>
+							<tr>
+								<td>Strictest types possible</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>Compiler catches bugs</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>Inferred types propagate</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>In-memory repositories</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+
+				<article class="option" id="option-4">
+					<header><h3>Option 4: Inline OKLCH literals per component (mimic the mockup as-authored)</h3></header>
+					<p>
+						Port the mockup literally — every component carries its own <code>oklch(...)</code> values inline, as the
+						reference HTML does.
+					</p>
+					<h4>Real-world examples</h4>
+					<ul>
+						<li>
+							<strong>Tailwind arbitrary values</strong> — <code>bg-[oklch(19%_0.03_274)]</code> style utilities inline
+							colour at the call site; convenient for one-offs, discouraged for a design system.
+							<a href="https://tailwindcss.com/docs/adding-custom-styles">source</a>
+						</li>
+						<li>
+							<strong>Styled-system prototypes</strong> — many design prototypes ship inline colour and are explicitly
+							refactored to tokens before production.
+							<a href="https://styled-system.com/theme-specification/">source</a>
+						</li>
+					</ul>
+					<h4>Pros</h4>
+					<ul>
+						<li>Fastest 1:1 transcription of the mockup — copy/paste the exact values.</li>
+					</ul>
+					<h4>Cons</h4>
+					<ul>
+						<li>
+							The palette is duplicated in dozens of files; the same green/blue/gray appears as literals everywhere —
+							catastrophic for single-source and future tweaks.
+						</li>
+						<li>No shared token vocabulary; a designer change means editing every component.</li>
+					</ul>
+					<h4>Philosophy alignment</h4>
+					<table class="philosophy-score">
+						<thead>
+							<tr>
+								<th>Principle</th>
+								<th>Score</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Single source of truth</td>
+								<td>1/5</td>
+								<td>Palette literally duplicated across every component — the worst case.</td>
+							</tr>
+							<tr>
+								<td>Strictest types possible</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>Compiler catches bugs</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>Inferred types propagate</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+							<tr>
+								<td>In-memory repositories</td>
+								<td>3/5</td>
+								<td>N/A.</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+
+				<section class="recommendation">
+					<h3>Recommendation: Option 1 — in-repo terminal token layer</h3>
+					<p>
+						Option 1 is the only choice that scores 5/5 on single-source-of-truth (the sole principle that meaningfully
+						applies to a CSS restyle) while keeping the change entirely local. It reuses the fact that components
+						already consume <code>@f0rbit/ui</code> semantic tokens, so retinting is mostly "repoint tokens," and it
+						isolates portfolio-specific colour from a shared library (beating Option 2's wrong ownership boundary) and
+						from per-file duplication (beating Options 3 and 4). The terminal-specific tokens it adds are documented in
+						AGENTS.md. Options 2/3/4 all fragment or misplace the single source of truth.
+					</p>
+				</section>
+			</section>
+
+			<section id="affected-areas">
+				<h2>Affected areas</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Path</th>
+							<th>Change</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>package.json</code></td>
+							<td>
+								modify — add <code>@f0rbit/lint</code> devDep + <code>lint/lint:fix/fmt/fmt:check</code> scripts; remove
+								<code>prettier</code>, <code>prettier-plugin-astro</code>; remove unused <code>moment</code> and
+								<code>drizzle-orm</code> deps
+							</td>
+						</tr>
+						<tr>
+							<td><code>.oxlintrc.json</code>, <code>.oxfmtrc.json</code>, <code>eslint.config.ts</code></td>
+							<td>
+								new — generated by <code>f0rbit-lint init</code>, then adjusted for <code>.astro</code>/<code
+									>.tsx</code
+								>
+								+ infra-file ignores
+							</td>
+						</tr>
+						<tr>
+							<td><code>.prettierrc</code></td>
+							<td>delete — replaced by oxfmt</td>
+						</tr>
+						<tr>
+							<td><code>src/styles/terminal.css</code></td>
+							<td>new — Tokyo Night token layer (Option 1)</td>
+						</tr>
+						<tr>
+							<td><code>src/layouts/Page.astro</code></td>
+							<td>
+								modify — import <code>terminal.css</code>; render shared <code>TerminalWindow</code> shell; add font
+								<code>@font-face</code>/preload in head
+							</td>
+						</tr>
+						<tr>
+							<td><code>src/layouts/Home.astro</code></td>
+							<td>modify — wrap in terminal shell</td>
+						</tr>
+						<tr>
+							<td><code>src/components/TerminalWindow.astro</code>, <code>PromptLine.astro</code></td>
+							<td>new — shared chrome (titlebar, traffic lights, route-derived path-nav) + prompt-line primitive</td>
+						</tr>
+						<tr>
+							<td><code>src/components/Navigation.astro</code></td>
+							<td>
+								modify — becomes path-nav tabs (<code>~/home ~/work ~/about ~/blog ~/timeline</code>), active derived
+								from route; mobile hamburger → path menu
+							</td>
+						</tr>
+						<tr>
+							<td><code>src/components/Footer.astro</code></td>
+							<td>modify — <code>$ contact</code> prompt-line style</td>
+						</tr>
+						<tr>
+							<td><code>src/global.css</code></td>
+							<td>
+								modify — element/type styles retuned to mono terminal language; keep <code>.page-container</code>,
+								badge/card overrides
+							</td>
+						</tr>
+						<tr>
+							<td><code>src/pages/index.astro</code></td>
+							<td>
+								modify — HOME (2a): whoami hero, ls --featured grid, git log + experience.log columns, contact footer
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code>src/pages/projects.astro</code>, <code>components/ProjectCard.astro</code>,
+								<code>components/projects/ProjectList.astro</code>, <code>RecentProjects.astro</code>
+							</td>
+							<td>modify — PROJECTS (2b): ls --projects, filter chips, 3-col card grid</td>
+						</tr>
+						<tr>
+							<td>
+								<code>src/pages/projects/[project_id].astro</code>, <code>components/projects/ProjectPage.astro</code>,
+								<code>Specification.astro</code>, <code>Status.astro</code>
+							</td>
+							<td>
+								modify — PROJECT DETAIL (2f): cd .., README/metadata/stack/commits sidebar; cache rendered spec markdown
+								(perf)
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code>src/pages/about.astro</code>, <code>components/about/AboutMe.astro</code>,
+								<code>SkillSelector.tsx</code>, <code>SkillCard.tsx</code>, <code>Experience.astro</code>,
+								<code>ExperienceCard.astro</code>
+							</td>
+							<td>modify — ABOUT (2b-about): cat about.md, skills.json grid, git log experience</td>
+						</tr>
+						<tr>
+							<td>
+								<code>src/pages/blog.astro</code>, <code>components/blog/BlogCard.astro</code>,
+								<code>RecentBlogs.astro</code>
+							</td>
+							<td>modify — BLOG (2c): ls -lt --posts list + popular_tags sidebar</td>
+						</tr>
+						<tr>
+							<td><code>src/pages/blog/[group]/[slug].astro</code>, <code>components/blog/PublishTime.tsx</code></td>
+							<td>
+								modify — BLOG POST (2g): cat &lt;slug&gt;.md prose; cache rendered remark HTML (perf); drop moment from
+								PublishTime
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<code>src/pages/timeline.astro</code>, <code>components/activity/Timeline.astro</code>,
+								<code>CommitList.astro</code>
+							</td>
+							<td>modify — TIMELINE (2d): git log --graph, contribution heatmap, grouped commit entries</td>
+						</tr>
+						<tr>
+							<td><code>src/utils.ts</code></td>
+							<td>
+								modify — replace moment <code>Duration</code>/<code>formatDuration</code> with native
+								<code>Intl</code>/date math
+							</td>
+						</tr>
+						<tr>
+							<td><code>src/assets/skills.ts</code></td>
+							<td>modify — remove moment usage</td>
+						</tr>
+						<tr>
+							<td><code>docs/perf-ttfb.md</code></td>
+							<td>new — prioritized TTFB analysis (safe wins done + report-only recommendations)</td>
+						</tr>
+						<tr>
+							<td><code>AGENTS.md</code></td>
+							<td>
+								modify — lint toolchain, token layer, terminal shell, moment→native (written by verification coder)
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section id="architecture-decisions">
+				<h2>Architecture decisions</h2>
+				<ul>
+					<li>
+						<strong>Token location:</strong> Option 1 (in-repo <code>src/styles/terminal.css</code>). See alternatives.
+					</li>
+					<li>
+						<strong>Terminal chrome is a shared Layout-level shell.</strong> A single
+						<code>TerminalWindow.astro</code> renders the rounded panel, titlebar (3 traffic-light dots + centered
+						<code>forbit@dev — &lt;path&gt; — zsh</code> + right-aligned path-nav tabs). Every page inherits it via
+						<code>Page.astro</code>; the active path and titlebar text derive from
+						<code>Astro.url.pathname</code> (mapping: <code>/</code>→<code>~/home</code>,
+						<code>/projects</code>→<code>~/work</code>, <code>/about</code>→<code>~/about</code>,
+						<code>/blog</code>→<code>~/blog</code>, <code>/timeline</code>→<code>~/timeline</code>; detail routes show
+						<code>~/work/&lt;id&gt;</code> etc.). This keeps the chrome defined once — no per-page duplication.
+					</li>
+					<li>
+						<strong>Path-nav is a rename of existing nav, not a new nav.</strong> The five path tabs map 1:1 to the five
+						existing routes; no nav items added or removed.
+					</li>
+					<li>
+						<strong>Page-vs-integrate gate:</strong> This initiative adds <em>zero</em> net-new pages and zero net-new
+						nav items — it restyles the seven existing routes in place. The gate is therefore satisfied trivially: no
+						aggregation/feed page is introduced, and every datum stays on the page where the user already expects it.
+						(Recorded here per the guidelines even though no new surface is created.)
+					</li>
+					<li>
+						<strong>Restyle, not refactor.</strong> The Provider/DI data layer (<code>middleware.ts</code>,
+						<code>providers/*</code>, <code>lib/cache.ts</code>, in-memory fakes) and all component data contracts
+						(props) are untouched. Tasks change markup/CSS and the two perf-relevant server behaviours (cache blog HTML,
+						prerender evaluation) only.
+					</li>
+					<li>
+						<strong>Prompt-line primitive.</strong> <code>PromptLine.astro</code> renders
+						<code>forbit@dev:&lt;path&gt;$ &lt;cmd&gt;</code> with the green user / gray path / optional blinking
+						<code>█</code> cursor, so the <code>$ whoami</code> / <code>$ ls --featured</code> /
+						<code>$ git log</code> framings are consistent across pages.
+					</li>
+					<li>
+						<strong>UI primitives:</strong> Every redesign task MUST
+						<code>WebFetch https://f0rbit.github.io/ui/llms.txt</code> first and reach for
+						<code>@f0rbit/ui</code> primitives/utilities natively — layout via
+						<code>.row</code>/<code>.stack</code>/<code>.grid</code>/<code>.cluster</code>,
+						<code>Card</code>/<code>CardContent</code>, <code>Badge</code>/<code>Status</code>, <code>Stat</code>,
+						<code>Clamp</code>, <code>Empty</code>, <code>Collapsible</code> — rather than reinventing wrappers. The
+						terminal look comes from the token layer + a thin chrome component, not from replacing the primitives.
+					</li>
+					<li>
+						<strong>Perf wins split:</strong> moment→native and font preload fold into Phase 2 (they touch shared
+						<code>utils.ts</code> + <code>Page.astro</code> head, already in flight there). Client-directive tuning,
+						<code>astro:assets</code>, drizzle removal, prerender evaluation, and blog-HTML caching are the dedicated
+						Phase 5, alongside the written report. Aggressive rework (wholesale SSR→static, cache-header redesign) is
+						<strong>report-only</strong> in <code>docs/perf-ttfb.md</code>.
+					</li>
+					<li>
+						<strong>Visual verification gotcha:</strong> the chrome-devtools/playwright MCP is misconfigured (expects
+						chromium-1217, 1223 is installed). Visual tasks should run <code>bunx playwright install chromium</code> (or
+						point at the installed 1223 build), or fall back to <code>astro build</code> + <code>astro preview</code> +
+						a manual screenshot. Load the <code>visual-review</code> skill for screenshot judgement.
+					</li>
+				</ul>
+			</section>
+
+			<section id="phases">
+				<h2>Phases</h2>
+
+				<div class="depgraph">
+					<svg viewBox="0 0 860 120" width="860" height="120" role="img" aria-label="Phase dependency graph">
+						<defs>
+							<marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+								<path d="M0,0 L7,3 L0,6 Z" fill="#8b949e" />
+							</marker>
+						</defs>
+						<g font-family="monospace" font-size="12" fill="#c9d1d9">
+							<rect x="6" y="44" width="150" height="34" rx="6" fill="#161b22" stroke="#30363d" />
+							<text x="16" y="65">P1 lint + baseline</text>
+							<rect x="196" y="44" width="150" height="34" rx="6" fill="#161b22" stroke="#58a6ff" />
+							<text x="206" y="65">P2 tokens + shell</text>
+							<rect x="386" y="8" width="150" height="30" rx="6" fill="#161b22" stroke="#30363d" />
+							<text x="396" y="28">P3 pages (×5 ‖)</text>
+							<rect x="386" y="84" width="150" height="30" rx="6" fill="#161b22" stroke="#30363d" />
+							<text x="396" y="104">(worktrees)</text>
+							<rect x="576" y="44" width="130" height="34" rx="6" fill="#161b22" stroke="#30363d" />
+							<text x="586" y="65">P4 mobile</text>
+							<rect x="726" y="44" width="128" height="34" rx="6" fill="#161b22" stroke="#30363d" />
+							<text x="736" y="65">P5 perf + doc</text>
+							<line x1="156" y1="61" x2="196" y2="61" stroke="#8b949e" marker-end="url(#arrow)" />
+							<line x1="346" y1="61" x2="386" y2="30" stroke="#8b949e" marker-end="url(#arrow)" />
+							<line x1="536" y1="23" x2="576" y2="55" stroke="#8b949e" marker-end="url(#arrow)" />
+							<line x1="706" y1="61" x2="726" y2="61" stroke="#8b949e" marker-end="url(#arrow)" />
+						</g>
+					</svg>
+				</div>
+
+				<!-- ===================== PHASE 1 ===================== -->
+				<section class="phase" id="phase-1">
+					<h3>Phase 1: Adopt @f0rbit/lint + clean baseline reformat</h3>
+					<p>
+						Land the lint/format toolchain and a repo-wide reformat on the <em>current</em> code BEFORE the redesign, so
+						subsequent diffs are clean and the "fix all lint/formatting" requirement is satisfied continuously.
+						Sequential single coder. One commit closes the phase.
+					</p>
+
+					<article class="task" id="task-1-1">
+						<header>
+							<h3>Task 1.1: Install @f0rbit/lint, run init, configure for Astro + Solid + infra ignores</h3>
+							<span class="badge done">done</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>package.json</code>, <code>.oxlintrc.json</code>, <code>.oxfmtrc.json</code>,
+								<code>eslint.config.ts</code>, <code>.prettierrc</code> (delete)
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~60 config</dd>
+							<dt>Dependencies</dt>
+							<dd>none</dd>
+							<dt>Parallelisable with</dt>
+							<dd>none (foundation)</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								Repo is Astro 4 + Solid + TS, runtime <code>bun</code>. Current formatting is a bare
+								<code>.prettierrc</code> (tabWidth 4, semi false, singleQuote true, printWidth 160) plus
+								<code>prettier</code> + <code>prettier-plugin-astro</code> devDeps. We replace that with
+								<code>@f0rbit/lint</code>, which wraps a 3-tool pipeline: <strong>oxlint</strong> (fast syntactic),
+								<strong>ESLint</strong> (type-aware, configured via
+								<code>define_lint_config({ naming: "snake_case", tsconfig_root_dir: import.meta.dirname, ... })</code>,
+								custom rule <code>f0rbit/must-use-result</code>), and <strong>oxfmt</strong> (formatting — tabs, 120
+								width). Use <code>naming: "snake_case"</code> (user default). <code>tsconfig.json</code> extends
+								<code>astro/tsconfigs/strict</code> and <strong>excludes</strong> <code>infra.ts</code>,
+								<code>pipeline.ts</code>, <code>grants.ts</code> — these are NOT in the TS program, so type-aware ESLint
+								rules will error on them unless ignored. Repo also has <code>.astro</code> files and Solid
+								<code>.tsx</code> files (<code>SkillSelector.tsx</code>, <code>SkillCard.tsx</code>,
+								<code>PublishTime.tsx</code>).
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>Run <code>bun add -d -E @f0rbit/lint</code> then <code>bunx f0rbit-lint init</code>.</li>
+								<li>
+									Inspect the generated <code>.oxlintrc.json</code>, <code>.oxfmtrc.json</code>,
+									<code>eslint.config.ts</code> and the merged <code>package.json</code> scripts (<code>lint</code>,
+									<code>lint:fix</code>, <code>fmt</code>, <code>fmt:check</code>). Confirm
+									<code>define_lint_config</code> is called with <code>naming: "snake_case"</code> and
+									<code>tsconfig_root_dir: import.meta.dirname</code>; add these if <code>init</code> didn't.
+								</li>
+								<li>
+									<strong>Astro + Solid coverage:</strong> verify whether the generated eslint config lints
+									<code>.astro</code> and Solid <code>.tsx</code>. If <code>init</code> does NOT cover
+									<code>.astro</code> out of the box, either add the astro-eslint-parser override the package documents,
+									OR (if type-aware rules can't resolve <code>.astro</code>) exclude <code>.astro</code> from the
+									<em>typed</em> ESLint rules while keeping oxlint/oxfmt on them. Decide based on the ACTUAL generated
+									config — do not assume. Document the choice in the commit body.
+								</li>
+								<li>
+									<strong>Infra ignores:</strong> add <code>infra.ts</code>, <code>pipeline.ts</code>,
+									<code>grants.ts</code> to the ESLint ignore list (they're outside the tsconfig program; type-aware
+									rules would otherwise error). Mirror any needed ignores in <code>.oxlintrc.json</code>.
+								</li>
+								<li>
+									Delete <code>.prettierrc</code>; remove <code>prettier</code> and
+									<code>prettier-plugin-astro</code> from <code>package.json</code> devDependencies. Do NOT run a full
+									reformat yet (that's Task 1.2) — but confirm <code>bun run lint</code> and
+									<code>bun run fmt:check</code> execute (they may report many findings; that's expected).
+								</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run lint        # executes without config error (findings OK)
+bun run fmt:check   # executes without config error (diffs OK)
+test ! -f .prettierrc && echo "prettierrc removed"
+grep -q '"fmt"' package.json && grep -q '"lint"' package.json && echo "scripts merged"</pre
+							>
+							<p>
+								Expected: all four commands succeed (lint/fmt:check may list findings — resolved in 1.2). No "cannot
+								find tsconfig" / "parserOptions.project" errors on
+								<code>infra.ts</code>/<code>pipeline.ts</code>/<code>grants.ts</code>.
+							</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										<code>naming: "snake_case"</code> is actually set in <code>eslint.config.ts</code> (not left at a
+										default).
+									</li>
+									<li>
+										<code>infra.ts</code>, <code>pipeline.ts</code>, <code>grants.ts</code> ignored — no type-aware
+										ESLint error referencing "not included in project".
+									</li>
+									<li>
+										<code>.astro</code> and Solid <code>.tsx</code> handling was verified against the generated config,
+										not assumed; the fallback (ignore .astro from typed rules) is only used if init genuinely lacks
+										Astro support.
+									</li>
+									<li>
+										<code>prettier</code> + <code>prettier-plugin-astro</code> fully removed from
+										<code>package.json</code>; no lingering <code>.prettierignore</code> reference.
+									</li>
+									<li>
+										Scripts use exact names
+										<code>lint</code>/<code>lint:fix</code>/<code>fmt</code>/<code>fmt:check</code>.
+									</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="proof">
+								<p>
+									<code>naming: "snake_case"</code> and <code>tsconfig_root_dir: import.meta.dirname</code> set in
+									<code>eslint.config.ts</code>. <code>infra.ts</code>/<code>pipeline.ts</code>/<code>grants.ts</code> do
+									not exist in this repo (no ignores needed). <code>.astro</code> coverage verified against the
+									generated config: <code>@f0rbit/eslint-config</code> only wires up
+									<code>ts/tsx/mts/cts</code> and astro-eslint-parser is not installed, so typed ESLint rules never
+									see <code>.astro</code> content; oxlint still lints inside <code>.astro</code> frontmatter — documented
+									in <code>eslint.config.ts:4-9</code>. <code>.prettierrc</code> deleted;
+									<code>prettier</code>/<code>prettier-plugin-astro</code> removed from
+									<code>package.json</code>. Scripts <code>lint</code>/<code>lint:fix</code>/<code>fmt</code>/<code
+										>fmt:check</code
+									>
+									present.
+								</p>
+								<pre>
+$ bun run fmt:check
+Checking formatting...
+All matched files use the correct format.
+Finished in 601ms on 50 files using 8 threads.
+
+$ bun run lint
+$ oxlint . && eslint .
+(zero findings)</pre
+								>
+							</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-1-2">
+						<header>
+							<h3>Task 1.2: Baseline sweep — <code>bun run fmt</code> + fix all lint findings on current code</h3>
+							<span class="badge done">done</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>repo-wide (reformat) + targeted lint fixes</dd>
+							<dt>Estimated LOC</dt>
+							<dd>large reformat diff, small logic churn</dd>
+							<dt>Dependencies</dt>
+							<dd>task-1-1</dd>
+							<dt>Parallelisable with</dt>
+							<dd>none</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								oxfmt uses tabs + 120 width; the old prettier used tabs (width 4) + 160 width + no semicolons + single
+								quotes. So the reformat WILL touch nearly every file (line-wrapping at 120, semicolon/quote
+								normalization per oxfmt defaults). This is expected churn and MUST land in this phase so redesign diffs
+								stay clean. The custom <code>f0rbit/must-use-result</code> rule may flag places that ignore a
+								<code>Result</code>; <code>src/utils.ts</code> already unwraps Results via
+								<code>resultToArray</code>/<code>resultToValue</code>, so most should pass, but check.
+								<code>src/utils.ts:92</code> <code>getTimeline</code> uses <code>any</code> (has a
+								<code>@todo fix typings</code>) — do NOT rewrite its logic here; if the lint config flags
+								<code>any</code>, prefer a scoped disable with the existing <code>@todo</code> note rather than a risky
+								retype (retyping is out of scope for the lint phase).
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>Run <code>bun run fmt</code> (writes formatting across the repo).</li>
+								<li>Run <code>bun run lint</code>; run <code>bun run lint:fix</code> for auto-fixable findings.</li>
+								<li>
+									Manually resolve remaining findings with the smallest safe change. For genuinely pre-existing
+									<code>any</code> that would need a real retype (e.g. <code>getTimeline</code>), apply a
+									narrowly-scoped inline disable with a comment pointing at the existing <code>@todo</code>, and add the
+									retype to Out of scope — do not change runtime behaviour in this phase.
+								</li>
+								<li>
+									Run <code>bun run typecheck</code> (<code>astro check</code>) and <code>bun test</code> to confirm the
+									reformat + fixes broke nothing.
+								</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run fmt:check   # clean, no diff
+bun run lint        # zero errors (warnings only if intentionally deferred)
+bun run typecheck   # astro check passes
+bun test            # existing __tests__ pass</pre
+							>
+							<p>Expected: <code>fmt:check</code> clean, <code>lint</code> zero errors, typecheck + tests green.</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										No runtime behaviour changed to satisfy a lint rule (only formatting + safe fixes + scoped
+										disables).
+									</li>
+									<li>
+										No new <code>any</code> introduced; pre-existing <code>any</code> in <code>getTimeline</code> not
+										"fixed" with a risky retype — deferred instead.
+									</li>
+									<li>
+										<code>bun test</code> still green — the reformat didn't alter string literals / template output that
+										tests assert on.
+									</li>
+									<li>No source files accidentally excluded from formatting to dodge findings.</li>
+									<li>
+										The reformat is a standalone commit (verification coder ensures redesign work is not mixed in).
+									</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="proof">
+								<p>
+									Repo-wide oxfmt reformat + lint fixes applied across 61 files (<code>git diff --stat origin/main</code>:
+									3667 insertions, 3233 deletions). Adversary checks: <code>&lt;Page&gt;</code> <code>ogImage</code> prop
+									name intact and consistent between <code>Page.astro</code>'s definition and all 7 call sites (no
+									clobber from the <code>og_image</code> local-variable rename in
+									<code>blog/[group]/[slug].astro</code>/<code>projects/[project_id].astro</code>). Provider methods
+									(<code>listProjects</code>, <code>getProject</code>, <code>listPosts</code>, <code>getPost</code>,
+									<code>listMyArticles</code>, <code>fetchTimeline</code>) stayed camelCase in
+									<code>src/providers/*.ts</code>; only local vars/functions snake_cased. All scoped disables
+									(<code>oxlint-disable-next-line</code>/<code>eslint-disable</code>) carry a reason comment and point
+									at real pre-existing gaps (<code>get_timeline</code> <code>any</code> + <code>@todo</code>,
+									<code>@devpad/api</code>/dev.to untyped response shapes, ambient <code>Date.now()</code> effect in
+									<code>cache.ts</code>) — none silence net-new issues.
+								</p>
+								<pre>
+$ bun run fmt:check
+All matched files use the correct format. (clean)
+
+$ bun run lint
+$ oxlint . && eslint .   (zero errors)
+
+$ bun run typecheck
+$ astro check
+Result (60 files): 0 errors, 0 warnings, 2 hints (pre-existing)
+
+$ bun test
+ 56 pass
+ 0 fail
+ 143 expect() calls
+Ran 56 tests across 4 files.
+
+$ bun run build
+[build] Complete!</pre
+								>
+							</div>
+						</section>
+					</article>
+				</section>
+
+				<!-- ===================== PHASE 2 ===================== -->
+				<section class="phase" id="phase-2">
+					<h3>Phase 2: Terminal token layer + shared shell + shared primitives (foundation)</h3>
+					<p>
+						Establishes the theme and the reusable terminal chrome that every page inherits. Also folds in the two perf
+						wins that touch these same shared files (moment→native in <code>utils.ts</code>, font preload in
+						<code>Page.astro</code> head). Sequential single coder — these are load-bearing, architectural, and share
+						files. One commit closes the phase. MUST <code>WebFetch https://f0rbit.github.io/ui/llms.txt</code> before
+						starting.
+					</p>
+
+					<article class="task" id="task-2-1">
+						<header>
+							<h3>Task 2.1: Tokyo Night token layer <code>src/styles/terminal.css</code> + font @font-face/preload</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/styles/terminal.css</code> (new), <code>src/layouts/Page.astro</code>,
+								<code>src/global.css</code>
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~120</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-1</dd>
+							<dt>Parallelisable with</dt>
+							<dd>none (foundation)</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								Decision: Option 1. Components consume <code>@f0rbit/ui</code> semantic tokens (<code>--bg</code>,
+								<code>--fg</code>, <code>--fg-muted</code>, <code>--fg-faint</code>, <code>--border</code>,
+								<code>--accent</code>, <code>--space-*</code>, <code>--text-*</code>, <code>--radius</code>).
+								<code>Page.astro:2</code> imports <code>@f0rbit/ui/styles</code>, then <code>:17</code> imports
+								<code>../global.css</code>. All colours are OKLCH. The mockup palette: panel bg
+								<code>oklch(19% 0.03 274)</code>, titlebar <code>oklch(25% 0.03 271)</code>, border
+								<code>oklch(37% 0.04 268)</code>/inner <code>oklch(31% 0.035 270)</code>, fg
+								<code>oklch(97% 0.015 270)</code>, muted body <code>oklch(72% 0.016 274)</code>; gray ramp L
+								30/45/58/72/85/97 at chroma ~0.012–0.018 hue 274; accents: green prompt-user/finished
+								<code>oklch(74% 0.11 150)</code>, blue path/link/dev <code>oklch(70% 0.12 258)</code>, purple keyword
+								<code>oklch(71% 0.11 300)</code>. Mono font stack <code>ui-monospace,'SF Mono',Menlo,monospace</code>;
+								Helvetica for meta labels. <code>Page.astro</code> head currently has NO <code>@font-face</code>/preload
+								though the design names a webfont — if a self-hosted webfont is used, add <code>@font-face</code> +
+								<code>&lt;link rel="preload"&gt;</code>; if the mono stack is purely system fonts (it is, per the
+								mockup), no webfont is needed — in that case skip preload and note it.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Create <code>src/styles/terminal.css</code> with a single <code>:root</code> block: (a) override the
+									<code>@f0rbit/ui</code> semantic tokens listed above to the Tokyo Night ramp; (b) declare
+									terminal-specific tokens: <code>--term-panel</code>, <code>--term-titlebar</code>,
+									<code>--term-border</code> (inner <code>oklch(31% 0.035 270)</code>),
+									<code>--term-prompt-user</code> (green), <code>--term-link</code> (blue),
+									<code>--term-keyword</code> (purple), <code>--term-gray-30/45/58/72/85/97</code>,
+									<code>--term-status-finished</code>, <code>--term-status-dev</code>, <code>--font-mono</code>. Include
+									a header comment listing which upstream <code>@f0rbit/ui</code> tokens are shadowed.
+								</li>
+								<li>
+									Import <code>terminal.css</code> in <code>Page.astro</code> immediately AFTER
+									<code>@f0rbit/ui/styles</code> and before/with <code>global.css</code> so the cascade wins.
+								</li>
+								<li>
+									Set the base terminal typography: body/content mono via <code>--font-mono</code>; add the
+									<code>@keyframes blink</code> + <code>.cursor</code> (blinking <code>█</code>) and
+									<code>.lift</code> hover transition (border-color + transform + box-shadow) here or in
+									<code>global.css</code> — these are shared by many components.
+								</li>
+								<li>
+									Font: if a webfont is actually required, add <code>@font-face</code> +
+									<code>&lt;link rel="preload" as="font" crossorigin&gt;</code> in <code>Page.astro</code> head. If the
+									design is system-mono-only, add a short comment recording that no webfont preload is needed (and that
+									the pre-existing <code>--font</code> webfont name, if unused, is dropped).
+								</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run typecheck &amp;&amp; bun run build   # builds clean
+bun run fmt:check &amp;&amp; bun run lint     # clean
+# visual: astro preview, screenshot any page — panel/titlebar/fg read Tokyo Night</pre
+							>
+							<p>
+								Expected: build succeeds; a rendered page shows dark Tokyo Night panel with correct fg/border/accent;
+								blinking cursor animates. Visual-review (load <code>visual-review</code> skill).
+							</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										Palette defined in exactly ONE place (<code>terminal.css</code> <code>:root</code>) — no OKLCH
+										literals leaking into components in this task.
+									</li>
+									<li>
+										<code>terminal.css</code> imported AFTER <code>@f0rbit/ui/styles</code> so overrides actually win
+										the cascade.
+									</li>
+									<li>No edit to <code>node_modules/@f0rbit/ui</code>.</li>
+									<li>
+										Existing <code>global.css</code> <code>.badge</code>/<code>.card</code>/<code>.page-container</code>
+										overrides preserved (they reference tokens now retinted).
+									</li>
+									<li>
+										Font decision is evidence-based (webfont preload only if a webfont is truly used); no dangling
+										broken <code>@font-face</code>.
+									</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-2-2">
+						<header>
+							<h3>Task 2.2: Shared terminal shell — TerminalWindow + PromptLine + path-nav + footer</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/components/TerminalWindow.astro</code> (new), <code>PromptLine.astro</code> (new),
+								<code>Navigation.astro</code>, <code>Footer.astro</code>, <code>Page.astro</code>,
+								<code>Home.astro</code>
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~200</dd>
+							<dt>Dependencies</dt>
+							<dd>task-2-1</dd>
+							<dt>Parallelisable with</dt>
+							<dd>none</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								Chrome (from the mockup titlebar, identical on every screen): rounded panel
+								<code>var(--term-panel)</code> border <code>var(--term-border)</code>, titlebar row
+								<code>var(--term-titlebar)</code> with — left: 3 traffic-light dots (gray
+								<code>oklch(58% 0.015 274)</code>, light-gray <code>oklch(78% 0.012 274)</code>, blue
+								<code>oklch(70% 0.12 258)</code>); center: <code>forbit@dev — &lt;path&gt; — zsh</code>; right: path-nav
+								tabs <code>~/home ~/work ~/about ~/blog ~/timeline</code>, active = blue, inactive = gray. Current
+								chrome: <code>Navigation.astro</code> uses astro-navbar
+								(<code>Astronav</code>/<code>MenuItems</code>/<code>MenuIcon</code>) with routes
+								Home/About/Projects/Blog/Timeline and a mobile hamburger; <code>Footer.astro</code>;
+								<code>Page.astro</code> wraps <code>&lt;slot/&gt;</code> in a min-height div + Footer;
+								<code>Home.astro</code> is the home wrapper. Route→path map: <code>/</code>→<code>~/home</code>,
+								<code>/projects</code>→<code>~/work</code>, <code>/about</code>→<code>~/about</code>,
+								<code>/blog</code>→<code>~/blog</code>, <code>/timeline</code>→<code>~/timeline</code>; detail routes
+								derive <code>~/work/&lt;project_id&gt;</code> and <code>~/blog</code>. Use <code>@f0rbit/ui</code>
+								<code>.row</code>/<code>.row-between</code> utilities for the titlebar layout rather than bespoke flex
+								where they fit.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Create <code>TerminalWindow.astro</code>: props <code>{ path: string }</code> (or derive from
+									<code>Astro.url.pathname</code>). Renders panel + titlebar (traffic lights, centered
+									<code>forbit@dev — {path} — zsh</code>, right-aligned path-nav) and a <code>&lt;slot/&gt;</code> for
+									page body with the mockup's padding.
+								</li>
+								<li>
+									Create <code>PromptLine.astro</code>: props
+									<code>{ path?: string, cmd: string, cursor?: boolean }</code> → renders
+									<code
+										>&lt;span class="prompt-user"&gt;forbit@dev&lt;/span&gt;:&lt;span
+										class="prompt-path"&gt;{path}&lt;/span&gt;$ {cmd}</code
+									>
+									with optional blinking cursor. Used by every page for <code>$ whoami</code>,
+									<code>$ ls --featured</code>, etc.
+								</li>
+								<li>
+									Rework <code>Navigation.astro</code> into the path-nav tab strip: five tabs mapping 1:1 to existing
+									routes, active derived from <code>Astro.url.pathname</code> (blue vs gray). Keep astro-navbar's mobile
+									hamburger, but the mobile menu becomes the "path menu" sketch (2h): <code>$ cd ~/</code> heading +
+									stacked <code>→ ~/home</code>…<code>~/timeline</code> rows + social icons; close = blue
+									<code>×</code>. Preserve accessibility (menu toggle still works).
+								</li>
+								<li>
+									Update <code>Footer.astro</code> to the <code>forbit@dev:~$ contact █</code> prompt-line style with
+									github / twitter / mail links (green user, blinking cursor).
+								</li>
+								<li>
+									Wire <code>Page.astro</code> and <code>Home.astro</code> to render page content inside
+									<code>TerminalWindow</code>, passing the derived path. Keep all existing SEO/OG/JSON-LD head
+									untouched.
+								</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run typecheck &amp;&amp; bun run build
+bun run lint &amp;&amp; bun run fmt:check
+# visual desktop + 360px: titlebar, traffic lights, active path tab correct per route; mobile hamburger opens path menu</pre
+							>
+							<p>
+								Expected: every route renders inside the terminal window with the correct active path tab and titlebar
+								text; mobile menu opens/closes. Visual-review desktop + mobile.
+							</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>Chrome defined ONCE — no page re-declares the titlebar/traffic-lights/path-nav.</li>
+									<li>
+										Active path derived from route (not hardcoded per page); detail routes still resolve a sensible
+										path.
+									</li>
+									<li>Mobile menu toggle remains keyboard/aria accessible (astro-navbar wiring intact).</li>
+									<li>Path-nav is the SAME five routes as before — none added/removed (no new nav item).</li>
+									<li>SEO/OG/JSON-LD head in <code>Page.astro</code> unchanged.</li>
+									<li>Uses <code>@f0rbit/ui</code> layout utilities where they fit; no reinvented row/stack.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-2-3">
+						<header>
+							<h3>Task 2.3: Replace moment.js with native Intl/date math (shared util + PublishTime)</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/utils.ts</code>, <code>src/assets/skills.ts</code>,
+								<code>src/components/blog/PublishTime.tsx</code>, <code>components/activity/Timeline.astro</code>,
+								<code>components/about/Experience.astro</code>, <code>components/about/ExperienceCard.astro</code>,
+								<code>package.json</code>
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~80</dd>
+							<dt>Dependencies</dt>
+							<dd>task-2-1</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-2-2 (different files; verification coder sequences the commit)</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								moment is used in six files. Critically <code>PublishTime.tsx</code> is a Solid client island that ships
+								moment to the BROWSER — removing it cuts client bundle + hydration cost (the highest-value perf item in
+								this task). <code>utils.ts:137</code> <code>formatDuration(duration: Duration)</code> buckets a duration
+								into "N years/months/days/hours" using <code>duration.asMonths()/asYears()/asDays()/asHours()</code>.
+								Other files use moment for date formatting/relative time. Replace with native
+								<code>Intl.DateTimeFormat</code>, <code>Intl.RelativeTimeFormat</code>, and plain millisecond math. Keep
+								public function signatures stable where possible, or switch <code>formatDuration</code> to take
+								start/end (or ms) instead of a moment <code>Duration</code> and update the (few) callers — this is a
+								restyle-adjacent cleanup, so update callers in the same task. Preserve the exact human strings the
+								current buckets produce so visual/text output is unchanged.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Rewrite <code>formatDuration</code> to compute from milliseconds (or start/end <code>Date</code>s)
+									using the same thresholds (≥16 months→years, ≥2 months→months, ≥3 days→days, else hours). Drop the
+									<code>import type { Duration } from 'moment'</code>.
+								</li>
+								<li>
+									Replace moment in <code>skills.ts</code>, <code>Timeline.astro</code>, <code>Experience.astro</code>,
+									<code>ExperienceCard.astro</code> with <code>Intl</code>/native equivalents; update call sites of
+									<code>formatDuration</code>.
+								</li>
+								<li>
+									<code>PublishTime.tsx</code>: replace moment relative-time with
+									<code>Intl.RelativeTimeFormat</code> (or a ~15-line helper). Confirm no moment import remains
+									anywhere.
+								</li>
+								<li>Remove <code>moment</code> from <code>package.json</code> dependencies.</li>
+								<li>Prefer narrow types (no <code>any</code>); annotate the new function signatures.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+grep -rn "moment" src && echo "FAIL: moment still referenced" || echo "moment gone"
+grep -q '"moment"' package.json && echo "FAIL: still in deps" || echo "dep removed"
+bun run typecheck &amp;&amp; bun test &amp;&amp; bun run build
+bun run lint &amp;&amp; bun run fmt:check</pre
+							>
+							<p>
+								Expected: no <code>moment</code> references in <code>src/</code> or <code>package.json</code>;
+								typecheck/tests/build green; rendered date strings match the previous output (spot-check via
+								visual-review on about + blog).
+							</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										Zero <code>moment</code> imports left (grep clean); dep removed from <code>package.json</code>.
+									</li>
+									<li>
+										<code>PublishTime.tsx</code> no longer bundles moment — verify no moment in the built client chunk.
+									</li>
+									<li>
+										Human-readable strings unchanged (same "N months" bucketing); timezone handling not silently
+										altered.
+									</li>
+									<li>No <code>any</code> added; new signatures annotated.</li>
+									<li>All six original call sites updated — none left calling a removed API.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+				</section>
+
+				<!-- ===================== PHASE 3 ===================== -->
+				<section class="phase" id="phase-3">
+					<h3>Phase 3: Page-by-page terminal redesign (parallel via worktrees)</h3>
+					<p>
+						With the token layer, shared shell, and prompt primitives in place, redesign each page's body to its mockup.
+						Each task owns a distinct set of page + component files, so they run as parallel
+						<code>coder-fast</code> agents in isolated git worktrees. The verification coder squash-integrates. Every
+						task MUST <code>WebFetch https://f0rbit.github.io/ui/llms.txt</code> first and use
+						<code>@f0rbit/ui</code> primitives natively. Each task consumes
+						<code>TerminalWindow</code>/<code>PromptLine</code>/tokens from Phase 2 — do NOT re-declare chrome or
+						palette. Data contracts (component props / provider data) are unchanged.
+					</p>
+
+					<article class="task" id="task-3-1">
+						<header>
+							<h3>Task 3.1: HOME (2a) — index.astro</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/pages/index.astro</code> (+ home-only section markup;
+								ProjectList/Experience/Timeline/RecentBlogs are restyled by 3-2/3-3/3-5; here compose them)
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~180</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-2</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-3-2, task-3-3, task-3-4, task-3-5</dd>
+							<dt>Mode</dt>
+							<dd>coder-fast</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								HOME mockup (2a): hero framed by <code>$ whoami</code> →
+								<code>&lt;h1&gt;Tom Materne / forbit&lt;/h1&gt;</code>, tagline "Software engineer. I build
+								<span>developer tools</span>, <span>games</span> &amp; <span>the web</span>." with green/blue/purple
+								accent words; a <code>$ cat role.txt →</code> line with the existing
+								<code>solidjs-typewriter</code> Typewriter (words: computer science student|software developer|open
+								source contributor|programming enthusiast) + blinking cursor; three meta chips (map-pin Brisbane, Amazon
+								SDE, blue "available for chat" dot). Then <code>$ ls --featured</code> as a grid table (icon | name+tags
+								| description | status), <code>✓ finished</code> in blue, <code>● dev</code> in gray. Then a two-column
+								row: <code>$ git log --oneline</code> (recent activity / the existing timeline-activity list) and
+								<code>$ cat experience.log</code> (left-border timeline entries — SDE·Amazon 2025→present highlighted).
+								Footer contact prompt-line already handled by <code>Footer.astro</code>. index.astro currently composes
+								hero+Typewriter, AboutMe, ProjectList(featured), Experience, RecentBlogs, Timeline sidebar inside
+								<code>@f0rbit/ui</code> Card/CardContent. Reuse those child components (they are restyled by their
+								owning tasks); here restructure index.astro's own layout + hero + prompt framings. Use
+								<code>PromptLine.astro</code> for the <code>$ whoami</code>/<code>$ ls --featured</code>/<code
+									>$ git log</code
+								>/<code>$ cat experience.log</code> headers.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Rebuild the hero block with <code>PromptLine cmd="whoami"</code>, the name h1, accent-word tagline,
+									the Typewriter role line (keep the island; set <code>client:visible</code>/<code>idle</code> — see
+									Phase 5 note, but applying it here is fine), and the three meta chips.
+								</li>
+								<li>
+									Frame the featured-projects section with <code>PromptLine path="~/work" cmd="ls --featured"</code> and
+									render it as the grid table layout (columns icon | name+tags | description | status) using the
+									ProjectList/featured data. The card row styling comes from Task 3.2's restyled ProjectCard/row where
+									shared.
+								</li>
+								<li>
+									Two-column row: left <code>$ git log --oneline</code> activity, right
+									<code>$ cat experience.log</code> with left-border timeline entries.
+								</li>
+								<li>
+									Keep AboutMe/RecentBlogs content but in the terminal language; remove now-redundant
+									<code>@f0rbit/ui</code> Card chrome where the mockup uses bare prompt sections.
+								</li>
+								<li>
+									Only edit <code>index.astro</code> (+ home-only inline markup). Do NOT edit
+									ProjectCard/Experience/Timeline files (owned by 3.2/3.3/3.5) to avoid worktree contention.
+								</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run build   # (verification coder runs full typecheck/lint/test after squash-integrate)
+# visual desktop 1360 + mobile 360: hero, whoami, ls --featured grid, git log + experience.log columns</pre
+							>
+							<p>Expected: home matches 2a on desktop and the 2h mobile home sketch. Visual-review both widths.</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>No OKLCH literals — colour via tokens only.</li>
+									<li>Chrome/titlebar not re-declared (inherited from <code>TerminalWindow</code>).</li>
+									<li>
+										Typewriter island preserved and hydration directive not <code>client:load</code> unless needed.
+									</li>
+									<li>Only <code>index.astro</code> touched — no edits to files owned by parallel tasks.</li>
+									<li>
+										Accent colour lands only on meaningful anchors (green user/finished, blue path/link/dev, purple
+										keyword) — body stays gray.
+									</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-3-2">
+						<header>
+							<h3>Task 3.2: PROJECTS (2b) list + detail (2f)</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/pages/projects.astro</code>, <code>src/pages/projects/[project_id].astro</code>,
+								<code>components/ProjectCard.astro</code>,
+								<code>components/projects/{ProjectList,RecentProjects,ProjectPage,Specification,Status}.astro</code>
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~300</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-2</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-3-1, task-3-3, task-3-4, task-3-5</dd>
+							<dt>Mode</dt>
+							<dd>coder-fast</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								PROJECTS list (2b): header <code>$ ls --projects</code> + <code>&lt;h1&gt;Projects&lt;/h1&gt;</code> +
+								right meta <code># N repositories · showing M featured</code>; a filter-chip row (<code>--all</code>
+								active blue outline, <code>--in-dev</code>, <code>--finished</code>, <code>--released</code>,
+								<code>--lang=all</code> gray outlines); a 3-col card grid — each card:
+								<code>~/work/&lt;name&gt;</code> with folder-git icon, status pill (<code>● dev</code> gray /
+								<code>✓ finished</code> blue / <code>↑ released</code>), description, tag row, github/external-link
+								icons; <code>.lift</code> hover. PROJECT DETAIL (2f): <code>cd ..</code> back link; header with
+								<code>~/work/&lt;name&gt;</code> breadcrumb, big <code>&lt;h1&gt;</code>, status pill, description,
+								GitHub + Live buttons; body grid = README article (<code>$ cat README.md</code>,
+								Overview/Features/Quick-start with a syntax-highlighted <code>&lt;pre&gt;</code> using purple
+								keywords/green strings, blockquote) + a 280px sidebar (<code># metadata</code> box,
+								<code># stack</code> tags, <code># recent commits</code>). Existing <code>ProjectPage.astro</code>/<code
+									>Specification.astro</code
+								>
+								render devpad project data + remark-parsed spec markdown. Keep data contracts; restyle only. Status
+								colour mapping lives in <code>Status.astro</code> — map dev→gray, finished→blue, released→light-gray per
+								mockup. Use <code>@f0rbit/ui</code> <code>Badge</code>/<code>Status</code>, <code>.grid-3</code>,
+								<code>Card</code>, <code>Stat</code> where they fit.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Restyle <code>projects.astro</code>: prompt header + h1 + repo-count meta; filter-chip row (visual
+									chips reflecting existing filter state — do not add new filtering logic beyond what exists); 3-col
+									grid of restyled <code>ProjectCard</code>.
+								</li>
+								<li>
+									Restyle <code>ProjectCard.astro</code> to the 2b card (breadcrumb name, status pill via
+									<code>Status.astro</code> colour map, description, tags, action icons, <code>.lift</code>). Ensure it
+									also satisfies the home <code>ls --featured</code> row usage (Task 3.1 composes it) — keep props
+									stable.
+								</li>
+								<li>
+									Restyle <code>[project_id].astro</code> + <code>ProjectPage.astro</code> to 2f: back link, header
+									block, README article + sidebar. Style <code>Specification.astro</code> prose for the terminal look
+									(keyword purple, string green in code blocks).
+								</li>
+								<li>Update <code>RecentProjects.astro</code> to match (used on home).</li>
+								<li>Only touch the files listed above.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run build
+# visual desktop + mobile: projects grid (3-col → 1-col mobile), filter chips, detail README+sidebar</pre
+							>
+							<p>Expected: list matches 2b and mobile 2h projects sketch; detail matches 2f. Visual-review.</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										Status colour map correct (dev gray, finished blue, released light-gray); no invented statuses.
+									</li>
+									<li><code>ProjectCard</code> props unchanged so home composition (3.1) still compiles.</li>
+									<li>No new provider calls / data-shape changes — restyle only.</li>
+									<li>
+										Code-block syntax colours use tokens (<code>--term-keyword</code>/<code>--term-prompt-user</code>),
+										not literals.
+									</li>
+									<li>Only listed files edited (no contention with parallel tasks).</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-3-3">
+						<header>
+							<h3>Task 3.3: ABOUT (2b-about) — about.astro + skills + experience</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/pages/about.astro</code>,
+								<code
+									>components/about/{AboutMe,Experience,ExperienceCard,SkillSelector,SkillCard,SkillEvents}.astro/tsx</code
+								>
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~260</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-2</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-3-1, task-3-2, task-3-4, task-3-5</dd>
+							<dt>Mode</dt>
+							<dd>coder-fast</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								ABOUT mockup (2c in reference = ~/about): three prompt sections. (1) <code>$ cat about.md</code> — a
+								2-col grid: left avatar (rounded-square gradient "f" tile + name/@f0rbit), right a key=value list
+								(role/education/location/hobbies with lucide icons, gray keys, <code>=</code> separators) + a bio
+								paragraph (gm-server in blue). (2) <code>$ cat skills.json</code> — a 3-col grid of skills (existing
+								<code>SkillSelector.tsx</code>/<code>SkillCard.tsx</code> Solid islands render
+								<code>src/assets/skills.ts</code>). (3) <code>$ git log --all experience/</code> — full experience list
+								(existing <code>Experience.astro</code>/<code>ExperienceCard.astro</code>) as left-border timeline
+								entries with a legend (professional/hobby/learning dots). Data from
+								<code>src/assets/{skills,experience}.ts</code>. Keep the Solid islands but tune hydration to
+								<code>client:visible</code>/<code>idle</code> (they're below the fold). Restyle only.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Restyle <code>about.astro</code> + <code>AboutMe.astro</code> to the <code>$ cat about.md</code> block
+									(avatar tile + key=value list + bio).
+								</li>
+								<li>
+									Restyle <code>SkillSelector.tsx</code>/<code>SkillCard.tsx</code> to the skills.json 3-col grid; set
+									the island hydration to <code>client:visible</code>.
+								</li>
+								<li>
+									Restyle <code>Experience.astro</code>/<code>ExperienceCard.astro</code> to left-border timeline
+									entries + the professional/hobby/learning legend.
+								</li>
+								<li>Frame each section with <code>PromptLine</code>. Only touch about-page files.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run build
+# visual desktop + mobile: about.md grid, skills.json 3-col, experience timeline + legend</pre
+							>
+							<p>Expected: matches the ~/about mockup; skills/experience data render correctly. Visual-review.</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>Skill/experience DATA unchanged (only presentation) — same items render.</li>
+									<li>
+										Solid islands still hydrate; <code>client:*</code> directive chosen deliberately (not
+										<code>client:load</code> for below-fold).
+									</li>
+									<li>No <code>any</code> added to <code>.tsx</code>; tokens not literals.</li>
+									<li>
+										Remote hobby background images (if present in AboutMe) noted for Phase 5 (astro:assets) — not
+										hotlinked anew.
+									</li>
+									<li>Only about-page files touched.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-3-4">
+						<header>
+							<h3>Task 3.4: TIMELINE (2d) — timeline.astro + activity components</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/pages/timeline.astro</code>, <code>components/activity/{Timeline,CommitList}.astro</code>,
+								<code>components/projects/EventTypeIcon.astro</code>
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~220</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-2</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-3-1, task-3-2, task-3-3, task-3-5</dd>
+							<dt>Mode</dt>
+							<dd>coder-fast</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								TIMELINE mockup (2e in reference = ~/timeline): header <code>$ git log --oneline --all --graph</code> +
+								<code>&lt;h1&gt;Activity&lt;/h1&gt;</code> + meta
+								<code># N commits this year · M repos · last push …</code>; a GitHub-style contribution heatmap strip
+								(green ramp <code>oklch(30% 0.012 274)</code>→<code>oklch(45% 0.035 155)</code>→<code
+									>oklch(60% 0.05 152)</code
+								>→<code>oklch(70% 0.12 258)</code>, "less…more" legend, 52 weeks) inside a bordered box; then the
+								grouped commit timeline (existing <code>getTimeline</code> in <code>utils.ts</code> groups commits by
+								project/date — do NOT change its logic). <code>Timeline.astro</code>/<code>CommitList.astro</code>
+								render the activity data (also used on home as the <code>git log</code> column). Mobile (2h timeline):
+								compact heatmap + "Today" grouped entries with colored dots + <code>hash · repo · time</code>. Restyle
+								only; keep the <code>getTimeline</code> data pipeline.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Restyle <code>timeline.astro</code>: prompt header, h1+meta, contribution heatmap strip (token-based
+									green ramp), grouped commit list below.
+								</li>
+								<li>
+									Restyle <code>Timeline.astro</code>/<code>CommitList.astro</code> to the terminal entry style (hash in
+									light-gray, message gray, repo/time meta) — keep them reusable for the home
+									<code>git log</code> column.
+								</li>
+								<li>
+									Add the heatmap as presentational markup driven by existing activity counts; if per-day counts aren't
+									already available, derive from the timeline data already fetched (no new provider call).
+								</li>
+								<li>Only touch the listed files.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run build
+# visual desktop + mobile: heatmap ramp, grouped commits, mobile "Today" list</pre
+							>
+							<p>Expected: matches ~/timeline mockup + mobile sketch. Visual-review.</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										<code>getTimeline</code> logic in <code>utils.ts</code> not modified (it's the grouping pipeline;
+										the pre-existing <code>any</code> stays deferred).
+									</li>
+									<li>Heatmap derives from already-fetched data — no new network/provider call added.</li>
+									<li>
+										Green ramp via tokens; commit hashes/repo names stay on the gray ramp (only status/graph gets
+										colour).
+									</li>
+									<li><code>Timeline.astro</code> still works when composed on home (3.1).</li>
+									<li>Only listed files touched.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-3-5">
+						<header>
+							<h3>Task 3.5: BLOG (2c) list + POST (2g) — blog.astro + [group]/[slug].astro + blog components</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/pages/blog.astro</code>, <code>src/pages/blog/[group]/[slug].astro</code>,
+								<code>components/blog/{BlogCard,RecentBlogs,PublishTime}.astro/tsx</code>
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~280</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-2 (uses moment-free PublishTime from 2.3)</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-3-1, task-3-2, task-3-3, task-3-4</dd>
+							<dt>Mode</dt>
+							<dd>coder-fast</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								BLOG list (2d in reference = ~/blog): header <code>$ ls -lt --posts</code> +
+								<code>&lt;h1&gt;Writing&lt;/h1&gt;</code> + rss chip; a 2-col grid (post list 1fr + 260px sidebar). Each
+								post row (<code>.lift</code>, top-border): date (calendar icon) · category (blue "personal" / light-gray
+								"dev.to") · read-time (clock) · <code>&lt;h3&gt;</code> title · excerpt · <code>#tag</code> hashes
+								(gray). Sidebar: <code># popular_tags</code> outlined chips (+ more). BLOG POST (2g): centered 74ch
+								column, <code>cd ~/blog</code> back link, <code>$ cat &lt;slug&gt;.md</code>, big h1, meta row
+								(avatar/forbit · date · read-time · category), prose (h2, paragraphs, syntax-highlighted
+								<code>&lt;pre&gt;</code>, blockquote), tag row, prev/next post nav. Blog data comes from devto + devpad
+								providers merged in <code>getBlogPosts</code>; the post body is remark-parsed.
+								<code>blog/[group]/[slug].astro:14</code> parses markdown at request time — this task styles the prose;
+								the RENDER CACHING is Phase 5 (don't add caching here, just make the markup cache-friendly).
+								<code>PublishTime.tsx</code> is already moment-free after Task 2.3. Restyle only.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Restyle <code>blog.astro</code> to the 2-col list + popular_tags sidebar; restyle
+									<code>BlogCard.astro</code>/<code>RecentBlogs.astro</code> to the post-row style (category colour:
+									personal→blue, dev.to→light-gray).
+								</li>
+								<li>
+									Restyle <code>[group]/[slug].astro</code> to the centered prose article (2g): back link,
+									<code>$ cat</code> line, meta row, prose typography (style the remark-rendered HTML container),
+									code-block + blockquote styles, tags, prev/next nav.
+								</li>
+								<li>Set <code>PublishTime</code> island hydration to <code>client:visible</code>/<code>idle</code>.</li>
+								<li>Only touch the listed files.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run build
+# visual desktop + mobile: blog list + sidebar, post prose + code block + prev/next</pre
+							>
+							<p>Expected: list matches ~/blog, post matches ~/blog/&lt;slug&gt;. Visual-review.</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>Category colour mapping correct (personal blue, dev.to light-gray); hashes stay gray.</li>
+									<li>
+										Prose container styles the remark HTML without changing the parse step (caching deferred to Phase
+										5).
+									</li>
+									<li><code>PublishTime</code> remains moment-free; hydration directive deliberate.</li>
+									<li>Prev/next nav derives from existing post ordering — no new data source.</li>
+									<li>Only listed files touched.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+				</section>
+
+				<!-- ===================== PHASE 4 ===================== -->
+				<section class="phase" id="phase-4">
+					<h3>Phase 4: Mobile responsive pass</h3>
+					<p>
+						Cross-cutting responsive audit across the shell + every page against the 2h mobile sketches. Single
+						<code>coder</code> (needs judgement across surfaces). One commit closes the phase. MUST
+						<code>WebFetch https://f0rbit.github.io/ui/llms.txt</code>.
+					</p>
+
+					<article class="task" id="task-4-1">
+						<header>
+							<h3>Task 4.1: Responsive terminal shell + per-page mobile layouts (2h)</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/global.css</code>, <code>TerminalWindow.astro</code>, <code>Navigation.astro</code>, and
+								per-page grids in <code>index/projects/about/blog/timeline</code> pages
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~150</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-3</dd>
+							<dt>Parallelisable with</dt>
+							<dd>none</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								Mobile sketches (2h): collapsed terminal (titlebar shows just logo + hamburger, path-nav hidden behind
+								the menu), hamburger→full-screen path menu (<code>$ cd ~/</code> + stacked <code>→ ~/home</code>… rows +
+								socials, blue <code>×</code> to close), stacked single-column cards on projects, compact heatmap +
+								"Today" grouped list on timeline, hero scaled down. Existing breakpoints in <code>global.css</code>
+								<code>.page-container</code>: 640/1024/1280/1700. astro-navbar already provides the mobile menu
+								mechanism (Task 2.2 restyled it). This pass makes every page's multi-column grid collapse to one column
+								and tunes type scale / padding for ~360px.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Verify/adjust the titlebar to the collapsed mobile form (hide path-nav tabs &lt;1024px, show
+									hamburger); confirm the path menu matches the 2h menu sketch.
+								</li>
+								<li>
+									Collapse every multi-column grid to single column on mobile: home <code>ls --featured</code> table →
+									stacked cards, git-log/experience two-col → stacked; projects 3-col → 1-col; about grids → stacked;
+									blog 2-col → list-only (sidebar below/hidden); timeline heatmap → compact horizontal strip + "Today"
+									list.
+								</li>
+								<li>Scale hero/h1 type and padding down per the sketches; ensure no horizontal overflow at 360px.</li>
+								<li>
+									Use existing breakpoints; prefer <code>@f0rbit/ui</code> responsive utilities
+									(<code>.hide-mobile</code>, grid utilities) where they fit.
+								</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run build
+# visual at 360px on every route: no horizontal scroll, menu opens, cards stack, heatmap compact</pre
+							>
+							<p>
+								Expected: all routes usable at 360px matching 2h; no overflow. Visual-review at 360px for each route
+								(load <code>visual-review</code>).
+							</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										No horizontal overflow at 360px on ANY route (check wide tables / code blocks scroll inside their
+										own container).
+									</li>
+									<li>Path menu is keyboard/aria accessible; close button works.</li>
+									<li>Desktop layouts unchanged (mobile media queries don't leak up).</li>
+									<li>Reused existing breakpoints — no new arbitrary breakpoint set introduced.</li>
+									<li>Tokens not literals.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+				</section>
+
+				<!-- ===================== PHASE 5 ===================== -->
+				<section class="phase" id="phase-5">
+					<h3>Phase 5: Perf safe-wins + write docs/perf-ttfb.md</h3>
+					<p>
+						The remaining safe TTFB wins (client-directive tuning already partly done in Phase 3 — verify/complete;
+						<code>astro:assets</code> images; drizzle removal; per-route prerender evaluation; blog-HTML caching) plus
+						the written prioritized analysis. Aggressive rework stays report-only. Single <code>coder</code> (judgement
+						+ writing). One commit closes the phase.
+					</p>
+
+					<article class="task" id="task-5-1">
+						<header>
+							<h3>Task 5.1: Images to astro:assets, drop unused drizzle-orm, finalize client directives</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/components/Navigation.astro</code>, <code>components/about/AboutMe.astro</code>,
+								<code>package.json</code>, island usages (<code>Typewriter</code>, <code>SkillSelector</code>,
+								<code>PublishTime</code>, <code>Clamp</code>)
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~90</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-4</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-5-2</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								<code>Navigation.astro</code> uses a raw <code>&lt;img&gt;</code> for the forbit logo (already imports
+								<code>forbit-icon.png</code> as <code>AstroImageMetadata</code> — switch to <code>astro:assets</code>
+								<code>&lt;Image&gt;</code>). The about page hotlinks remote hobby background images — move them local +
+								optimize via <code>astro:assets</code>. <code>drizzle-orm</code> is in <code>package.json</code> deps
+								but NOT imported anywhere in <code>src/</code> (confirmed) — remove it to trim the bundle. Island
+								hydration: <code>Typewriter</code>, <code>SkillSelector</code>, <code>PublishTime</code>,
+								<code>Clamp</code> should be <code>client:visible</code>/<code>client:idle</code> rather than
+								<code>client:load</code> unless immediately visible+interactive (Typewriter is above-fold animation →
+								<code>client:idle</code> acceptable; the rest → <code>client:visible</code>). Phase 3 may have set some
+								already — verify and complete.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Convert <code>Navigation.astro</code> logo and about-page hobby images to <code>astro:assets</code>
+									<code>&lt;Image&gt;</code> with local sources; remove remote hotlinks.
+								</li>
+								<li>
+									Remove <code>drizzle-orm</code> from <code>package.json</code> (confirm still unused via grep before
+									removing).
+								</li>
+								<li>
+									Audit all island directives; set <code>client:visible</code>/<code>client:idle</code> appropriately;
+									leave a one-line rationale comment where non-obvious.
+								</li>
+								<li>Rebuild and confirm no broken images / missing hydration.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+grep -rn "drizzle" src ; grep -q '"drizzle-orm"' package.json &amp;&amp; echo "FAIL still dep" || echo "drizzle removed"
+bun run typecheck &amp;&amp; bun run build &amp;&amp; bun test
+bun run lint &amp;&amp; bun run fmt:check
+# visual: logo + about images render; islands still hydrate</pre
+							>
+							<p>Expected: drizzle gone, images optimized/local, islands hydrate on visible/idle; build green.</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>drizzle confirmed unused before removal (grep clean).</li>
+									<li>No remote image hotlinks remain (all via astro:assets local).</li>
+									<li>
+										Islands still hydrate — no interactivity broken by directive change; no
+										<code>client:load</code> left where <code>client:visible</code> is correct.
+									</li>
+									<li>No layout shift introduced by <code>&lt;Image&gt;</code> (width/height set).</li>
+									<li>Tokens not literals.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-5-2">
+						<header>
+							<h3>Task 5.2: Cache rendered blog-post HTML + per-route prerender evaluation</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd>
+								<code>src/pages/blog/[group]/[slug].astro</code>, <code>src/lib/cache.ts</code> (read only / reuse),
+								per-page <code>prerender</code> flags
+							</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~70</dd>
+							<dt>Dependencies</dt>
+							<dd>phase-4</dd>
+							<dt>Parallelisable with</dt>
+							<dd>task-5-1</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								Every route is <code>prerender=false</code> (full SSR). The SWR cache (<code>src/lib/cache.ts</code>,
+								600s TTL over the Workers Cache API, wired in <code>middleware.ts</code>) is the main TTFB lever and
+								already caches provider fetches. <code>blog/[group]/[slug].astro:14</code> re-runs
+								<code>remark</code> markdown parsing at REQUEST time on every hit — cache the rendered HTML (keyed by
+								group+slug, via the existing <code>cachedFetch</code>/cache infra) so repeat requests skip the parse.
+								For prerender: evaluate each route — content is remote-API-driven and changes when devpad/devto update,
+								so wholesale <code>prerender=true</code> is risky; identify any genuinely-static route (if none, keep
+								SSR + lean on SWR and say so in the doc). This task makes only the SAFE change (cache blog HTML); the
+								prerender re-architecture is analysed but left as a recommendation in the doc unless a route is
+								trivially static.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Wrap the remark render of a blog post in the existing cache layer (reuse <code>getCached</code>/<code
+										>cachedFetch</code
+									>
+									pattern from <code>utils.ts</code>/<code>lib/cache.ts</code>), keyed by
+									<code>blog-html:&lt;group&gt;:&lt;slug&gt;</code>, so rendered HTML is cached alongside the post data.
+									Do NOT hand-roll a new cache — reuse the infra.
+								</li>
+								<li>
+									Evaluate each route's dynamism; apply <code>prerender=true</code> ONLY where genuinely static (likely
+									none given remote data) — otherwise leave SSR and record the rationale for the doc.
+								</li>
+								<li>Confirm cache correctness: a content update still refreshes within the SWR TTL.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+bun run typecheck &amp;&amp; bun run build &amp;&amp; bun test
+# smoke: second request to a blog post skips remark parse (log/timing) </pre
+							>
+							<p>
+								Expected: blog post HTML served from cache on repeat request within TTL; no stale-forever content (SWR
+								revalidation intact); build/tests green.
+							</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>
+										Reuses existing <code>lib/cache.ts</code> — no second bespoke cache implementation (single source).
+									</li>
+									<li>Cache key includes group AND slug — no cross-post collision.</li>
+									<li>SWR revalidation still refreshes updated content within TTL (not cached forever).</li>
+									<li>No <code>prerender=true</code> applied to a route whose content is remote/dynamic.</li>
+									<li><code>Result</code> error paths from providers still handled (no throw).</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+
+					<article class="task" id="task-5-3">
+						<header>
+							<h3>Task 5.3: Write docs/perf-ttfb.md — prioritized analysis</h3>
+							<span class="badge todo">todo</span>
+						</header>
+						<dl class="meta">
+							<dt>Files</dt>
+							<dd><code>docs/perf-ttfb.md</code> (new)</dd>
+							<dt>Estimated LOC</dt>
+							<dd>~120 (prose)</dd>
+							<dt>Dependencies</dt>
+							<dd>task-5-1, task-5-2</dd>
+							<dt>Parallelisable with</dt>
+							<dd>none</dd>
+							<dt>Mode</dt>
+							<dd>coder</dd>
+						</dl>
+						<section data-kind="context">
+							<h4>Context (self-contained)</h4>
+							<p>
+								Deliverable: a written, prioritized TTFB analysis. It records (a) the safe wins SHIPPED in this
+								initiative — moment removal (client bundle + hydration), font handling,
+								<code>client:visible/idle</code> island tuning, <code>astro:assets</code> images, drizzle-orm removal,
+								blog-HTML caching; and (b) REPORT-ONLY recommendations NOT implemented — wholesale SSR→static/ISR
+								re-architecture, cache-header redesign, edge-cache tuning of the Workers Cache API TTLs, provider-fetch
+								parallelization/batching, and any per-route prerender opportunities found in 5.2. Each item: impact
+								estimate (client-bundle KB / TTFB ms qualitative), effort, risk, and a recommendation. The main TTFB
+								lever is the SWR cache (600s TTL, Workers Cache API); note its current behaviour and where it could be
+								extended.
+							</p>
+						</section>
+						<section data-kind="what">
+							<h4>What to do</h4>
+							<ol>
+								<li>
+									Write <code>docs/perf-ttfb.md</code> with two sections: "Shipped safe wins" (what changed, why it
+									helps) and "Report-only recommendations" (prioritized table: item · impact · effort · risk ·
+									recommendation).
+								</li>
+								<li>
+									Ground each claim in the actual codebase (name files/routes). Reference the SWR cache as the primary
+									lever.
+								</li>
+								<li>Keep aggressive rework clearly flagged as NOT DONE / recommendation.</li>
+							</ol>
+						</section>
+						<section data-kind="verification">
+							<h4>Verification</h4>
+							<pre>
+test -f docs/perf-ttfb.md &amp;&amp; echo "doc exists"
+# manual read: two sections present, prioritized table, grounded in real files</pre
+							>
+							<p>
+								Expected: doc exists, cleanly structured, every recommendation tied to a real file/route, aggressive
+								items marked report-only.
+							</p>
+						</section>
+						<section data-kind="adversary">
+							<h4>Adversary checklist</h4>
+							<div class="adversary">
+								<ul>
+									<li>Every claim references a real file/route (no generic advice).</li>
+									<li>Shipped vs report-only clearly separated — no implying unshipped work was done.</li>
+									<li>
+										The SWR cache lever is described accurately (600s TTL, Workers Cache API,
+										<code>middleware.ts</code> wiring).
+									</li>
+									<li>No contradiction with what Tasks 5.1/5.2 actually changed.</li>
+								</ul>
+							</div>
+						</section>
+						<section data-kind="proof">
+							<h4>Proof</h4>
+							<div class="empty-proof">To be filled by verification coder.</div>
+						</section>
+					</article>
+				</section>
+			</section>
+
+			<section id="breaking">
+				<h2>Breaking changes</h2>
+				<ul>
+					<li>
+						<strong>BREAKING (tooling):</strong> the formatter changes from prettier (tabWidth 4, printWidth 160,
+						no-semi, single-quote) to oxfmt (tabs, 120 width) via <code>@f0rbit/lint</code>.
+						<code>.prettierrc</code> and the <code>prettier</code>/<code>prettier-plugin-astro</code> devDeps are
+						removed. This causes a one-time repo-wide reformat (Phase 1, isolated commit). Anyone with the old prettier
+						in their editor must switch to the new scripts (<code>bun run fmt</code>).
+					</li>
+					<li>
+						<strong>BREAKING (deps removed):</strong> <code>moment</code> and <code>drizzle-orm</code> are removed from
+						<code>package.json</code>. moment is replaced by native <code>Intl</code>; drizzle-orm was unused in
+						<code>src/</code>. Any external script relying on them would break (none found in <code>src/</code>).
+					</li>
+					<li>
+						<strong>Visual:</strong> the entire site's look changes (full terminal restyle). No data/URL/route changes —
+						all seven routes and the nav targets stay identical, so no external links break.
+					</li>
+				</ul>
+			</section>
+
+			<section id="out-of-scope">
+				<h2>Out of scope</h2>
+				<ul>
+					<li>
+						Retyping <code>getTimeline</code> in <code>src/utils.ts</code> (pre-existing <code>any</code> with a
+						<code>@todo</code>) — deferred; only lint-scoped-disabled in Phase 1, not rewritten.
+					</li>
+					<li>
+						Wholesale SSR→static/ISR re-architecture and Workers cache-header/TTL redesign — analysed in
+						<code>docs/perf-ttfb.md</code> as report-only recommendations, not implemented.
+					</li>
+					<li>
+						Changing the Tokyo Night palette inside <code>@f0rbit/ui</code> (<code>~/dev/ui</code>) — explicitly
+						rejected (Option 2). If the user later wants the terminal tokens to become the library default, that is a
+						cross-repo change requiring the <code>pipelines-setup</code> flow (singleton service, gradual rollout).
+					</li>
+					<li>New pages, nav items, or data sources — none; this is a restyle of existing routes.</li>
+					<li>Provider-fetch batching/parallelization beyond what exists — noted in the perf doc only.</li>
+				</ul>
+			</section>
+
+			<section id="agents-md-updates">
+				<h2>AGENTS.md updates</h2>
+				<p>
+					The verification coder writes these into the project's <code>AGENTS.md</code> after Phase 1 (lint) and updates
+					the rest as later phases land.
+				</p>
+				<ul>
+					<li>
+						<strong>Lint/format toolchain:</strong> code quality is enforced by <code>@f0rbit/lint</code> (oxlint +
+						type-aware ESLint with <code>f0rbit/must-use-result</code> + oxfmt). Scripts: <code>bun run lint</code>,
+						<code>lint:fix</code>, <code>fmt</code>, <code>fmt:check</code>. Config in <code>.oxlintrc.json</code>,
+						<code>.oxfmtrc.json</code>, <code>eslint.config.ts</code> (<code>naming: "snake_case"</code>,
+						<code>tsconfig_root_dir: import.meta.dirname</code>). Format is tabs + 120 width (NOT the old prettier
+						160/no-semi). <code>infra.ts</code>, <code>pipeline.ts</code>, <code>grants.ts</code> are ignored by
+						type-aware ESLint (excluded from tsconfig). Record the final <code>.astro</code>/Solid handling decision
+						here once known.
+					</li>
+					<li>
+						<strong>Design token location:</strong> the Tokyo Night terminal palette lives in ONE place —
+						<code>src/styles/terminal.css</code> (<code>:root</code>), which overrides <code>@f0rbit/ui</code> semantic
+						tokens and adds <code>--term-*</code> tokens. Never inline OKLCH literals in components; add a token
+						instead. <code>@f0rbit/ui</code> is unmodified. Document the <code>--term-*</code> vocabulary + which
+						upstream tokens are shadowed.
+					</li>
+					<li>
+						<strong>Terminal shell architecture:</strong> the terminal window chrome (panel, titlebar, traffic lights,
+						path-nav tabs) is a single shared component <code>TerminalWindow.astro</code> rendered at the layout level
+						(<code>Page.astro</code>/<code>Home.astro</code>); active path derives from <code>Astro.url.pathname</code>.
+						Prompt lines use <code>PromptLine.astro</code>. Pages compose these — do NOT re-declare chrome per page.
+						Path-nav maps 1:1 to the five existing routes.
+					</li>
+					<li>
+						<strong>Dates:</strong> moment.js is removed; use native <code>Intl.DateTimeFormat</code>/<code
+							>Intl.RelativeTimeFormat</code
+						>
+						and ms math. <code>formatDuration</code> in <code>src/utils.ts</code> is the shared helper.
+					</li>
+					<li>
+						<strong>Perf:</strong> the SWR cache (<code>src/lib/cache.ts</code>, 600s TTL, Workers Cache API, wired in
+						<code>middleware.ts</code>) is the primary TTFB lever; blog-post rendered HTML is cached through it. Islands
+						use <code>client:visible</code>/<code>idle</code>; images use <code>astro:assets</code>. See
+						<code>docs/perf-ttfb.md</code>. drizzle-orm removed (was unused).
+					</li>
+					<li>
+						<strong>Visual verification gotcha:</strong> chrome-devtools/playwright MCP expects chromium-1217 but 1223
+						is installed — run <code>bunx playwright install chromium</code> or fall back to <code>astro build</code> +
+						<code>astro preview</code> + manual screenshot for visual review.
+					</li>
+				</ul>
+			</section>
+		</main>
+	</body>
+</html>

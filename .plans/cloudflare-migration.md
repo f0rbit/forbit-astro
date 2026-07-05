@@ -114,8 +114,8 @@ workerd-only issues via the preview-URL smoke test.
 4. OG: replace `@resvg/resvg-js` with `workers-og`. Fonts already external
    (`fonts.gstatic.com`).
 5. CI/CD: Cloudflare Workers Builds. Deploy command: `bun install && bunx
-   wrangler deploy` for production (main), `bun install && bunx wrangler
-   versions upload` for non-prod (PRs → preview URLs). Pre-deploy build:
+wrangler deploy` for production (main), `bun install && bunx wrangler
+versions upload` for non-prod (PRs → preview URLs). Pre-deploy build:
    `bun run typecheck && bun test && bun run build`. Secrets via dashboard.
 6. Invalidation: DevPad → CF Deploy Hook → Workers Build → fresh isolate
    flushes the cache.
@@ -160,25 +160,27 @@ __tests__/
 
 ```typescript
 // src/providers/devpad.ts
-import { Result } from '@devpad/api' // re-exports @f0rbit/corpus Result
+import { Result } from "@devpad/api"; // re-exports @f0rbit/corpus Result
 
-export type ProviderError = { code: string; message: string }
+export type ProviderError = { code: string; message: string };
 
 export interface DevpadProvider {
-  listProjects(): Promise<Result<Project[], ProviderError>>
-  getProject(id: string): Promise<Result<Project, ProviderError>>
-  listPosts(): Promise<Result<Post[], ProviderError>>
-  getPost(slug: string): Promise<Result<Post, ProviderError>>
+	listProjects(): Promise<Result<Project[], ProviderError>>;
+	getProject(id: string): Promise<Result<Project, ProviderError>>;
+	listPosts(): Promise<Result<Post[], ProviderError>>;
+	getPost(slug: string): Promise<Result<Post, ProviderError>>;
 }
 
 // src/providers/devpad.ts (production)
-export class HttpDevpadProvider implements DevpadProvider { /* wraps @devpad/api */ }
+export class HttpDevpadProvider implements DevpadProvider {
+	/* wraps @devpad/api */
+}
 
 // src/providers/devpad-in-memory.ts
 export class InMemoryDevpadProvider implements DevpadProvider {
-  projects: Project[] = []
-  posts: Post[] = []
-  /* deterministic returns */
+	projects: Project[] = [];
+	posts: Post[] = [];
+	/* deterministic returns */
 }
 ```
 
@@ -202,12 +204,18 @@ build an in-memory fake that satisfies the surface area we use (`match`,
 ```typescript
 // __tests__/helpers.ts
 export function makeFakeCache(): Cache {
-  const store = new Map<string, { response: Response; expiresAt: number }>()
-  return {
-    async match(req: Request | string) { /* returns Response or undefined */ },
-    async put(req: Request | string, res: Response) { /* honours Cache-Control max-age */ },
-    async delete(req: Request | string) { /* … */ },
-  } as unknown as Cache
+	const store = new Map<string, { response: Response; expiresAt: number }>();
+	return {
+		async match(req: Request | string) {
+			/* returns Response or undefined */
+		},
+		async put(req: Request | string, res: Response) {
+			/* honours Cache-Control max-age */
+		},
+		async delete(req: Request | string) {
+			/* … */
+		},
+	} as unknown as Cache;
 }
 ```
 
@@ -249,18 +257,18 @@ behaviour as today, deployed nowhere yet.
 
 ### Tasks (all sequential — single coder, default model)
 
-| # | Task | LOC | Files |
-|---|------|-----|-------|
-| 1.1 | Bump `astro` to `^4.10.3`, bump `@devpad/api` to `^2.1.11` (corpus Result types), add `@astrojs/cloudflare@^12.2.1`, drop `@astrojs/node`, drop `@resvg/resvg-js` (re-added in Phase 3 as `workers-og`). `@f0rbit/corpus` becomes available transitively via devpad's re-export — no separate dep. | ~10 | `package.json` |
-| 1.2 | Rewrite `astro.config.mjs`: switch `adapter` to `cloudflare`, keep `output: 'server'`, drop the top-level-await sitemap call (replace with a build-time fetch helper that does NOT touch cache state — see 1.3) | ~30 | `astro.config.mjs` |
-| 1.3 | Add `src/lib/build-data.ts` that calls DevPad/DevTo directly via `fetch()` for build-time sitemap generation. No cache. | ~40 | new |
-| 1.4 | Define `astro:env/server` schema in `astro.config.mjs` for `DEVPAD_API_KEY`, `DEVTO_KEY`, `POSTS_URL`, `DEVPAD_URL` (all `secret`, `optional: false` except `DEVPAD_URL` which has a default) | ~20 | `astro.config.mjs` |
-| 1.5 | Rewrite `src/client.ts` to import `DEVPAD_API_KEY`, `DEVPAD_URL` from `astro:env/server`. **BREAKING**: `VITE_*` env names removed. | ~10 | `src/client.ts` |
-| 1.6 | Rewrite `src/utils.ts` env block (`secrets` object on lines 5-20) to import `DEVTO_KEY`, `POSTS_URL` from `astro:env/server`. Delete the missing-secret logging block. | ~15 | `src/utils.ts` |
-| 1.7 | Add `wrangler.jsonc` with `name`, `main` (Astro adapter writes to `./dist/_worker.js/index.js`), `compatibility_date`, `compatibility_flags: ["nodejs_compat"]`, `assets` block pointing at `./dist`. No bindings yet (cache uses `caches.default` which is implicit). Add `observability.enabled = true`. | ~30 | new `wrangler.jsonc` |
-| 1.8 | Add `.dev.vars` template (gitignored) and a committed `.dev.vars.example` documenting required local secrets | ~10 | new |
-| 1.9 | Add `bun run typecheck` and `bun run dev:cf` scripts (`wrangler dev`); run `wrangler types` in postinstall to keep `worker-configuration.d.ts` fresh; add `worker-configuration.d.ts` to `.gitignore` | ~15 | `package.json`, `.gitignore` |
-| 1.10 | Update `tsconfig.json` to include `worker-configuration.d.ts` types | ~5 | `tsconfig.json` |
+| #    | Task                                                                                                                                                                                                                                                                                                                  | LOC | Files                          |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------ |
+| 1.1  | Bump `astro` to `^4.10.3`, bump `@devpad/api` to `^2.1.11` (corpus Result types), add `@astrojs/cloudflare@^12.2.1`, drop `@astrojs/node`, drop `@resvg/resvg-js` (re-added in Phase 3 as `workers-og`). `@f0rbit/corpus` becomes available transitively via devpad's re-export — no separate dep.                    | ~10 | `package.json`                 |
+| 1.2  | Rewrite `astro.config.mjs`: switch `adapter` to `cloudflare`, keep `output: 'server'`, drop the top-level-await sitemap call (replace with a build-time fetch helper that does NOT touch cache state — see 1.3)                                                                                                       | ~30 | `astro.config.mjs`             |
+| 1.3  | Add `src/lib/build-data.ts` that calls DevPad/DevTo directly via `fetch()` for build-time sitemap generation. No cache.                                                                                                                                                                                               | ~40 | new                            |
+| 1.4  | Define `astro:env/server` schema in `astro.config.mjs` for `DEVPAD_API_KEY`, `DEVTO_KEY`, `POSTS_URL`, `DEVPAD_URL` (all `secret`, `optional: false` except `DEVPAD_URL` which has a default)                                                                                                                         | ~20 | `astro.config.mjs`             |
+| 1.5  | Rewrite `src/client.ts` to import `DEVPAD_API_KEY`, `DEVPAD_URL` from `astro:env/server`. **BREAKING**: `VITE_*` env names removed.                                                                                                                                                                                   | ~10 | `src/client.ts`                |
+| 1.6  | Rewrite `src/utils.ts` env block (`secrets` object on lines 5-20) to import `DEVTO_KEY`, `POSTS_URL` from `astro:env/server`. Delete the missing-secret logging block.                                                                                                                                                | ~15 | `src/utils.ts`                 |
+| 1.7  | Add `wrangler.jsonc` with `name`, `main` (Astro adapter writes to `./dist/_worker.js/index.js`), `compatibility_date`, `compatibility_flags: ["nodejs_compat"]`, `assets` block pointing at `./dist`. No bindings yet (cache uses `caches.default` which is implicit). Add `observability.enabled = true`.            | ~30 | new `wrangler.jsonc`           |
+| 1.8  | Add `.dev.vars` template (gitignored) and a committed `.dev.vars.example` documenting required local secrets                                                                                                                                                                                                          | ~10 | new                            |
+| 1.9  | Add `bun run typecheck` and `bun run dev:cf` scripts (`wrangler dev`); run `wrangler types` in postinstall to keep `worker-configuration.d.ts` fresh; add `worker-configuration.d.ts` to `.gitignore`                                                                                                                 | ~15 | `package.json`, `.gitignore`   |
+| 1.10 | Update `tsconfig.json` to include `worker-configuration.d.ts` types                                                                                                                                                                                                                                                   | ~5  | `tsconfig.json`                |
 | 1.11 | Smoke-verify: `bun run build && bunx wrangler dev` and curl `/`, `/projects`, `/blog`, `/og/default.png`. **Note**: OG endpoints will fail at runtime in this phase because resvg-js was removed — that's expected and gets fixed in Phase 3. Skip-or-temporarily-stub the OG endpoints so the rest of the app boots. | ~20 | OG endpoints (temporary stubs) |
 
 **Parallelisation**: none. Foundation phase, single coder, default model.
@@ -291,17 +299,17 @@ proper test suite.
 
 ### Tasks
 
-| # | Task | LOC | Parallel? | Files |
-|---|------|-----|-----------|-------|
-| 2.1 | Create `src/providers/` with three interfaces + production impls + in-memory impls. Production `HttpDevpadProvider` wraps `@devpad/api` (today's `src/client.ts` logic). `HttpDevtoProvider` wraps today's `fetchDevToAPI`. `HttpPostsFeedProvider` wraps today's POSTS_URL fetch. | ~180 | yes (3 sub-tasks, one per provider) | new |
-| 2.2 | Create `src/lib/cache.ts`: `cachedFetch<T>(opts: { cache: Cache, ctx: { waitUntil(p): void }, key: string, ttlMs: number, fetcher: () => Promise<T> })` returning fresh / stale-then-refresh / fetch-now per the locked-in semantics. Stores `JSON.stringify(value)` in a `Response` with `Cache-Control: max-age=2*ttl` and an `X-Cached-At` header. On read, if age > ttl: schedule background refresh via `waitUntil`, return stale value immediately. | ~120 | no (depends on 2.1 only for the `Result`-like return shape if we wrap it) | new |
-| 2.3 | Rewrite `src/utils.ts`: delete module-level `caches`/`StaleCache`/`update_cache`/`get_data`/`cache_status`. Replace `getProjects`, `getBlogPosts`, `fetchTimeline`, `getProject`, `getBlogPost`, `isProjectCacheInvalid` with versions that take `({ providers, cache, ctx })` or read from a per-request context. **Keep the public function signatures stable for callers that don't pass context** by reading from `Astro.locals` (Astro adapter exposes `runtime.ctx` and `runtime.caches` on locals). Document the locals contract. | ~150 | no (depends on 2.1 + 2.2) | `src/utils.ts` |
-| 2.4 | Add an Astro middleware (`src/middleware.ts`) that populates `Astro.locals.runtime` with `{ providers, cache, ctx }` per request. The cloudflare adapter already exposes `runtime.ctx` and `caches.default` — middleware just constructs production providers once and stashes them. | ~50 | no (depends on 2.3) | new |
-| 2.5 | Update component/page call sites to use the new signatures. Most will be no-op if 2.3 keeps `getProjects()` callable with no args by reading from `Astro.locals` — but the `astro.config.mjs` build-time sitemap call already moved to `src/lib/build-data.ts` in 1.3, so no module-load-time issue remains. | ~30 | no | call sites listed above |
-| 2.6 | Add `__tests__/helpers.ts` with `makeFakeCache()` (Map-backed Cache), `makeFakeCtx()` ({ waitUntil(p) { p.catch(noop) } }), and `makeFakeProviders()` factory | ~80 | yes | new |
-| 2.7 | Write `__tests__/integration/cache.test.ts`: fresh hit, stale hit triggers background refresh, empty miss waits for fetcher, fetcher error returns last-good-stale, ctx.waitUntil is actually called on stale, ttl boundary | ~150 | yes (depends on 2.2 + 2.6) | new |
-| 2.8 | Write `__tests__/integration/data-loading.test.ts`: `getProjects` filters PUBLIC, `getBlogPost` for DEVTO vs DEV groups, `fetchTimeline` returns array, error path returns empty array. Uses fake providers + fake cache. | ~150 | yes (parallel with 2.7) | new |
-| 2.9 | Add `bun test` script to `package.json`. Add `bun run typecheck && bun test` to a single `bun run check` script that CI will call. | ~5 | yes | `package.json` |
+| #   | Task                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | LOC  | Parallel?                                                                 | Files                   |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------- | ----------------------- |
+| 2.1 | Create `src/providers/` with three interfaces + production impls + in-memory impls. Production `HttpDevpadProvider` wraps `@devpad/api` (today's `src/client.ts` logic). `HttpDevtoProvider` wraps today's `fetchDevToAPI`. `HttpPostsFeedProvider` wraps today's POSTS_URL fetch.                                                                                                                                                                                                                                                       | ~180 | yes (3 sub-tasks, one per provider)                                       | new                     |
+| 2.2 | Create `src/lib/cache.ts`: `cachedFetch<T>(opts: { cache: Cache, ctx: { waitUntil(p): void }, key: string, ttlMs: number, fetcher: () => Promise<T> })` returning fresh / stale-then-refresh / fetch-now per the locked-in semantics. Stores `JSON.stringify(value)` in a `Response` with `Cache-Control: max-age=2*ttl` and an `X-Cached-At` header. On read, if age > ttl: schedule background refresh via `waitUntil`, return stale value immediately.                                                                                | ~120 | no (depends on 2.1 only for the `Result`-like return shape if we wrap it) | new                     |
+| 2.3 | Rewrite `src/utils.ts`: delete module-level `caches`/`StaleCache`/`update_cache`/`get_data`/`cache_status`. Replace `getProjects`, `getBlogPosts`, `fetchTimeline`, `getProject`, `getBlogPost`, `isProjectCacheInvalid` with versions that take `({ providers, cache, ctx })` or read from a per-request context. **Keep the public function signatures stable for callers that don't pass context** by reading from `Astro.locals` (Astro adapter exposes `runtime.ctx` and `runtime.caches` on locals). Document the locals contract. | ~150 | no (depends on 2.1 + 2.2)                                                 | `src/utils.ts`          |
+| 2.4 | Add an Astro middleware (`src/middleware.ts`) that populates `Astro.locals.runtime` with `{ providers, cache, ctx }` per request. The cloudflare adapter already exposes `runtime.ctx` and `caches.default` — middleware just constructs production providers once and stashes them.                                                                                                                                                                                                                                                     | ~50  | no (depends on 2.3)                                                       | new                     |
+| 2.5 | Update component/page call sites to use the new signatures. Most will be no-op if 2.3 keeps `getProjects()` callable with no args by reading from `Astro.locals` — but the `astro.config.mjs` build-time sitemap call already moved to `src/lib/build-data.ts` in 1.3, so no module-load-time issue remains.                                                                                                                                                                                                                             | ~30  | no                                                                        | call sites listed above |
+| 2.6 | Add `__tests__/helpers.ts` with `makeFakeCache()` (Map-backed Cache), `makeFakeCtx()` ({ waitUntil(p) { p.catch(noop) } }), and `makeFakeProviders()` factory                                                                                                                                                                                                                                                                                                                                                                            | ~80  | yes                                                                       | new                     |
+| 2.7 | Write `__tests__/integration/cache.test.ts`: fresh hit, stale hit triggers background refresh, empty miss waits for fetcher, fetcher error returns last-good-stale, ctx.waitUntil is actually called on stale, ttl boundary                                                                                                                                                                                                                                                                                                              | ~150 | yes (depends on 2.2 + 2.6)                                                | new                     |
+| 2.8 | Write `__tests__/integration/data-loading.test.ts`: `getProjects` filters PUBLIC, `getBlogPost` for DEVTO vs DEV groups, `fetchTimeline` returns array, error path returns empty array. Uses fake providers + fake cache.                                                                                                                                                                                                                                                                                                                | ~150 | yes (parallel with 2.7)                                                   | new                     |
+| 2.9 | Add `bun test` script to `package.json`. Add `bun run typecheck && bun test` to a single `bun run check` script that CI will call.                                                                                                                                                                                                                                                                                                                                                                                                       | ~5   | yes                                                                       | `package.json`          |
 
 **Parallelisation**: 2.1 splits into 3 parallel coder-fast worktrees (one per
 provider). 2.2 → 2.3 → 2.4 → 2.5 is sequential. 2.6 + 2.7 + 2.8 can run
@@ -333,15 +341,15 @@ test them.
 
 ### Tasks
 
-| # | Task | LOC | Parallel? | Files |
-|---|------|-----|-----------|-------|
-| 3.1 | Add `workers-og` to deps. Drop `satori` and `@resvg/resvg-js` direct deps if `workers-og` re-exports them; otherwise keep `satori` (workers-og uses it internally). | ~5 | no | `package.json` |
-| 3.2 | Rewrite `src/lib/og-image.ts`: replace `satori + Resvg` with `ImageResponse` from `workers-og` (or `og`/`og.svg` depending on the API the package ships). Keep `OG` colour tokens, `statusColor`, `loadFonts`, `ogResponse` unchanged in shape. Adjust `renderOgImage` to return either a `Response` directly or a `Buffer` depending on what's idiomatic for `workers-og`. | ~80 | no | `src/lib/og-image.ts` |
-| 3.3 | Update `src/pages/og/default.png.ts` to use the new `og-image.ts` API | ~10 | yes | file |
-| 3.4 | Update `src/pages/og/project/[project_id].png.ts` likewise | ~10 | yes | file |
-| 3.5 | Update `src/pages/og/blog/[group]/[slug].png.ts` likewise | ~10 | yes | file |
-| 3.6 | Add `__tests__/integration/og-images.test.ts`: import the GET handlers, call them with mock `APIContext`, assert response is 200 + content-type `image/png` + body length > 1000 bytes. For the satori-text assertion, expose a thin `renderToSvg()` from `og-image.ts` that returns the intermediate SVG so tests can `expect(svg).toContain('forbit')`, etc. | ~120 | yes | new |
-| 3.7 | Manual `wrangler dev` smoke: curl all 3 OG endpoints, save PNGs, eyeball them. Document any rendering deltas vs. resvg-js. | ~0 | no | (manual) |
+| #   | Task                                                                                                                                                                                                                                                                                                                                                                        | LOC  | Parallel? | Files                 |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | --------- | --------------------- |
+| 3.1 | Add `workers-og` to deps. Drop `satori` and `@resvg/resvg-js` direct deps if `workers-og` re-exports them; otherwise keep `satori` (workers-og uses it internally).                                                                                                                                                                                                         | ~5   | no        | `package.json`        |
+| 3.2 | Rewrite `src/lib/og-image.ts`: replace `satori + Resvg` with `ImageResponse` from `workers-og` (or `og`/`og.svg` depending on the API the package ships). Keep `OG` colour tokens, `statusColor`, `loadFonts`, `ogResponse` unchanged in shape. Adjust `renderOgImage` to return either a `Response` directly or a `Buffer` depending on what's idiomatic for `workers-og`. | ~80  | no        | `src/lib/og-image.ts` |
+| 3.3 | Update `src/pages/og/default.png.ts` to use the new `og-image.ts` API                                                                                                                                                                                                                                                                                                       | ~10  | yes       | file                  |
+| 3.4 | Update `src/pages/og/project/[project_id].png.ts` likewise                                                                                                                                                                                                                                                                                                                  | ~10  | yes       | file                  |
+| 3.5 | Update `src/pages/og/blog/[group]/[slug].png.ts` likewise                                                                                                                                                                                                                                                                                                                   | ~10  | yes       | file                  |
+| 3.6 | Add `__tests__/integration/og-images.test.ts`: import the GET handlers, call them with mock `APIContext`, assert response is 200 + content-type `image/png` + body length > 1000 bytes. For the satori-text assertion, expose a thin `renderToSvg()` from `og-image.ts` that returns the intermediate SVG so tests can `expect(svg).toContain('forbit')`, etc.              | ~120 | yes       | new                   |
+| 3.7 | Manual `wrangler dev` smoke: curl all 3 OG endpoints, save PNGs, eyeball them. Document any rendering deltas vs. resvg-js.                                                                                                                                                                                                                                                  | ~0   | no        | (manual)              |
 
 **Parallelisation**: 3.1 → 3.2 sequential. Then 3.3 + 3.4 + 3.5 + 3.6 in
 parallel (4 worktrees).
@@ -374,14 +382,14 @@ Auto-deploy from main, preview URLs on PRs, rebuild on DevPad publish.
 
 #### 4a. Repo-side automation (coder agent)
 
-| # | Task | LOC | Parallel? | Files |
-|---|------|-----|-----------|-------|
-| 4.1 | Add `scripts/smoke.ts` — Bun script taking `BASE_URL` env var, hitting the 6 routes listed in Testing Strategy, asserting status + content-type. Exit 1 on any failure. | ~80 | yes | new |
-| 4.2 | Document Workers Builds config in `AGENTS.md` and a new `docs/deploy.md`: build command, deploy command (prod vs non-prod), required secrets, smoke command. Include the exact dashboard form-fill values. | ~80 | yes | new |
-| 4.3 | Replace `.github/workflows/deploy.yml` with a no-op or delete it. The Workers Builds dashboard handles deploys. **Keep** a separate GitHub Action only if we want PR comments with preview URLs (Workers Builds posts a deployment status, but a comment is nicer); skip if low value. | ~0 | yes | delete file |
-| 4.4 | Document the DevPad → CF Deploy Hook URL setup. Add a `docs/content-publishing.md` with the exact hook URL placeholder, how to register it on DevPad's blog publish webhook, and the cache-flush story (new isolate = empty Cache API entries). | ~40 | yes | new |
-| 4.5 | Add a `bun run smoke` script that points at a base URL passed via env var | ~5 | yes | `package.json` |
-| 4.6 | Rollback runbook in `docs/rollback.md`: (a) flip DNS back to VPS A record, (b) `wrangler rollback` to previous version, (c) when each is appropriate. | ~50 | yes | new |
+| #   | Task                                                                                                                                                                                                                                                                                   | LOC | Parallel? | Files          |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --------- | -------------- |
+| 4.1 | Add `scripts/smoke.ts` — Bun script taking `BASE_URL` env var, hitting the 6 routes listed in Testing Strategy, asserting status + content-type. Exit 1 on any failure.                                                                                                                | ~80 | yes       | new            |
+| 4.2 | Document Workers Builds config in `AGENTS.md` and a new `docs/deploy.md`: build command, deploy command (prod vs non-prod), required secrets, smoke command. Include the exact dashboard form-fill values.                                                                             | ~80 | yes       | new            |
+| 4.3 | Replace `.github/workflows/deploy.yml` with a no-op or delete it. The Workers Builds dashboard handles deploys. **Keep** a separate GitHub Action only if we want PR comments with preview URLs (Workers Builds posts a deployment status, but a comment is nicer); skip if low value. | ~0  | yes       | delete file    |
+| 4.4 | Document the DevPad → CF Deploy Hook URL setup. Add a `docs/content-publishing.md` with the exact hook URL placeholder, how to register it on DevPad's blog publish webhook, and the cache-flush story (new isolate = empty Cache API entries).                                        | ~40 | yes       | new            |
+| 4.5 | Add a `bun run smoke` script that points at a base URL passed via env var                                                                                                                                                                                                              | ~5  | yes       | `package.json` |
+| 4.6 | Rollback runbook in `docs/rollback.md`: (a) flip DNS back to VPS A record, (b) `wrangler rollback` to previous version, (c) when each is appropriate.                                                                                                                                  | ~50 | yes       | new            |
 
 #### 4b. User-action-required steps (documented, NOT automated)
 
@@ -437,14 +445,14 @@ single-step (flip DNS back). VPS keeps running for 7 days as the safety net.
 
 ## Cross-cutting risks and mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| `workers-og` rendering differs visually | Medium | Low (it's an OG image) | Manual eyeball in Phase 3 task 3.7 |
-| Cache API quirks (e.g. cache miss in dev) | Medium | Low | Tests use fake cache; smoke tests in Phase 4 catch prod regression |
-| `astro:env/server` types not generated | Low | Medium | `wrangler types` in postinstall + tsconfig include |
-| Workers Builds env var for deployed URL undocumented | Low | Low | Phase 4 task 4.2 verifies the exact var name at deploy time |
-| Build-time sitemap fetch fails (no network in CI) | Medium | Medium | `src/lib/build-data.ts` returns empty arrays on fetch error; sitemap stays buildable |
-| New isolate doesn't actually flush cache (Cache API persists across isolates) | Medium | Medium | This is real — Cache API persists. Re-deploy doesn't auto-flush. **Mitigation**: bake the deploy SHA into cache keys (e.g. `https://cache.local/${SHA}/projects`) so a new deploy uses fresh keys. Old entries age out naturally. |
+| Risk                                                                          | Likelihood | Impact                 | Mitigation                                                                                                                                                                                                                        |
+| ----------------------------------------------------------------------------- | ---------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `workers-og` rendering differs visually                                       | Medium     | Low (it's an OG image) | Manual eyeball in Phase 3 task 3.7                                                                                                                                                                                                |
+| Cache API quirks (e.g. cache miss in dev)                                     | Medium     | Low                    | Tests use fake cache; smoke tests in Phase 4 catch prod regression                                                                                                                                                                |
+| `astro:env/server` types not generated                                        | Low        | Medium                 | `wrangler types` in postinstall + tsconfig include                                                                                                                                                                                |
+| Workers Builds env var for deployed URL undocumented                          | Low        | Low                    | Phase 4 task 4.2 verifies the exact var name at deploy time                                                                                                                                                                       |
+| Build-time sitemap fetch fails (no network in CI)                             | Medium     | Medium                 | `src/lib/build-data.ts` returns empty arrays on fetch error; sitemap stays buildable                                                                                                                                              |
+| New isolate doesn't actually flush cache (Cache API persists across isolates) | Medium     | Medium                 | This is real — Cache API persists. Re-deploy doesn't auto-flush. **Mitigation**: bake the deploy SHA into cache keys (e.g. `https://cache.local/${SHA}/projects`) so a new deploy uses fresh keys. Old entries age out naturally. |
 
 The last one is **important** and may modify Phase 2 — see "Open question"
 below.
@@ -454,7 +462,7 @@ below.
 ## OPEN QUESTIONS
 
 1. **Cache invalidation on deploy**: the locked-in plan says "fresh isolate
-   flushes cache". That's true for *module-level memory* but **not** for
+   flushes cache". That's true for _module-level memory_ but **not** for
    Cloudflare Cache API — Cache API persists across isolates and across
    deploys. The DevPad → Deploy Hook design assumes a deploy purges the cache;
    it won't. Two options:
@@ -463,8 +471,8 @@ below.
      needed. **Recommended.**
    - **(B) Programmatic purge** via Cloudflare API on each deploy (post-deploy
      step). Adds an API token and a script. Heavier.
-   I've taken Option A as the default in Phase 2 — confirm before Phase 2
-   kicks off.
+     I've taken Option A as the default in Phase 2 — confirm before Phase 2
+     kicks off.
 
 2. **devpad MCP not currently exposed** in this session — `devpad_*` tools
    were not in the available-tools list when this plan was written. Tasks
@@ -487,7 +495,7 @@ Once Phase 4 ships, append to project `AGENTS.md`:
 - Hosting: Cloudflare Workers via Workers Builds (auto-deploy on push to
   `main`, preview URLs on PRs)
 - Local dev: `bun run dev` (Vite) for iteration; `bun run dev:cf` (`wrangler
-  dev`) for workerd parity check before push
+dev`) for workerd parity check before push
 - Env vars: `astro:env/server` typed schema; secrets in CF dashboard, local
   values in `.dev.vars`
 - Cache: `caches.default` with SWR via `ctx.waitUntil`; cache keys include
@@ -505,6 +513,7 @@ Once Phase 4 ships, append to project `AGENTS.md`:
 Each task includes title, phase, priority, dependencies. Project: `forbit-astro`.
 
 ### Phase 1 — Foundation
+
 - 1.1 Bump Astro 4.x + swap adapter (HIGH, no deps)
 - 1.2 Rewrite astro.config.mjs adapter block (HIGH, deps: 1.1)
 - 1.3 Create build-data.ts for sitemap (MED, deps: 1.1)
@@ -518,6 +527,7 @@ Each task includes title, phase, priority, dependencies. Project: `forbit-astro`
 - 1.11 Phase 1 smoke verify (HIGH, deps: 1.1-1.10)
 
 ### Phase 2 — Cache + Providers + Tests
+
 - 2.1a HttpDevpadProvider + InMemory (HIGH, parallel, deps: Phase 1)
 - 2.1b HttpDevtoProvider + InMemory (HIGH, parallel, deps: Phase 1)
 - 2.1c HttpPostsFeedProvider + InMemory (HIGH, parallel, deps: Phase 1)
@@ -531,6 +541,7 @@ Each task includes title, phase, priority, dependencies. Project: `forbit-astro`
 - 2.9 Add bun test scripts (LOW, deps: 2.7+2.8)
 
 ### Phase 3 — OG Images
+
 - 3.1 Swap deps to workers-og (HIGH, deps: Phase 2)
 - 3.2 Rewrite src/lib/og-image.ts (HIGH, deps: 3.1)
 - 3.3 Migrate default.png.ts (MED, parallel, deps: 3.2)
@@ -540,6 +551,7 @@ Each task includes title, phase, priority, dependencies. Project: `forbit-astro`
 - 3.7 Manual eyeball smoke (LOW, deps: 3.3-3.5)
 
 ### Phase 4 — CI/CD + Cutover
+
 - 4.1 scripts/smoke.ts (MED, parallel, deps: Phase 3)
 - 4.2 docs/deploy.md (MED, parallel)
 - 4.3 Delete old GitHub Actions (LOW, parallel)

@@ -1,8 +1,8 @@
-import type { APIRoute } from 'astro'
-import { defaultLayout, ogResponse } from '../../lib/og-image'
+import type { APIRoute } from "astro";
+import { default_layout, og_response } from "../../lib/og-image";
 
-export const prerender = false
+export const prerender = false;
 
 export const GET: APIRoute = async () => {
-    return await ogResponse(defaultLayout())
-}
+	return await og_response(default_layout());
+};

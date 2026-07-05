@@ -1,6 +1,6 @@
 ---
 import { Collapsible } from '@f0rbit/ui'
-import { fetchTimeline, getTimeline, type AppLocals } from '../../utils'
+import { fetch_timeline, get_timeline, type AppLocals } from '../../utils'
 import moment from 'moment'
 import CommitList from './CommitList.astro'
 interface Props {
@@ -11,10 +11,11 @@ interface Props {
 
 const { limit, group_commits, project_repo = null } = Astro.props
 
-const activity = await fetchTimeline(Astro.locals as AppLocals)
+const activity = await fetch_timeline(Astro.locals as AppLocals)
 
-let events = getTimeline(activity, group_commits)
+let events = get_timeline(activity, group_commits)
 
+// oxlint-disable-next-line typescript/no-explicit-any -- events come from get_timeline(), untyped pending its own @todo in utils.ts
 if (project_repo) events = events.filter((event: any) => event.permalink && event.permalink.includes(project_repo))
 
 // limit the response

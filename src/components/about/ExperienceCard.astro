@@ -1,7 +1,7 @@
 ---
 import moment from 'moment'
 import type { Experience } from '../../assets/experience'
-import { formatDuration } from '../../utils'
+import { format_duration } from '../../utils'
 import SkillEvents from '../about/SkillEvents.astro'
 import AwardTypeIcon from '../projects/AwardTypeIcon.astro'
 import { Badge, Clamp } from "@f0rbit/ui"
@@ -28,7 +28,7 @@ const { title, awards } = experience
         <div class="experience-content stack stack-sm">
             <label class="text-sm experience-label">
                 <span>{date_string}</span>
-                {duration && <span class="text-subtle"> ({formatDuration(duration)})</span>}
+                {duration && <span class="text-subtle"> ({format_duration(duration)})</span>}
             </label>
             <div class="experience-title">
                 <h3 id={experience.id}>{title}</h3>
@@ -63,7 +63,7 @@ const { title, awards } = experience
         <div class="stack stack-sm">
             <label class="text-sm experience-label">
                 <span>{date_string}</span>
-                {duration && <span class="text-subtle"> ({formatDuration(duration)})</span>}
+                {duration && <span class="text-subtle"> ({format_duration(duration)})</span>}
             </label>
             <div class={`experience-title ${type == 'left' ? 'experience-title--reverse' : ''}`}>
                 <h3 id={experience.id}>{title}</h3>

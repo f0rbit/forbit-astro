@@ -1,162 +1,150 @@
-import { describe, it, expect, beforeEach } from 'bun:test'
+import { describe, it, expect, beforeEach } from "bun:test";
 import {
-    OG,
-    statusColor,
-    defaultLayout,
-    projectLayout,
-    projectFallbackLayout,
-    blogLayout,
-    blogFallbackLayout,
-    extractText,
-} from '../../src/lib/og-image'
-import type { AppLocals } from '../../src/utils'
-import { makeFakeCache, makeFakeCtx, makeFakeProviders } from '../helpers'
-import type { Project, Post } from '../../src/types'
-import { PROJECT_VISIBILITY, BLOG_GROUP } from '../../src/types'
-import { GET as defaultGET } from '../../src/pages/og/default.png'
-import { GET as projectGET } from '../../src/pages/og/project/[project_id].png'
-import { GET as blogGET } from '../../src/pages/og/blog/[group]/[slug].png'
+	OG,
+	status_color,
+	default_layout,
+	project_layout,
+	project_fallback_layout,
+	blog_layout,
+	blog_fallback_layout,
+	extract_text,
+} from "../../src/lib/og-image";
+import type { AppLocals } from "../../src/utils";
+import { make_fake_cache, make_fake_ctx, make_fake_providers } from "../helpers";
+import type { Project, Post } from "../../src/types";
+import { PROJECT_VISIBILITY, BLOG_GROUP } from "../../src/types";
+import { GET as default_get } from "../../src/pages/og/default.png";
 
-function makeTestProject(overrides?: Partial<Project>): Project {
-    return {
-        project_id: 'gm-server',
-        name: 'GM Server',
-        description: 'A multiplayer server framework for GameMaker.',
-        visibility: PROJECT_VISIBILITY.PUBLIC,
-        status: 'LIVE',
-        skills: [],
-        ...overrides,
-    } as Project
+/* eslint-disable @typescript-eslint/consistent-type-assertions -- fixture is intentionally a partial/loose shape (only the fields these tests read), not the full real `Project` type from @devpad/api */
+function make_test_project(overrides?: Partial<Project>): Project {
+	return {
+		project_id: "gm-server",
+		name: "GM Server",
+		description: "A multiplayer server framework for GameMaker.",
+		visibility: PROJECT_VISIBILITY.PUBLIC,
+		status: "LIVE",
+		skills: [],
+		...overrides,
+	} as Project;
+}
+/* eslint-enable @typescript-eslint/consistent-type-assertions */
+
+function make_test_post(overrides?: Partial<Post>): Post {
+	const post: Post = {
+		slug: "hello-world",
+		group: BLOG_GROUP.DEV,
+		title: "Hello World",
+		description: "A first post.",
+		published: true,
+		published_at: new Date("2024-01-01").toISOString(),
+		tag_list: ["typescript", "astro"],
+		content: "",
+		...overrides,
+	};
+	return post;
 }
 
-function makeTestPost(overrides?: Partial<Post>): Post {
-    return {
-        slug: 'hello-world',
-        group: BLOG_GROUP.DEV,
-        title: 'Hello World',
-        description: 'A first post.',
-        published: true,
-        published_at: new Date('2024-01-01').toISOString(),
-        tag_list: ['typescript', 'astro'],
-        content: '',
-        ...overrides,
-    } as Post
-}
+describe("og-image layout helpers", () => {
+	describe("status_color", () => {
+		it("maps RELEASED/LIVE/FINISHED to success", () => {
+			expect(status_color("RELEASED")).toBe(OG.success);
+			expect(status_color("LIVE")).toBe(OG.success);
+			expect(status_color("FINISHED")).toBe(OG.success);
+		});
 
-function makeContext(params: Record<string, string>) {
-    const providers = makeFakeProviders()
-    const cache = makeFakeCache()
-    const ctx = makeFakeCtx()
-    const locals: AppLocals = { providers, cache, ctx } as AppLocals
-    return {
-        params,
-        locals,
-        providers,
-        astroContext: { params, locals } as Parameters<typeof projectGET>[0],
-    }
-}
+		it("maps DEVELOPMENT to info, PAUSED to warning, STOPPED/ABANDONED to error", () => {
+			expect(status_color("DEVELOPMENT")).toBe(OG.info);
+			expect(status_color("PAUSED")).toBe(OG.warning);
+			expect(status_color("STOPPED")).toBe(OG.error);
+			expect(status_color("ABANDONED")).toBe(OG.error);
+		});
 
-describe('og-image layout helpers', () => {
-    describe('statusColor', () => {
-        it('maps RELEASED/LIVE/FINISHED to success', () => {
-            expect(statusColor('RELEASED')).toBe(OG.success)
-            expect(statusColor('LIVE')).toBe(OG.success)
-            expect(statusColor('FINISHED')).toBe(OG.success)
-        })
+		it("falls back to fgSubtle for unknown status", () => {
+			expect(status_color("UNKNOWN")).toBe(OG.fgSubtle);
+		});
+	});
 
-        it('maps DEVELOPMENT to info, PAUSED to warning, STOPPED/ABANDONED to error', () => {
-            expect(statusColor('DEVELOPMENT')).toBe(OG.info)
-            expect(statusColor('PAUSED')).toBe(OG.warning)
-            expect(statusColor('STOPPED')).toBe(OG.error)
-            expect(statusColor('ABANDONED')).toBe(OG.error)
-        })
+	describe("default_layout", () => {
+		it("contains the brand text and tagline", () => {
+			const text = extract_text(default_layout());
+			expect(text).toContain("forbit");
+			expect(text).toContain("Software Developer");
+			expect(text).toContain("forbit.dev");
+		});
+	});
 
-        it('falls back to fgSubtle for unknown status', () => {
-            expect(statusColor('UNKNOWN')).toBe(OG.fgSubtle)
-        })
-    })
+	describe("project_layout", () => {
+		it("contains the project name, description, and status", () => {
+			const project = make_test_project({ name: "My Cool Project", description: "A neat thing.", status: "LIVE" });
+			const text = extract_text(project_layout(project));
+			expect(text).toContain("My Cool Project");
+			expect(text).toContain("A neat thing.");
+			expect(text).toContain("LIVE");
+			expect(text).toContain("forbit.dev");
+		});
 
-    describe('defaultLayout', () => {
-        it('contains the brand text and tagline', () => {
-            const text = extractText(defaultLayout())
-            expect(text).toContain('forbit')
-            expect(text).toContain('Software Developer')
-            expect(text).toContain('forbit.dev')
-        })
-    })
+		it("truncates long descriptions to 120 chars", () => {
+			const long = "x".repeat(500);
+			const project = make_test_project({ description: long });
+			const text = extract_text(project_layout(project));
+			// truncated text ends with ellipsis, far shorter than 500
+			expect(text.length).toBeLessThan(500);
+			expect(text).toContain("...");
+		});
 
-    describe('projectLayout', () => {
-        it('contains the project name, description, and status', () => {
-            const project = makeTestProject({ name: 'My Cool Project', description: 'A neat thing.', status: 'LIVE' })
-            const text = extractText(projectLayout(project))
-            expect(text).toContain('My Cool Project')
-            expect(text).toContain('A neat thing.')
-            expect(text).toContain('LIVE')
-            expect(text).toContain('forbit.dev')
-        })
+		it("omits description segment when none provided", () => {
+			const project = make_test_project({ description: null });
+			const text = extract_text(project_layout(project));
+			expect(text).toContain(project.name);
+			// No '...' should appear since no description to truncate
+			expect(text).not.toContain("...");
+		});
+	});
 
-        it('truncates long descriptions to 120 chars', () => {
-            const long = 'x'.repeat(500)
-            const project = makeTestProject({ description: long })
-            const text = extractText(projectLayout(project))
-            // truncated text ends with ellipsis, far shorter than 500
-            expect(text.length).toBeLessThan(500)
-            expect(text).toContain('...')
-        })
+	describe("project_fallback_layout", () => {
+		it("shows Project Not Found", () => {
+			expect(extract_text(project_fallback_layout())).toContain("Project Not Found");
+		});
+	});
 
-        it('omits description segment when none provided', () => {
-            const project = makeTestProject({ description: null })
-            const text = extractText(projectLayout(project))
-            expect(text).toContain(project.name)
-            // No '...' should appear since no description to truncate
-            expect(text).not.toContain('...')
-        })
-    })
+	describe("blog_layout", () => {
+		it("contains the post title, description, and tags", () => {
+			const post = make_test_post({
+				title: "Functional Astro",
+				description: "Why composition wins.",
+				tag_list: ["astro", "fp", "ts"],
+			});
+			const text = extract_text(blog_layout(post));
+			expect(text).toContain("Functional Astro");
+			expect(text).toContain("Why composition wins.");
+			expect(text).toContain("astro");
+			expect(text).toContain("fp");
+			expect(text).toContain("ts");
+			expect(text).toContain("forbit.dev");
+		});
 
-    describe('projectFallbackLayout', () => {
-        it('shows Project Not Found', () => {
-            expect(extractText(projectFallbackLayout())).toContain('Project Not Found')
-        })
-    })
+		it("truncates long titles to 80 chars", () => {
+			const post = make_test_post({ title: "a".repeat(200), description: "" });
+			const text = extract_text(blog_layout(post));
+			expect(text).toContain("...");
+		});
 
-    describe('blogLayout', () => {
-        it('contains the post title, description, and tags', () => {
-            const post = makeTestPost({
-                title: 'Functional Astro',
-                description: 'Why composition wins.',
-                tag_list: ['astro', 'fp', 'ts'],
-            })
-            const text = extractText(blogLayout(post))
-            expect(text).toContain('Functional Astro')
-            expect(text).toContain('Why composition wins.')
-            expect(text).toContain('astro')
-            expect(text).toContain('fp')
-            expect(text).toContain('ts')
-            expect(text).toContain('forbit.dev')
-        })
+		it("caps tag pills to 5", () => {
+			const post = make_test_post({ tag_list: ["t1", "t2", "t3", "t4", "t5", "t6", "t7"] });
+			const text = extract_text(blog_layout(post));
+			expect(text).toContain("t1");
+			expect(text).toContain("t5");
+			expect(text).not.toContain("t6");
+			expect(text).not.toContain("t7");
+		});
+	});
 
-        it('truncates long titles to 80 chars', () => {
-            const post = makeTestPost({ title: 'a'.repeat(200), description: '' })
-            const text = extractText(blogLayout(post))
-            expect(text).toContain('...')
-        })
-
-        it('caps tag pills to 5', () => {
-            const post = makeTestPost({ tag_list: ['t1', 't2', 't3', 't4', 't5', 't6', 't7'] })
-            const text = extractText(blogLayout(post))
-            expect(text).toContain('t1')
-            expect(text).toContain('t5')
-            expect(text).not.toContain('t6')
-            expect(text).not.toContain('t7')
-        })
-    })
-
-    describe('blogFallbackLayout', () => {
-        it('shows Post not found', () => {
-            expect(extractText(blogFallbackLayout())).toContain('Post not found')
-        })
-    })
-})
+	describe("blog_fallback_layout", () => {
+		it("shows Post not found", () => {
+			expect(extract_text(blog_fallback_layout())).toContain("Post not found");
+		});
+	});
+});
 
 // ---------- endpoint integration ----------
 //
@@ -167,82 +155,82 @@ describe('og-image layout helpers', () => {
 // PNG byte-level verification happens in Phase 4 smoke tests against a
 // real Workers preview URL.
 
-describe('og endpoint handlers (routing only)', () => {
-    let providers: ReturnType<typeof makeFakeProviders>
-    let locals: AppLocals
+describe("og endpoint handlers (routing only)", () => {
+	let providers: ReturnType<typeof make_fake_providers>;
+	let locals: AppLocals;
 
-    beforeEach(() => {
-        providers = makeFakeProviders()
-        const cache = makeFakeCache()
-        const ctx = makeFakeCtx()
-        locals = { providers, cache, ctx } as AppLocals
-    })
+	beforeEach(() => {
+		providers = make_fake_providers();
+		const cache = make_fake_cache();
+		const ctx = make_fake_ctx();
+		locals = { providers, cache, ctx };
+	});
 
-    it('default endpoint exports a GET function', () => {
-        expect(typeof defaultGET).toBe('function')
-    })
+	it("default endpoint exports a GET function", () => {
+		expect(typeof default_get).toBe("function");
+	});
 
-    it('project endpoint resolves an existing project from providers', async () => {
-        const project = makeTestProject({ project_id: 'devpad', name: 'devpad' })
-        providers.devpad.projects = [project]
+	it("project endpoint resolves an existing project from providers", async () => {
+		const project = make_test_project({ project_id: "devpad", name: "devpad" });
+		providers.devpad.projects = [project];
 
-        let resolvedProject: Project | null = null
-        const original = providers.devpad.getProject.bind(providers.devpad)
-        providers.devpad.getProject = async (id: string) => {
-            const result = await original(id)
-            if (result.ok) resolvedProject = result.value
-            return result
-        }
+		let resolved_project: Project | null = null;
+		const original = providers.devpad.getProject.bind(providers.devpad);
+		providers.devpad.getProject = async (id: string) => {
+			const result = await original(id);
+			if (result.ok) resolved_project = result.value;
+			return result;
+		};
 
-        // Seed cache via list (so projectGET takes the cached path)
-        const { getProjects, getProject } = await import('../../src/utils')
-        await getProjects(locals)
-        const found = await getProject(locals, 'devpad')
+		// Seed cache via list (so project_get takes the cached path)
+		const { get_projects, get_project } = await import("../../src/utils");
+		await get_projects(locals);
+		const found = await get_project(locals, "devpad");
 
-        expect(found).toBeDefined()
-        expect(found?.project_id).toBe('devpad')
-        // resolvedProject stays null because cached path skips getProject — confirms cache hit
-        expect(resolvedProject).toBeNull()
-    })
+		expect(found).toBeDefined();
+		expect(found?.project_id).toBe("devpad");
+		// resolved_project stays null because cached path skips get_project — confirms cache hit
+		expect(resolved_project).toBeNull();
+	});
 
-    it('blog endpoint dispatches DEV group to devpad provider', async () => {
-        const post = makeTestPost({ group: BLOG_GROUP.DEV, slug: 'my-post', title: 'My Post' })
-        providers.devpad.posts = [post]
+	it("blog endpoint dispatches DEV group to devpad provider", async () => {
+		const post = make_test_post({ group: BLOG_GROUP.DEV, slug: "my-post", title: "My Post" });
+		providers.devpad.posts = [post];
 
-        const { getBlogPost } = await import('../../src/utils')
-        const found = await getBlogPost(locals, BLOG_GROUP.DEV, 'my-post')
+		const { get_blog_post } = await import("../../src/utils");
+		const found = await get_blog_post(locals, BLOG_GROUP.DEV, "my-post");
 
-        expect(found).toBeDefined()
-        expect(found?.title).toBe('My Post')
-    })
+		expect(found).toBeDefined();
+		expect(found?.title).toBe("My Post");
+	});
 
-    it('blog endpoint dispatches DEVTO group to devto provider', async () => {
-        const post = makeTestPost({ group: BLOG_GROUP.DEVTO, slug: 'my-devto', title: 'Cross-Posted' })
-        providers.devto.articles = [post]
+	it("blog endpoint dispatches DEVTO group to devto provider", async () => {
+		const post = make_test_post({ group: BLOG_GROUP.DEVTO, slug: "my-devto", title: "Cross-Posted" });
+		providers.devto.articles = [post];
 
-        const { getBlogPost } = await import('../../src/utils')
-        const found = await getBlogPost(locals, BLOG_GROUP.DEVTO, 'my-devto')
+		const { get_blog_post } = await import("../../src/utils");
+		const found = await get_blog_post(locals, BLOG_GROUP.DEVTO, "my-devto");
 
-        expect(found).toBeDefined()
-        expect(found?.title).toBe('Cross-Posted')
-    })
+		expect(found).toBeDefined();
+		expect(found?.title).toBe("Cross-Posted");
+	});
 
-    it('project endpoint falls back when project not found', async () => {
-        providers.devpad.projects = []
-        providers.devpad.failures.add('getProject')
+	it("project endpoint falls back when project not found", async () => {
+		providers.devpad.projects = [];
+		providers.devpad.failures.add("getProject");
 
-        const { getProject } = await import('../../src/utils')
-        const found = await getProject(locals, 'nonexistent')
-        expect(found).toBeNull()
-        // fallback path drives projectFallbackLayout
-        expect(extractText(projectFallbackLayout())).toContain('Not Found')
-    })
+		const { get_project } = await import("../../src/utils");
+		const found = await get_project(locals, "nonexistent");
+		expect(found).toBeNull();
+		// fallback path drives project_fallback_layout
+		expect(extract_text(project_fallback_layout())).toContain("Not Found");
+	});
 
-    it('blog endpoint falls back when post not found', async () => {
-        providers.devpad.failures.add('getPost')
-        const { getBlogPost } = await import('../../src/utils')
-        const found = await getBlogPost(locals, BLOG_GROUP.DEV, 'nonexistent')
-        expect(found).toBeNull()
-        expect(extractText(blogFallbackLayout())).toContain('not found')
-    })
-})
+	it("blog endpoint falls back when post not found", async () => {
+		providers.devpad.failures.add("getPost");
+		const { get_blog_post } = await import("../../src/utils");
+		const found = await get_blog_post(locals, BLOG_GROUP.DEV, "nonexistent");
+		expect(found).toBeNull();
+		expect(extract_text(blog_fallback_layout())).toContain("not found");
+	});
+});

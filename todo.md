@@ -1,25 +1,26 @@
 # TODO
+
 - [x] Experiences Timeline
 - [x] Blog Posts
 - [x] Contact Information footer
 - [ ] Recent Activity Timeline
-    - [x] Commit Component Styling
-    - [ ] Tweet Component
-    - [ ] Reddit Post Component
+  - [x] Commit Component Styling
+  - [ ] Tweet Component
+  - [ ] Reddit Post Component
 - [x] Add Technologies to projects
 - [x] Investigate the old site and locate missing data and then hardcode that data for now
-    - [ ] Add all the old technologies (frameworks, platforms, applications, etc.)
+  - [ ] Add all the old technologies (frameworks, platforms, applications, etc.)
 - [x] Add project sub-pages
-    - [x] Include specification rendered in markdown
-    - [x] Have an area where if it's got a github link, we would display recent activity from media-timeline (using old posts data structure, media-timeline not done yet.)
+  - [x] Include specification rendered in markdown
+  - [x] Have an area where if it's got a github link, we would display recent activity from media-timeline (using old posts data structure, media-timeline not done yet.)
 - [x] What I'm working on section
 - [ ] Hobby Cards
-    - [ ] Get these to go to relevant pages
-    - [ ] Figure out a common place to upload images for photography & art
+  - [ ] Get these to go to relevant pages
+  - [ ] Figure out a common place to upload images for photography & art
 - [x] Skill Sets
-    - [x] Descriptions of each of my skills, list of relveant experience that helped in formation
-    - [x] Some state handling
+  - [x] Descriptions of each of my skills, list of relveant experience that helped in formation
+  - [x] Some state handling
 - [ ] Blog pages
-    - [x] Styling
-    - [ ] Get the list of contents to work (id-based titles)
-    - [ ] Have the timeline on the side of the content
+  - [x] Styling
+  - [ ] Get the list of contents to work (id-based titles)
+  - [ ] Have the timeline on the side of the content

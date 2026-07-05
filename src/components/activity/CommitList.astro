@@ -1,5 +1,9 @@
 ---
+// commits come from utils.ts's get_timeline(), which has a `@todo fix typings`
+// (untyped intermediate shape) — matching `any` here rather than fabricating
+// a type for a shape that's about to be retyped upstream.
 interface Props {
+    // oxlint-disable-next-line typescript/no-explicit-any -- see above
     commits: any[]
 }
 
@@ -10,6 +14,7 @@ const { commits } = Astro.props;
     <div style="width: 1px; background: var(--border); align-self: stretch;"></div>
     <div class="stack stack-sm">
         {
+            // oxlint-disable-next-line typescript/no-explicit-any -- see @todo above interface Props
             commits.map((commit: any) => (
                 <p>
                     <a href={commit.permalink}>
