@@ -6,7 +6,8 @@ import { person_json_ld } from "../lib/json-ld";
 import AboutMe from "../components/about/AboutMe.astro";
 import Experience from "../components/about/Experience.astro";
 import RecentProjects from "../components/projects/RecentProjects.astro";
-import SkillSelector from "../components/about/SkillSelector";
+import SkillBars from "../components/about/SkillBars";
+import SkillDetail from "../components/about/SkillDetail";
 import { skills } from "../assets/skills";
 
 const hobbies = [
@@ -53,7 +54,7 @@ export const prerender = false;
 
 		<section class="stack">
 			<PromptLine cmd="cat skills.json" />
-			<SkillSelector client:visible skills={skills} />
+			<SkillBars client:visible skills={skills} />
 		</section>
 
 		<section class="stack">
@@ -82,6 +83,11 @@ export const prerender = false;
 					))
 				}
 			</div>
+		</section>
+
+		<section class="stack">
+			<PromptLine cmd="cat skills/selected.md" />
+			<SkillDetail client:visible skills={skills} />
 		</section>
 	</main>
 </Page>
