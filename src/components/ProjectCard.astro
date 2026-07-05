@@ -1,10 +1,8 @@
 ---
-import { Card, CardHeader, CardTitle, CardContent, CardFooter, Badge } from "@f0rbit/ui";
-import { Github } from 'lucide-astro'
+import { ExternalLink, FolderGit2, Github } from 'lucide-astro'
 import type { Project } from '../types'
 import Status from './projects/Status.astro'
 import { TECH_MAP, type Technology } from '../assets/technology'
-import TechnologyIcon from './projects/TechnologyIcon.astro'
 
 interface Props {
     project: Project
@@ -15,72 +13,49 @@ const { project } = Astro.props
 const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 ---
 
-<div class="project-card">
-    <Card id={project.project_id}>
-        <CardHeader>
-            <CardTitle>
-                <a href={`/projects/${project.project_id}`}>{project.name}</a>
-            </CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p class="text-muted">{project.description}</p>
-        </CardContent>
-        <CardFooter>
-            <div class="cluster" style="justify-content: center;">
-                <Status status={project.status} />
-                {
-                    project.repo_url && (
-                        <Badge>
-                            <a href={project.repo_url} class="row row-sm">
-                                <Github size={16} />
-                                GitHub
-                            </a>
-                        </Badge>
-                    )
-                }
-                {
-                    project.link_url && (
-                        <Badge>
-                            <a href={project.link_url}>{project.link_text}</a>
-                        </Badge>
-                    )
-                }
-                {
-                    technologies.length > 0 && (
-                        <Badge>
-                            <div class="row row-sm">
-                                {technologies.map((tech: Technology) => (
-                                    <TechnologyIcon tech={tech} />
-                                ))}
-                            </div>
-                        </Badge>
-                    )
-                }
-            </div>
-        </CardFooter>
-    </Card>
-</div>
+<a class="project-card lift" href={`/projects/${project.project_id}`}>
+    <div class="row row-between">
+        <span class="row row-sm text-sm text-muted project-card-path">
+            <FolderGit2 size={16} />
+            <span>~/work/<span class="text-primary project-card-name">{project.name}</span></span>
+        </span>
+        <Status status={project.status} />
+    </div>
+    <p class="text-sm text-muted project-card-description">{project.description}</p>
+    <div class="row row-between">
+        <div class="row row-sm text-xs project-card-tags">
+            {technologies.map((tech) => <span>{tech}</span>)}
+        </div>
+        <div class="row row-sm text-muted project-card-links">
+            {project.repo_url && <Github size={15} aria-label="GitHub repository" />}
+            {project.link_url && <ExternalLink size={15} aria-label={project.link_text ?? 'Live link'} />}
+        </div>
+    </div>
+</a>
 
 <style>
     .project-card {
-        text-align: center;
-        height: 100%;
-    }
-    .project-card :global(.card) {
-        height: 100%;
         display: flex;
         flex-direction: column;
+        gap: var(--space-sm);
+        height: 100%;
+        padding: var(--space-md);
+        border: 1px solid var(--term-border-inner);
+        border-radius: var(--radius);
+        background: var(--term-titlebar);
+        cursor: pointer;
     }
-    .project-card :global(.card-content) {
+    .project-card-path {
+        min-width: 0;
+    }
+    .project-card-name {
+        font-weight: 600;
+    }
+    .project-card-description {
         flex-grow: 1;
+        line-height: 1.5;
     }
-    .project-card :global(.card-header) {
-        justify-content: center;
-    }
-    .project-card :global(.card-footer) {
-        justify-content: center;
-        border-top: none;
-        padding-top: var(--space-sm);
-        margin-top: var(--space-sm);
+    .project-card-tags {
+        flex-wrap: wrap;
     }
 </style>

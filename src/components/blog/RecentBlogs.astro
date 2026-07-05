@@ -1,10 +1,18 @@
 ---
-import { get_blog_posts, type AppLocals } from '../../utils'
-import BlogCard from './BlogCard.astro'
+import { get_blog_posts, type AppLocals } from "../../utils";
+import BlogCard from "./BlogCard.astro";
 
-const posts = (await get_blog_posts(Astro.locals as AppLocals)).slice(0, 3)
+const posts = (await get_blog_posts(Astro.locals as AppLocals)).slice(0, 3);
 ---
 
-<div class="grid">
-    {posts.map((post: any) => <BlogCard post={post} />)}
+<div class="blog-row-list">
+	{posts.map((post) => <BlogCard post={post} />)}
 </div>
+
+<style>
+	.blog-row-list {
+		display: flex;
+		flex-direction: column;
+		border-bottom: 1px solid var(--term-border-inner);
+	}
+</style>

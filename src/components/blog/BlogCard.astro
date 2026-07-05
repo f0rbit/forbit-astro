@@ -1,54 +1,84 @@
 ---
-import type { Post } from '../../types'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from "@f0rbit/ui";
+import type { Post } from "../../types";
+import { BLOG_GROUP } from "../../types";
+import { Calendar, Clock } from "lucide-astro";
+import PublishTime from "./PublishTime.tsx";
 
 interface Props {
-    post: Post
+	post: Post;
 }
 
-const { post } = Astro.props
-const relative_url = `${post.group}/${post.slug}`
+export type CategoryInfo = { label: string; class_name: string };
+
+/** Single source of truth for the personal/dev.to category label + accent color. */
+export function post_category(post: Post): CategoryInfo {
+	return post.group === BLOG_GROUP.DEVTO
+		? { label: "dev.to", class_name: "category-devto" }
+		: { label: "personal", class_name: "category-personal" };
+}
+
+/** Estimated reading time (200 wpm), derived from the post body — no new data source. */
+export function read_minutes(content: string): number {
+	const words = content.trim().split(/\s+/).filter(Boolean).length;
+	return Math.max(1, Math.round(words / 200));
+}
+
+const { post } = Astro.props;
+const relative_url = `${post.group}/${post.slug}`;
+const category = post_category(post);
+const minutes = read_minutes(post.content);
+const tags = post.tag_list.slice(0, 3);
 ---
 
-<div class="blog-card">
-    <Card>
-        <CardHeader>
-            <CardTitle><span transition:name={'title-' + post.slug}>{post.title}</span></CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p class="text-subtle">{post.description}</p>
-        </CardContent>
-        <CardFooter>
-            <div class="row" style="justify-content: center;">
-                <a href={`/blog/${relative_url}`}>
-                    <Button variant="secondary">Read</Button>
-                </a>
-                {!!post.url && (
-                    <a href={post.url}>
-                        <Button variant="ghost">Visit</Button>
-                    </a>
-                )}
-            </div>
-        </CardFooter>
-    </Card>
-</div>
+<a class="lift blog-row" href={`/blog/${relative_url}`}>
+	<div class="row row-sm blog-row-meta font-mono text-xs text-subtle">
+		<span class="row row-sm">
+			<Calendar size={13} />
+			<PublishTime client:visible date={post.published_at} />
+		</span>
+		<span class:list={["blog-row-category", category.class_name]}>{category.label}</span>
+		<span class="row row-sm">
+			<Clock size={13} />
+			{minutes} min
+		</span>
+	</div>
+	<h3 class="blog-row-title" transition:name={"title-" + post.slug}>{post.title}</h3>
+	<p class="blog-row-excerpt text-muted">{post.description}</p>
+	{
+		tags.length > 0 && (
+			<div class="row row-sm blog-row-tags text-xs">
+				{tags.map((tag) => (
+					<span class="blog-row-tag">#{tag}</span>
+				))}
+			</div>
+		)
+	}
+</a>
 
 <style>
-    .blog-card {
-        height: 100%;
-    }
-    .blog-card :global(.card) {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    .blog-card :global(.card-content) {
-        flex-grow: 1;
-    }
-    .blog-card :global(.card-footer) {
-        justify-content: center;
-        border-top: none;
-        padding-top: 0;
-        margin-top: var(--space-sm);
-    }
+	.blog-row {
+		display: block;
+		padding: var(--space-md) var(--space-sm);
+		border-top: 1px solid var(--term-border-inner);
+		text-decoration: none;
+	}
+	.blog-row-meta {
+		margin-bottom: var(--space-sm);
+	}
+	.category-personal {
+		color: var(--term-link);
+	}
+	.category-devto {
+		color: var(--term-gray-72);
+	}
+	.blog-row-title {
+		margin-bottom: var(--space-sm);
+	}
+	.blog-row-excerpt {
+		max-width: 74ch;
+		margin-bottom: var(--space-sm);
+	}
+	.blog-row-tag {
+		color: var(--fg-faint);
+	}
 </style>

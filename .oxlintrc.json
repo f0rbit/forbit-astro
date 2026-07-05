@@ -1,6 +1,6 @@
 {
 	"extends": ["./node_modules/@f0rbit/oxlint-config/oxlintrc.json"],
-	"ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/coverage/**"],
+	"ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/coverage/**", ".claude/**"],
 	"overrides": [
 		{
 			"files": ["src/components/**/*.astro", "src/components/**/*.tsx", "src/layouts/**/*.astro"],

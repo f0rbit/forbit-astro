@@ -1,124 +1,157 @@
 ---
-import Home from '../layouts/Home.astro'
-import Navigation from '../components/Navigation.astro'
-import AboutMe from '../components/about/AboutMe.astro'
-import Experience from '../components/about/Experience.astro'
-import Timeline from '../components/activity/Timeline.astro'
-import ProjectList from '../components/projects/ProjectList.astro'
-import RecentBlogs from '../components/blog/RecentBlogs.astro'
-import { Card, CardContent } from '@f0rbit/ui'
-import { Typewriter } from 'solidjs-typewriter'
+import Home from "../layouts/Home.astro";
+import PromptLine from "../components/PromptLine.astro";
+import AboutMe from "../components/about/AboutMe.astro";
+import Experience from "../components/about/Experience.astro";
+import Timeline from "../components/activity/Timeline.astro";
+import ProjectList from "../components/projects/ProjectList.astro";
+import RecentBlogs from "../components/blog/RecentBlogs.astro";
+import { Typewriter } from "solidjs-typewriter";
+import { MapPin, Briefcase, CircleDot } from "lucide-astro";
 
-export const prerender = false
+export const prerender = false;
 ---
 
 <Home>
-    <header class="hero">
-        <h1 class="hero-title">forbit</h1>
-        <p>
-            <span>I am a </span>
-            <Typewriter client:load words={['computer science student', 'software developer', 'open source contributor', 'programming enthusiast', 'creative individual' ]} cursor={true} loop={-1} />
-        </p>
-    </header>
-    <Navigation home={true} />
-    <main class="page-container home-sections">
-        <section id="about-me" class="stack">
-            <h2>About Me</h2>
-            <Card>
-                <CardContent>
-                    <AboutMe more={true} />
-                </CardContent>
-            </Card>
-        </section>
-        <section id="projects" class="stack">
-            <h2>Featured Projects</h2>
-            <div class="featured-grid">
-                <ProjectList select={['gm-server', 'devpad', 'dungeon-generator']} />
-            </div>
-        </section>
-        <div class="home-layout">
-            <div class="stack">
-                <section id="experience" class="stack">
-                    <h2>Experience</h2>
-                    <Card>
-                        <CardContent>
-                            <Experience types={['professional']} sort={'reverse_position'} mode={'left'} />
-                        </CardContent>
-                    </Card>
-                </section>
-                <section id="recent-blogs" class="stack">
-                    <h2>Recent Blogs</h2>
-                    <RecentBlogs />
-                </section>
-            </div>
-            <section class="stack home-sidebar">
-                <h2>Recent Activity</h2>
-                <Card>
-                    <CardContent>
-                        <Timeline limit={10} group_commits={false} />
-                    </CardContent>
-                </Card>
-            </section>
-        </div>
-    </main>
+	<main class="page-container home-sections">
+		<header class="hero stack">
+			<PromptLine path="~" cmd="whoami" />
+			<h1 class="hero-name">Tom Materne <span class="text-muted">/ forbit</span></h1>
+			<p class="hero-tagline">
+				Software engineer. I build <span class="accent-blue">developer tools</span>, <span class="accent-green"
+					>games</span
+				> & <span class="accent-purple">the web</span>.
+			</p>
+			<p class="hero-role text-muted text-sm font-mono">
+				$ cat role.txt &#8594;{" "}
+				<span class="hero-role-word">
+					<Typewriter
+						client:visible
+						words={[
+							"computer science student",
+							"software developer",
+							"open source contributor",
+							"programming enthusiast",
+						]}
+						cursor={false}
+						loop={-1}
+					/>
+				</span>
+				<span class="cursor" aria-hidden="true"></span>
+			</p>
+			<div class="hero-chips row row-sm">
+				<span class="chip"><MapPin size={14} />Brisbane, AU</span>
+				<span class="chip"><Briefcase size={14} />SDE @ Amazon</span>
+				<span class="chip chip--accent"><CircleDot size={14} />available for chat</span>
+			</div>
+		</header>
+
+		<section id="projects" class="stack">
+			<PromptLine path="~/work" cmd="ls --featured" />
+			<div class="featured-list">
+				<ProjectList select={["devpad", "gm-server", "runbook", "dungeon-generator"]} />
+			</div>
+		</section>
+
+		<div class="recent-columns">
+			<section id="recent-activity" class="stack">
+				<PromptLine path="~" cmd="git log --oneline" />
+				<Timeline limit={10} group_commits={false} />
+			</section>
+			<section id="experience" class="stack">
+				<PromptLine path="~" cmd="cat experience.log" />
+				<Experience types={["professional"]} sort={"reverse_position"} mode={"left"} />
+			</section>
+		</div>
+
+		<section id="about-me" class="stack">
+			<PromptLine path="~" cmd="cat about.md" />
+			<AboutMe more={true} />
+		</section>
+
+		<section id="recent-blogs" class="stack">
+			<PromptLine path="~/blog" cmd="ls -lt --posts | head -3" />
+			<RecentBlogs />
+		</section>
+	</main>
 </Home>
 
 <style>
-    .hero {
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        gap: var(--space-sm);
-    }
+	.home-sections {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+		padding-block: var(--space-lg);
+	}
 
-    .hero-title {
-        font-size: 4vw;
-        font-weight: bold;
-    }
+	.hero-name {
+		font-size: var(--text-4xl);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		margin: 0;
+	}
 
-    .home-sections {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-lg);
-    }
+	.hero-tagline {
+		font-size: var(--text-lg);
+		color: var(--fg-muted);
+		margin: 0;
+	}
 
-    .home-layout {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--space-sm);
-        align-items: start;
-    }
+	.hero-role {
+		margin: 0;
+	}
 
-    @media (min-width: 1280px) {
-        .home-layout {
-            grid-template-columns: 1fr min(400px, 30vw);
-        }
-    }
+	.hero-role-word {
+		color: var(--fg);
+	}
 
-    .featured-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
-    }
+	.accent-blue {
+		color: var(--term-link);
+	}
+	.accent-green {
+		color: var(--term-prompt-user);
+	}
+	.accent-purple {
+		color: var(--term-keyword);
+	}
 
-    @media (min-width: 1280px) {
-        .featured-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
+	.hero-chips {
+		margin-top: var(--space-xs);
+		flex-wrap: wrap;
+	}
 
-    .home-sidebar {
-        display: none;
-    }
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+		font-size: var(--text-sm);
+		font-family: var(--font-mono);
+		border: 1px solid var(--term-border-inner);
+		border-radius: var(--radius);
+		padding: 0.35em 0.7em;
+		color: var(--fg-muted);
+	}
 
-    @media (min-width: 1280px) {
-        .home-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-        }
-    }
+	.chip--accent {
+		border-color: var(--term-link);
+		color: var(--term-link);
+	}
+
+	.featured-list {
+		border: 1px solid var(--term-border-inner);
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.recent-columns {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-lg);
+	}
+
+	@media (min-width: 1024px) {
+		.recent-columns {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
 </style>

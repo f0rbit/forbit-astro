@@ -1,78 +1,177 @@
 ---
-import type { ImageMetadata as AstroImageMetadata } from 'astro'
-import { Laptop2, GraduationCap, Camera, Fish } from 'lucide-astro'
-import forbitIconImport from "../../assets/forbit-icon.png"
-const forbitIcon = forbitIconImport as unknown as AstroImageMetadata;
+import { Laptop2, GraduationCap, MapPin, Camera } from "lucide-astro";
+
 interface Props {
-    more: boolean
+	more: boolean;
 }
 
 const { more } = Astro.props;
+
+const info = [
+	{ icon: Laptop2, key: "role", value: "Software Engineer @ Amazon" },
+	{ icon: GraduationCap, key: "education", value: "B.CompSci, University of Adelaide" },
+	{ icon: MapPin, key: "location", value: "Brisbane, Australia" },
+	{ icon: Camera, key: "hobbies", value: "Photography, Snorkelling" },
+];
 ---
 
 <div class="about-me">
-    <div class="about-avatar">
-        <img src={forbitIcon.src} alt="forbit logo" style="border-radius: 30%;" width={64} height={64} />
-    </div>
-    <ul class="about-info">
-        <li class="row"><Laptop2 size={18} />Software Engineer</li>
-        <li class="row"><GraduationCap size={18} />University of Adelaide</li>
-        <li class="row"><Camera size={18} />Hobbyist Photographer</li>
-        <li class="row"><Fish size={18} /><span>Avid <a href="https://www.instagram.com/ninding.femo/">Snorkeller</a></span></li>
-    </ul>
-    <div class="about-bio">
-        <p class="text-muted">
-            I am currently studying Computer Science, and making projects in my free time. Feel free to contact me about anything. My main
-            project is gm-server, an open-source framework for interfacing between Java servers and Gamemaker: Studio game clients.
-            Currently working on experimenting with different web-dev technologies.
-        </p>
-        {more && <a href="/about">More Information</a>}
-    </div>
+	<div class="about-left">
+		<div class="about-avatar-tile">f</div>
+		<div class="about-identity">
+			<span class="about-name">Tom Materne</span>
+			<span class="about-handle text-sm">@f0rbit</span>
+		</div>
+	</div>
+	<div class="about-right">
+		<ul class="about-info">
+			{
+				info.map(({ icon: Icon, key, value }) => (
+					<li class="about-row">
+						<span class="about-key">
+							<Icon size={16} />
+							{key}
+						</span>
+						<span class="about-punct">=</span>
+						<span class="about-value">{value}</span>
+					</li>
+				))
+			}
+		</ul>
+		<div class="about-bio">
+			<p class="text-muted">
+				I studied Computer Science and have been building things for as long as I can remember — starting in Scratch, moving through
+				GameMaker and Java, and landing squarely in web &amp; distributed systems. My main open-source work is <a
+					href="https://github.com/f0rbit/gm-server"
+					class="about-link">gm-server</a
+				>, a framework for interfacing Java servers with GameMaker: Studio clients. These days I experiment with new web-dev technologies
+				and developer tooling. Feel free to reach out about anything.
+			</p>
+			{more && <a href="/about" class="about-link font-mono text-sm">$ cd ~/about →</a>}
+		</div>
+	</div>
 </div>
 
 <style>
-    .about-me {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        align-items: center;
-    }
-    .about-avatar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        width: 4rem;
-        height: 4rem;
-    }
-    .about-avatar :global(img) {
-        width: 4rem;
-        height: 4rem;
-        object-fit: cover;
-    }
-    .about-info {
-        white-space: nowrap;
-        padding: var(--space-md);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-xs);
-        list-style: none;
-        width: max-content;
-        margin: 0;
-    }
-    .about-info .row {
-        padding-inline-end: var(--space-md);
-    }
+	.about-me {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-md) var(--space-lg);
+		align-items: start;
+	}
 
-    @media (min-width: 1024px) {
-        .about-me {
-            flex-direction: row;
-            align-items: center;
-        }
-        .about-bio {
-            align-self: flex-start;
-        }
-    }
+	.about-left {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-sm);
+	}
+
+	.about-right {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+
+	.about-avatar-tile {
+		width: 6rem;
+		height: 6rem;
+		flex-shrink: 0;
+		border-radius: 22%;
+		background: linear-gradient(135deg, var(--term-gray-85), var(--term-gray-72));
+		color: var(--bg);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 800;
+		font-size: 2.4rem;
+	}
+
+	.about-identity {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.15rem;
+		text-align: center;
+	}
+
+	.about-name {
+		color: var(--fg);
+		font-weight: 700;
+		font-size: 1.05rem;
+	}
+
+	.about-handle {
+		color: var(--fg-subtle);
+	}
+
+	.about-info {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		width: max-content;
+		max-width: 100%;
+		font-size: 0.9rem;
+	}
+
+	.about-row {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+
+	.about-key {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		width: 9rem;
+		flex-shrink: 0;
+		color: var(--term-gray-72);
+		text-align: left;
+	}
+
+	.about-punct {
+		color: var(--fg-subtle);
+	}
+
+	.about-value {
+		color: var(--term-gray-85);
+		text-align: left;
+	}
+
+	.about-bio {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		align-items: center;
+	}
+
+	.about-bio p {
+		max-width: 70ch;
+		line-height: 1.65;
+		text-align: left;
+	}
+
+	.about-link {
+		color: var(--term-link);
+	}
+
+	@media (min-width: 1024px) {
+		.about-me {
+			grid-template-columns: auto 1fr;
+		}
+		.about-left {
+			align-items: center;
+		}
+		.about-identity {
+			align-items: center;
+			text-align: center;
+		}
+		.about-bio {
+			align-items: flex-start;
+		}
+	}
 </style>

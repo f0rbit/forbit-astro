@@ -1,44 +1,72 @@
 ---
 import Page from '../layouts/Page.astro'
-import Navigation from '../components/Navigation.astro'
+import PromptLine from '../components/PromptLine.astro'
 import ProjectList from '../components/projects/ProjectList.astro'
 import { get_projects, type AppLocals } from '../utils'
 
-const projects = (await get_projects(Astro.locals as AppLocals)).toSorted((a,b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()) || null;
+const projects = (await get_projects(Astro.locals as AppLocals)).toSorted((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()) || null;
 const invalid = projects.length === 0
 
 export const prerender = false
 ---
 
 <Page title="Projects" description="A list of all my projects, including specifcation and recent activity" keywords={["projects", "programming", "software engineer", "side projects", "web dev side projects", "tech journey"]} canonical='https://forbit.dev/projects' ogImage="https://forbit.dev/og/default.png">
-    <Navigation home={false} />
-    <div class="page-container stack">
+    <div class="stack">
         {
             invalid ? (
-                <p style="color: var(--error); text-align: center;">Invalid response from Projects API</p>
+                <p class="text-muted" style="text-align: center;">Invalid response from Projects API</p>
             ) : (
-                <main class="project-grid">
-                    <ProjectList projects={projects} select={null} />
-                </main>
+                <>
+                    <div class="row row-between projects-header">
+                        <div>
+                            <PromptLine cmd="ls --projects" />
+                            <h1 class="projects-title">Projects</h1>
+                        </div>
+                        <span class="text-sm text-muted"># {projects.length} repositories</span>
+                    </div>
+
+                    <div class="cluster projects-filters">
+                        <span class="filter-chip filter-chip--active">--all</span>
+                        <span class="filter-chip">--in-dev</span>
+                        <span class="filter-chip">--finished</span>
+                        <span class="filter-chip">--released</span>
+                        <span class="filter-chip">--lang=all</span>
+                    </div>
+
+                    <main class="grid grid-3">
+                        <ProjectList projects={projects} select={null} />
+                    </main>
+
+                    <PromptLine cmd="" cursor={true} />
+                </>
             )
         }
     </div>
 </Page>
 
 <style>
-    .project-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
+    .projects-header {
+        align-items: flex-end;
     }
-    @media (min-width: 1024px) {
-        .project-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    .projects-title {
+        font-size: var(--text-3xl);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-top: var(--space-xs);
     }
-    @media (min-width: 1536px) {
-        .project-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
+    .projects-filters {
+        margin-bottom: var(--space-xs);
+    }
+    .filter-chip {
+        font-size: var(--text-xs);
+        padding: 0.35rem 0.7rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--term-border-inner);
+        color: var(--fg-muted);
+        font-family: var(--font-mono);
+    }
+    .filter-chip--active {
+        border-color: var(--accent);
+        color: var(--accent);
     }
 </style>

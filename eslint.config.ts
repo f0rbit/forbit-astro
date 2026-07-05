@@ -51,6 +51,13 @@ export default define_lint_config({
 			ignores: [".astro/**", ".wrangler/**", "worker-configuration.d.ts"],
 		},
 		{
+			// Nested Claude agent worktrees live under .claude/worktrees/** —
+			// each has its own node_modules and configs; scanning them from
+			// the main tree recurses into sibling checkouts and fails on
+			// their (differently-versioned) toolchains.
+			ignores: [".claude/**"],
+		},
+		{
 			// Astro API routes must export exact framework-mandated names
 			// (`GET`, `POST`, `prerender`, ...). No local helpers live in
 			// these files, so disabling the whole rule here loses nothing.

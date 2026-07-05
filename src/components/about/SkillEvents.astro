@@ -30,5 +30,5 @@ title += (title.length > 1 ? ' ' : '') + (skill ? skill + " skills" : "")
     <span class="row row-sm">
         {events.sort(sort_skill_event).map((t) => <EventTypeIcon type={t} size={16} />)}
     </span>
-    <span>{skill}</span>
+    <span class="font-mono text-xs">{skill}</span>
 </Badge>

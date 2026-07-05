@@ -1,14 +1,157 @@
 ---
 import Page from '../layouts/Page.astro'
-import Navigation from '../components/Navigation.astro'
-import TimelineComponent from "../components/activity/Timeline.astro"
+import PromptLine from '../components/PromptLine.astro'
+import TimelineComponent from '../components/activity/Timeline.astro'
+import { fetch_timeline, type AppLocals } from '../utils'
+import { format_relative_time } from '../lib/time'
 
-export const prerender = false;
+export const prerender = false
+
+const DAY_MS = 24 * 60 * 60 * 1000
+const WEEKS = 52
+const TOTAL_DAYS = WEEKS * 7
+
+// `fetch_timeline` is cached (see utils.ts's get_cached), so calling it here as
+// well as inside <TimelineComponent> below reads the same cached payload rather
+// than issuing a second provider fetch. Raw feed items are untyped upstream
+// (see get_timeline's own @todo in utils.ts) — only used here to derive the
+// heatmap + summary stats, never to reimplement the grouping pipeline itself.
+// oxlint-disable-next-line typescript/no-explicit-any -- see comment above
+const activity = (await fetch_timeline(Astro.locals as AppLocals)) as any[]
+
+// oxlint-disable-next-line typescript/no-explicit-any -- see comment above
+const commit_events = activity.filter((item: any) => item.category === 'GITHUB')
+
+const now = Date.now()
+const year_start = new Date(new Date(now).getFullYear(), 0, 1).getTime()
+// oxlint-disable-next-line typescript/no-explicit-any -- see comment above
+const commits_this_year = commit_events.filter((event: any) => event.date >= year_start).length
+// oxlint-disable-next-line typescript/no-explicit-any -- see comment above
+const repo_count = new Set(commit_events.map((event: any) => event.project)).size
+// oxlint-disable-next-line typescript/no-explicit-any -- see comment above
+const last_push_ms = commit_events.reduce((max: number, event: any) => Math.max(max, event.date), 0)
+const last_push = last_push_ms > 0 ? format_relative_time(new Date(last_push_ms)) : 'no pushes yet'
+
+const today_start = new Date(now).setHours(0, 0, 0, 0)
+const day_counts = new Map<number, number>()
+// oxlint-disable-next-line typescript/no-explicit-any -- see comment above
+for (const event of commit_events as any[]) {
+    const day_start = new Date(event.date).setHours(0, 0, 0, 0)
+    day_counts.set(day_start, (day_counts.get(day_start) ?? 0) + 1)
+}
+const max_count = Math.max(0, ...day_counts.values())
+
+function level_for(count: number): 0 | 1 | 2 | 3 {
+    if (count <= 0 || max_count <= 0) return 0
+    const ratio = count / max_count
+    if (ratio >= 0.66) return 3
+    if (ratio >= 0.33) return 2
+    return 1
+}
+
+const heatmap_days = Array.from({ length: TOTAL_DAYS }, (_, index) => {
+    const day_start = today_start - (TOTAL_DAYS - 1 - index) * DAY_MS
+    const count = day_counts.get(day_start) ?? 0
+    return { day_start, count, level: level_for(count) }
+})
+const heatmap_weeks = Array.from({ length: WEEKS }, (_, week) => heatmap_days.slice(week * 7, week * 7 + 7))
 ---
 
 <Page title="Timeline" description="All of my public recent activity on the internet" keywords={["timeline", "tweets", "commits", "log"]} canonical='https://forbit.dev/timeline' ogImage="https://forbit.dev/og/default.png">
-    <Navigation home={false} />
-    <div class="page-container">
+    <div class="page-container timeline-page stack stack-lg">
+        <header class="stack stack-sm">
+            <PromptLine cmd="git log --oneline --all --graph" />
+            <div class="row row-sm timeline-heading">
+                <h1>Activity</h1>
+                <span class="text-xs text-muted"># {commits_this_year} commits this year &middot; {repo_count} repos &middot; last push {last_push}</span>
+            </div>
+        </header>
+
+        <div class="heatmap-panel stack stack-sm">
+            <div class="heatmap-grid">
+                {
+                    heatmap_weeks.map((week) => (
+                        <div class="heatmap-week">
+                            {week.map((day) => (
+                                <span
+                                    class={`heatmap-cell heatmap-cell--${day.level.toString()}`}
+                                    title={`${day.count.toString()} commit${day.count === 1 ? '' : 's'} on ${new Date(day.day_start).toDateString()}`}
+                                />
+                            ))}
+                        </div>
+                    ))
+                }
+            </div>
+            <div class="row row-between heatmap-legend text-xs text-muted">
+                <span>52 weeks</span>
+                <span class="row row-sm">
+                    less
+                    <span class="row row-sm heatmap-legend-swatches">
+                        <span class="heatmap-cell heatmap-cell--0" />
+                        <span class="heatmap-cell heatmap-cell--1" />
+                        <span class="heatmap-cell heatmap-cell--2" />
+                        <span class="heatmap-cell heatmap-cell--3" />
+                    </span>
+                    more
+                </span>
+            </div>
+        </div>
+
         <TimelineComponent group_commits={true} limit={null} />
+
+        <PromptLine cmd="" cursor={true} />
     </div>
 </Page>
+
+<style>
+    .timeline-page {
+        padding-block: var(--space-lg);
+    }
+
+    .timeline-heading {
+        align-items: baseline;
+        flex-wrap: wrap;
+    }
+
+    .heatmap-panel {
+        border: 1px solid var(--term-border-inner);
+        border-radius: var(--radius);
+        background: var(--term-titlebar);
+        padding: var(--space-md);
+    }
+
+    .heatmap-grid {
+        display: flex;
+        gap: 3px;
+        flex-wrap: wrap;
+    }
+
+    .heatmap-week {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .heatmap-cell {
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        display: inline-block;
+    }
+    .heatmap-cell--0 {
+        background: var(--term-gray-30);
+    }
+    .heatmap-cell--1 {
+        background: color-mix(in oklch, var(--term-gray-30), var(--term-status-finished) 33%);
+    }
+    .heatmap-cell--2 {
+        background: color-mix(in oklch, var(--term-gray-30), var(--term-status-finished) 66%);
+    }
+    .heatmap-cell--3 {
+        background: var(--term-status-finished);
+    }
+
+    .heatmap-legend-swatches {
+        gap: 2px;
+    }
+</style>

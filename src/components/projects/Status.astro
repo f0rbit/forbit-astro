@@ -1,6 +1,4 @@
 ---
-import { Badge } from "@f0rbit/ui"
-import { Hammer, MonitorX, Pause, Radio, Rocket, Trash2, Zap } from 'lucide-astro'
 import type { PROJECT_STATUS } from '../../types'
 
 interface Props {
@@ -9,45 +7,49 @@ interface Props {
 }
 
 const { status } = Astro.props
-const size = Astro.props.size ?? 16;
+const size = Astro.props.size ?? 13;
 
-function getVariant(project_status: PROJECT_STATUS) {
+interface StatusVisual {
+    label: string
+    glyph: string
+    color: string
+}
+
+function get_visual(project_status: PROJECT_STATUS): StatusVisual {
     switch (project_status) {
-        case "DEVELOPMENT": return "accent";
-        case "LIVE":
-        case "FINISHED":
-        case "RELEASED": return "success";
-        case "STOPPED":
-        case "ABANDONED": return "error";
-        case "PAUSED": return "warning";
-        default: return "default";
+        case 'DEVELOPMENT':
+            return { label: 'dev', glyph: '●', color: 'var(--term-status-dev)' }
+        case 'PAUSED':
+            return { label: 'paused', glyph: '●', color: 'var(--term-gray-58)' }
+        case 'LIVE':
+        case 'FINISHED':
+            return { label: 'finished', glyph: '✓', color: 'var(--term-status-finished)' }
+        case 'RELEASED':
+            return { label: 'released', glyph: '↑', color: 'var(--term-gray-72)' }
+        case 'STOPPED':
+        case 'ABANDONED':
+            return { label: project_status.toLowerCase(), glyph: '✕', color: 'var(--fg-faint)' }
     }
 }
+
+const visual = get_visual(status)
 ---
 
-<Badge variant={getVariant(status)}>
-    <span class="row row-sm">
-        {
-            [status].map((s: PROJECT_STATUS) => {
-                switch (s) {
-                    case 'DEVELOPMENT':
-                        return <Hammer size={size} />
-                    case 'LIVE':
-                        return <Radio size={size} />
-                    case 'PAUSED':
-                        return <Pause size={size} />
-                    case 'STOPPED':
-                        return <MonitorX size={size} />
-                    case 'RELEASED':
-                        return <Rocket size={size} />
-                    case 'ABANDONED':
-                        return <Trash2 size={size} />
-                    case "FINISHED":
-                        return <Zap size={size} />
-                }
-                return <div>N/A</div>
-            })
-        }
-        <span style="text-transform: capitalize;">{status.toLowerCase()}</span>
-    </span>
-</Badge>
+<span class="status-pill font-mono" style={`--status-color: ${visual.color}; font-size: ${size}px;`}>
+    <span aria-hidden="true">{visual.glyph}</span>
+    <span>{visual.label}</span>
+</span>
+
+<style>
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35em;
+        color: var(--status-color);
+        border: 1px solid var(--status-color);
+        border-radius: 999px;
+        padding: 0.15em 0.65em;
+        line-height: 1;
+        white-space: nowrap;
+    }
+</style>

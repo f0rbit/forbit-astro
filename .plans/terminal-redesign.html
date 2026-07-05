@@ -1636,7 +1636,7 @@ $ grep -rl "moment" dist/_astro/*.js
 					<article class="task" id="task-3-1">
 						<header>
 							<h3>Task 3.1: HOME (2a) — index.astro</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -1730,14 +1730,14 @@ bun run build   # (verification coder runs full typecheck/lint/test after squash
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">Files: <code>src/pages/index.astro</code>. Integrated via <code>git checkout worktree-agent-a25e36f36e89b561f -- src/pages/index.astro</code> into one squashed Phase 3 commit (no conflicts, disjoint file set). Gate: typecheck 0 errors, <code>bun run build</code> succeeds composing restyled ProjectList/Experience/Timeline/RecentBlogs/AboutMe from the other four branches, lint 0 errors, fmt clean, 56/56 tests pass. Visual: screenshotted at 1360px via headless Chromium + local wrangler dev — single terminal panel/titlebar (no double nav), hero with <code>$ whoami</code> prompt, accent-colored tagline words, meta chips, two-column git-log/experience.log row all render per mockup 2a. Screenshot: scratchpad/home.png.</div>
 						</section>
 					</article>
 
 					<article class="task" id="task-3-2">
 						<header>
 							<h3>Task 3.2: PROJECTS (2b) list + detail (2f)</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -1828,14 +1828,14 @@ bun run build
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">Files: <code>src/pages/projects.astro</code>, <code>src/pages/projects/[project_id].astro</code>, <code>src/components/ProjectCard.astro</code>, <code>src/components/projects/ProjectPage.astro</code>, <code>src/components/projects/Status.astro</code>. Integrated via <code>git checkout worktree-agent-ac8c376f2694f83cd -- ...</code>, no conflicts. Gate: typecheck/build/lint/fmt/test all green (see Phase 3 gate summary). Visual: screenshotted /projects at 1360px — single terminal panel, no double nav; page shows a calm terminal-styled error state ("Invalid response from Projects API") because this sandbox has no live Projects API credentials — structural rendering (titlebar, tab strip, panel chrome) confirmed correct, but a live-data screenshot of the populated grid + detail page (2f) could not be captured here and needs a follow-up pass with real API access. Screenshot: scratchpad/projects.png.</div>
 						</section>
 					</article>
 
 					<article class="task" id="task-3-3">
 						<header>
 							<h3>Task 3.3: ABOUT (2b-about) — about.astro + skills + experience</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -1915,14 +1915,14 @@ bun run build
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">Files: <code>src/pages/about.astro</code>, <code>src/components/about/{AboutMe,Experience,ExperienceCard,SkillEvents}.astro</code>, <code>src/components/about/{SkillSelector,SkillCard}.tsx</code>. Integrated via <code>git checkout worktree-agent-aacadefecd6711e81 -- ...</code>, no conflicts. Confirmed <code>Experience</code> consolidated to a single <code>mode: "left"</code> prop literal (<code>src/components/about/Experience.astro:9</code>), matching <code>index.astro</code>'s <code>mode={"left"}</code> usage — cross-branch prop contract holds. Gate: typecheck/build/lint/fmt/test all green. Visual: /about at 1360px — single panel/titlebar, about.md key-value block, skill bars (Java/GameMaker/JavaScript/Leadership), full experience git-log with left-border timeline entries, hobbies photo grid, all Tokyo Night terminal styling, no double nav. Screenshot: scratchpad/about.png.</div>
 						</section>
 					</article>
 
 					<article class="task" id="task-3-4">
 						<header>
 							<h3>Task 3.4: TIMELINE (2d) — timeline.astro + activity components</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -2002,14 +2002,14 @@ bun run build
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">Files: <code>src/pages/timeline.astro</code>, <code>src/components/activity/{Timeline,CommitList}.astro</code>. Integrated via <code>git checkout worktree-agent-acb2bb651351d6943 -- ...</code>, no conflicts. Gate: typecheck/build/lint/fmt/test all green. Visual: /timeline at 1360px — single panel/titlebar, <code>$ git log --oneline --all --graph</code> prompt header, contribution-graph grid, calm empty state ("0 commits this year · 0 repos · last push no pushes yet") since this sandbox has no GitHub token — grid/legend styling and layout confirmed correct; a populated-graph screenshot needs a follow-up pass with real GitHub credentials. Screenshot: scratchpad/timeline.png.</div>
 						</section>
 					</article>
 
 					<article class="task" id="task-3-5">
 						<header>
 							<h3>Task 3.5: BLOG (2c) list + POST (2g) — blog.astro + [group]/[slug].astro + blog components</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -2085,7 +2085,7 @@ bun run build
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<div class="proof">Files: <code>src/pages/blog.astro</code>, <code>src/pages/blog/[group]/[slug].astro</code>, <code>src/components/blog/{BlogCard,RecentBlogs}.astro</code>. Integrated via <code>git checkout worktree-agent-a6eacd74f793fe3f0 -- ...</code>, no conflicts. Gate: typecheck/build/lint/fmt/test all green. Visual: /blog at 1360px — single panel/titlebar, <code>$ ls -lt --posts</code> header, RSS button, popular_tags/sources sidebar with subscribe card, terminal styling correct; post list and sources counts are empty (0) because this sandbox has no live personal-blog/dev.to API access, so the populated post-grid (2c) and a post detail page (2g) could not be screenshotted — needs a follow-up visual pass with real API access. Screenshot: scratchpad/blog.png.</div>
 						</section>
 					</article>
 				</section>
@@ -2559,14 +2559,40 @@ test -f docs/perf-ttfb.md &amp;&amp; echo "doc exists"
 						<code>forbit@dev:&lt;path&gt;$ &lt;cmd&gt;</code> primitive used across the shell and pages.
 					</li>
 					<li>
-						<strong>(Phase 2) PHASE3-TODO — transitional double nav:</strong>
-						<code>TerminalWindow.astro</code> now renders <code>&lt;Navigation/&gt;</code> in its titlebar, but the 7
-						route files (<code>index</code>, <code>projects</code>, <code>projects/[project_id]</code>,
-						<code>about</code>, <code>blog</code>, <code>blog/[group]/[slug]</code>, <code>timeline</code>) still
-						ALSO call <code>&lt;Navigation/&gt;</code> directly in their own bodies (left untouched in Phase 2 to
-						avoid Phase 3 worktree contention). Every page currently renders the path-nav TWICE — purely visual/
-						transitional, the build is green. <strong>Each Phase 3 page task must delete its own page's redundant
-						<code>&lt;Navigation/&gt;</code> call</strong> when it restyles that page's body.
+						<strong>(Phase 3) PHASE3-TODO resolved — double nav removed:</strong> all 7 route files
+						(<code>index</code>, <code>projects</code>, <code>projects/[project_id]</code>, <code>about</code>,
+						<code>blog</code>, <code>blog/[group]/[slug]</code>, <code>timeline</code>) had their redundant
+						page-level <code>&lt;Navigation/&gt;</code> calls removed as part of each page's restyle. Verified by
+						grep: <code>grep -rln "Navigation" src/pages/ src/components/</code> now matches only
+						<code>TerminalWindow.astro</code> — the single canonical instance rendered at the layout level. No
+						double-nav in any of the five screenshotted routes.
+					</li>
+					<li>
+						<strong>(Phase 3) Experience variant consolidation:</strong> <code>Experience.astro</code>'s
+						<code>mode</code> prop was collapsed from a multi-variant union down to a single
+						<code>mode: "left"</code> literal (left-border timeline layout only) — the only variant any caller
+						(<code>index.astro</code>, <code>about.astro</code>) uses. If a second layout variant is needed later,
+						widen the prop type back to a union rather than adding an untyped string.
+					</li>
+					<li>
+						<strong>(Phase 3) Lint/format ignore gap — nested worktrees:</strong> <code>.claude/worktrees/**</code>
+						(created by parallel coder-fast agents) is untracked but not gitignored, and lives inside the repo
+						tree, so <code>oxlint .</code>/<code>eslint .</code>/<code>oxfmt --check .</code> from the main
+						worktree recursed into sibling worktree checkouts and failed on their (differently-versioned)
+						toolchains/configs. Fixed by adding <code>.claude/**</code> to <code>ignorePatterns</code> in
+						<code>.oxlintrc.json</code> and <code>.oxfmtrc.json</code>, and an <code>ignores: [".claude/**"]</code>
+						override in <code>eslint.config.ts</code>. The <code>src/lib/build-data.ts</code> unused-directive
+						lint failure reported by all five Phase 3 worktrees did NOT reproduce on the main tree's canonical
+						<code>node_modules</code> — confirmed a worktree-local artifact (stale/mismatched installed lint
+						package versions in the freshly-bootstrapped worktrees), not a real lint regression.
+					</li>
+					<li>
+						<strong>(Phase 3) Preview/visual-review mechanics:</strong> <code>astro preview</code> does NOT work
+						with the <code>@astrojs/cloudflare</code> adapter ("does not support the preview command"). Use
+						<code>bunx wrangler dev --port 8788</code> against the built <code>dist/</code> instead (reads
+						<code>wrangler.jsonc</code>'s <code>assets</code> binding + <code>.dev.vars</code>), then drive a
+						local Playwright <code>chromium.launch()</code> script rather than the chrome-devtools MCP if its
+						pinned browser revision doesn't match what's installed.
 					</li>
 					<li>
 						<strong>(Phase 2) moment.js removed:</strong> replaced by <code>src/lib/time.ts</code> (native
