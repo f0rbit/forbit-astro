@@ -9,7 +9,7 @@ interface Props {
 const { path = derive_path(Astro.url.pathname) } = Astro.props;
 ---
 
-<div class="terminal-window lift">
+<div class="terminal-window">
 	<div class="terminal-titlebar row row-between">
 		<div class="terminal-dots row row-sm" aria-hidden="true">
 			<span class="terminal-dot terminal-dot--gray"></span>
@@ -26,10 +26,6 @@ const { path = derive_path(Astro.url.pathname) } = Astro.props;
 
 <style>
 	.terminal-window {
-		background: var(--term-panel);
-		border: 1px solid var(--term-border);
-		border-radius: var(--radius-lg);
-		overflow: hidden;
 		margin-inline: auto;
 	}
 
