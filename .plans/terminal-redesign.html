@@ -2251,7 +2251,7 @@ $ bun test            → 56 pass, 0 fail, 143 expect() calls</pre
 					<article class="task" id="task-5-1">
 						<header>
 							<h3>Task 5.1: Images to astro:assets, drop unused drizzle-orm, finalize client directives</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -2329,14 +2329,35 @@ bun run lint &amp;&amp; bun run fmt:check
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<p>
+								<code>Navigation.astro</code> renders no <code>&lt;img&gt;</code> at all (Phase 3 replaced the logo
+								with the text-based <code>path-nav</code> tab strip) — confirmed by grep, so item 1's logo
+								conversion was N/A; <code>src/assets/forbit-icon.png</code> is a pre-existing unused asset, noted
+								but left in place. About-page hobby images (<code>src/pages/about.astro</code>) are genuinely
+								third-party (pexels, squarespace-cdn, reddit media, a council site) — configured
+								<code>astro.config.mjs</code>'s <code>image.domains</code> allow-list and switched to
+								<code>&lt;Image src=... width={480} height={336}&gt;</code>; verified locally via
+								<code>wrangler dev</code>: <code>GET /_image?...&amp;f=webp</code> → <code>200 image/jpeg</code>.
+								<code>grep -rn "drizzle" src</code> → no matches (confirmed unused before removal);
+								<code>drizzle-orm</code> removed from <code>package.json</code>, <code>bun install</code> updated
+								<code>bun.lock</code>. Island directives:
+								<code>ExperienceCard.astro</code>'s <code>Clamp</code> and
+								<code>ProjectPage.astro</code>'s <code>PublishTime</code> changed
+								<code>client:load</code> → <code>client:visible</code>;
+								<code>index.astro</code>'s <code>Typewriter</code> changed <code>client:visible</code> →
+								<code>client:idle</code> (above-fold, rationale comment inline). Post-change
+								<code>grep -rn "client:load" src</code> → no matches.
+								<code>bun run typecheck</code>: 0 errors. <code>bun run build</code>: green, no broken image
+								references. <code>bun run lint</code> / <code>bun run fmt:check</code>: clean. <code>bun test</code>:
+								56 pass / 0 fail.
+							</p>
 						</section>
 					</article>
 
 					<article class="task" id="task-5-2">
 						<header>
 							<h3>Task 5.2: Cache rendered blog-post HTML + per-route prerender evaluation</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -2413,14 +2434,30 @@ bun run typecheck &amp;&amp; bun run build &amp;&amp; bun test
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<p>
+								Added <code>get_blog_post_html(locals, group, slug, render)</code> in <code>src/utils.ts</code>,
+								reusing the existing private <code>get_cached</code>/<code>cached_fetch</code> SWR infra (same
+								function every other provider call goes through) — no new cache mechanism. Cache key:
+								<code>blog-html:&lt;group&gt;:&lt;slug&gt;</code> (verified in code — both group and slug are
+								interpolated). <code>src/pages/blog/[group]/[slug].astro</code> now renders the remark output
+								through this helper and interpolates it via <code>set:html</code> (previously an unescaped raw
+								<code>VFile</code> object interpolation — <code>set:html</code> is the explicit, correct way to
+								emit the now-cached plain string). Result error paths unchanged: <code>get_blog_post</code> still
+								returns <code>null</code> on provider failure (no throw), and <code>html</code> short-circuits to
+								<code>""</code> when there's no post. Evaluated every route's <code>prerender</code> flag (grep
+								across <code>src/pages</code>) — all remain remote-API-driven, so all stay
+								<code>prerender=false</code>; no route was converted (see
+								<code>docs/perf-ttfb.md</code>'s "Prerender evaluation" section for the full reasoning).
+								<code>bun run typecheck</code> / <code>bun run build</code> / <code>bun test</code> (56 pass) all
+								green.
+							</p>
 						</section>
 					</article>
 
 					<article class="task" id="task-5-3">
 						<header>
 							<h3>Task 5.3: Write docs/perf-ttfb.md — prioritized analysis</h3>
-							<span class="badge todo">todo</span>
+							<span class="badge done">done</span>
 						</header>
 						<dl class="meta">
 							<dt>Files</dt>
@@ -2490,7 +2527,18 @@ test -f docs/perf-ttfb.md &amp;&amp; echo "doc exists"
 						</section>
 						<section data-kind="proof">
 							<h4>Proof</h4>
-							<div class="empty-proof">To be filled by verification coder.</div>
+							<p>
+								<code>docs/perf-ttfb.md</code> created with "Current architecture", "Shipped this initiative (with
+								impact)", "Prerender evaluation", and "Prioritized recommendations (report-only, NOT
+								implemented)" sections. Every claim cites a real file/route (e.g.
+								<code>src/utils.ts:7</code>'s <code>DEFAULT_TTL_SECONDS</code>,
+								<code>src/lib/cache.ts:53-56</code>'s SWR hit/refresh logic,
+								<code>src/middleware.ts</code>'s <code>resolve_cache</code>, the exact build output chunk names
+								and sizes for <code>PublishTime</code>/<code>SkillSelector</code>/<code>web.js</code>). The
+								10-row recommendation table is clearly marked "report-only, NOT implemented" and does not
+								overlap with what 5.1/5.2 actually shipped (verified no contradiction against this task's own
+								proof sections above). <code>test -f docs/perf-ttfb.md</code> → exists.
+							</p>
 						</section>
 					</article>
 				</section>

@@ -36,6 +36,15 @@ export default defineConfig({
 		},
 	},
 	site,
+	image: {
+		// Hobby-card background photos on /about are hosted on third-party
+		// services (stock photo host, a squarespace CDN, a reddit media host,
+		// a council site) — we don't own or control these assets, so we
+		// vendor-avoid and instead let astro:assets optimize them at their
+		// remote URL via <Image>, rather than downloading third-party files
+		// into src/assets.
+		domains: ["images.pexels.com", "images.squarespace-cdn.com", "preview.redd.it", "www.westtorrens.sa.gov.au"],
+	},
 	experimental: {
 		env: {
 			schema: {

@@ -89,7 +89,8 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
                     project.updated_at && (
                         <div class="row row-between">
                             <dt class="text-muted">last updated</dt>
-                            <dd class="text-primary"><PublishTime client:load date={project.updated_at} /></dd>
+                            {/* sidebar metadata, below the fold on first paint — defer hydration until visible */}
+                            <dd class="text-primary"><PublishTime client:visible date={project.updated_at} /></dd>
                         </div>
                     )
                 }

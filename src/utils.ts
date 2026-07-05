@@ -1,3 +1,4 @@
+import { ok } from "@devpad/api";
 import { type Project, type BlogGroup, BLOG_GROUP, type Post } from "./types";
 import { cached_fetch, type CacheCtx } from "./lib/cache";
 import type { AppProviders, ProviderError, Result } from "./providers/types";
@@ -87,6 +88,16 @@ export async function get_blog_post(locals: AppLocals, group: BlogGroup, slug: s
 	}
 	console.error(`Invalid blog group ${group}`);
 	return null;
+}
+
+export async function get_blog_post_html(
+	locals: AppLocals,
+	group: BlogGroup,
+	slug: string,
+	render: () => Promise<string>,
+): Promise<string> {
+	const result = await get_cached<string>(locals, `blog-html:${group}:${slug}`, async () => ok(await render()));
+	return result_to_value(result, "BLOG_POST_HTML") ?? "";
 }
 
 /** @todo fix typings */

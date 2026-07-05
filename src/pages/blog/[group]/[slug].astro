@@ -4,7 +4,7 @@ import Page from "../../../layouts/Page.astro";
 import PromptLine from "../../../components/PromptLine.astro";
 import type { BlogGroup } from "../../../types";
 const { group, slug } = Astro.params;
-import { get_blog_post, get_blog_posts, type AppLocals } from "../../../utils";
+import { get_blog_post, get_blog_post_html, get_blog_posts, type AppLocals } from "../../../utils";
 import { remark } from "remark";
 import PublishTime from "../../../components/blog/PublishTime.tsx";
 import { post_category, read_minutes } from "../../../components/blog/BlogCard.astro";
@@ -13,7 +13,15 @@ import { ArrowLeft, ChevronRight, Calendar, Clock, ExternalLink } from "lucide-a
 
 const post = await get_blog_post(Astro.locals as AppLocals, group as BlogGroup, slug as string);
 
-const parsed = await remark().use(remarkHtml).process(post?.content ?? "no content");
+// Cache the rendered HTML (not just the raw markdown) so repeat requests
+// within the SWR TTL skip the remark parse entirely — see get_blog_post_html
+// in utils.ts, which reuses the same lib/cache.ts SWR infra as the post data.
+const html = post
+	? await get_blog_post_html(Astro.locals as AppLocals, group as BlogGroup, slug as string, async () => {
+			const file = await remark().use(remarkHtml).process(post.content);
+			return file.toString();
+		})
+	: "";
 
 const posts = await get_blog_posts(Astro.locals as AppLocals);
 const current_index = posts.findIndex((p) => p.group === group && p.slug === slug);
@@ -80,7 +88,7 @@ const jsonLd = post ? article_json_ld(post, canonical, og_image) : undefined;
 						)}
 					</div>
 
-					<article class="post-prose">{parsed}</article>
+					<article class="post-prose" set:html={html} />
 
 					{post.tag_list.length > 0 && (
 						<div class="row row-sm post-tags text-xs">

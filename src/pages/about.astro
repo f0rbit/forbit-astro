@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import Page from "../layouts/Page.astro";
 import PromptLine from "../components/PromptLine.astro";
 import { person_json_ld } from "../lib/json-ld";
@@ -11,24 +12,24 @@ import { skills } from "../assets/skills";
 const hobbies = [
 	{
 		title: "Photography",
-		background: '"https://images.pexels.com/photos/12882429/pexels-photo-12882429.jpeg"',
+		image: "https://images.pexels.com/photos/12882429/pexels-photo-12882429.jpeg",
 		url: "https://www.flickr.com/tmaterne/",
 	},
 	{
 		title: "Painting",
-		background:
+		image:
 			"https://images.squarespace-cdn.com/content/5942c23d8419c2dea969941a/1594788901787-3H2JUWI1097AF8HV6OMI/YT_PWMChallenge.png?content-type=image%2Fpng",
 		url: "https://pin.it/6j3Ka81sa",
 	},
 	{
 		title: "Music",
-		background:
+		image:
 			"https://preview.redd.it/started-a-vinyl-collection-in-september-its-grown-very-fast-v0-n2xm1g3iz7dc1.jpeg?width=1080&crop=smart&auto=webp&s=c055e82d09fdff2d230486115176ef0771e9377d",
 		url: "https://blends.blog/music",
 	},
 	{
 		title: "Badminton",
-		background: "https://www.westtorrens.sa.gov.au/files/content/public/v/2/events-directory/come-and-try-badminton-session-a/badminton.png?w=1200",
+		image: "https://www.westtorrens.sa.gov.au/files/content/public/v/2/events-directory/come-and-try-badminton-session-a/badminton.png?w=1200",
 		url: null,
 	},
 ];
@@ -71,8 +72,9 @@ export const prerender = false;
 			<PromptLine cmd="cat hobbies.json" />
 			<div class="grid grid-4 hobby-grid">
 				{
-					hobbies.map(({ title, background, url }) => (
-						<a href={url ?? undefined} class:list={["hobby-card lift", { "hobby-card--static": !url }]} style={`background-image: url(${background});`}>
+					hobbies.map(({ title, image, url }) => (
+						<a href={url ?? undefined} class:list={["hobby-card lift", { "hobby-card--static": !url }]}>
+							<Image src={image} alt={title} width={480} height={336} class="hobby-bg" />
 							<div class="hobby-overlay">
 								<span class="text-sm font-mono">{title}</span>
 							</div>
@@ -94,12 +96,11 @@ export const prerender = false;
 	}
 
 	.hobby-card {
+		position: relative;
 		display: flex;
 		align-items: flex-end;
 		border-radius: var(--radius-md);
 		border: 1px solid var(--term-border);
-		background-size: cover;
-		background-position: center;
 		height: 7rem;
 		overflow: hidden;
 	}
@@ -108,7 +109,18 @@ export const prerender = false;
 		cursor: default;
 	}
 
+	.hobby-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0;
+	}
+
 	.hobby-overlay {
+		position: relative;
+		z-index: 1;
 		width: 100%;
 		padding: var(--space-xs) var(--space-sm);
 		background: linear-gradient(to top, var(--term-titlebar), transparent);

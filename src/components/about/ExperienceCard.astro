@@ -34,7 +34,8 @@ const { title, company, awards, type } = experience;
 			{company && <span class:list={["experience-company", `experience-company--${type}`]}>{company}</span>}
 		</div>
 		<div class="stack stack-sm">
-			<Clamp client:load lines={2} showMoreText="Read More" showLessText="Read Less">
+			{/* below-fold in the experience timeline — hydrate once it scrolls into view, not on load */}
+			<Clamp client:visible lines={2} showMoreText="Read More" showLessText="Read Less">
 				<p class="text-muted">{experience.description}</p>
 			</Clamp>
 			<div class="cluster experience-awards">

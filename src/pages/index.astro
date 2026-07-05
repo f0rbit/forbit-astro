@@ -25,8 +25,11 @@ export const prerender = false;
 			<p class="hero-role text-muted text-sm font-mono">
 				$ cat role.txt &#8594;{" "}
 				<span class="hero-role-word">
+					{/* above-fold hero animation — always in the initial viewport, so
+					client:idle hydrates as soon as the main thread is free instead of
+					paying for an IntersectionObserver that would fire immediately anyway */}
 					<Typewriter
-						client:visible
+						client:idle
 						words={[
 							"computer science student",
 							"software developer",
