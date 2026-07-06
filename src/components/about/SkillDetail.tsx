@@ -16,9 +16,9 @@ function SkillDetail(props: { skills: Record<string, SkillInformation> }) {
 							<SkillSubheading information={info} />
 						</div>
 						<p class="text-muted">{info.description}</p>
-						<div class="row">
+						<div class="row" style={{ "flex-wrap": "wrap" }}>
 							<h5>Experience</h5>
-							<div class="row row-sm">
+							<div class="row row-sm" style={{ "flex-wrap": "wrap" }}>
 								{Array.from(info.experience).map((exp) => (
 									<a href={`#${exp}`} class="font-mono text-sm">
 										{exp}

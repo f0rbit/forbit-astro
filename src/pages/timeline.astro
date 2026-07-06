@@ -58,7 +58,7 @@ const heatmap_weeks = Array.from({ length: WEEKS }, (_, week) => heatmap_days.sl
 ---
 
 <Page title="Timeline" description="All of my public recent activity on the internet" keywords={["timeline", "tweets", "commits", "log"]} canonical='https://forbit.dev/timeline' ogImage="https://forbit.dev/og/default.png">
-    <div class="page-container timeline-page stack stack-lg">
+    <div class="timeline-page stack stack-lg">
         <header class="stack stack-sm">
             <PromptLine cmd="git log --oneline --all --graph" />
             <div class="row row-sm timeline-heading">

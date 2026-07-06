@@ -123,30 +123,19 @@ article.specification h3 {
 	color: var(--fg-muted);
 }
 
-/* Page container — replaces CenteredContainer responsive padding */
+/*
+ * Content-width container — the ONE content-width constraint used
+ * site-wide. Applied to `.terminal-body` (the actual content column,
+ * see TerminalWindow.astro) and to Footer (so its content column-aligns
+ * with the body above it). Never nest this inside itself, and never
+ * apply it to the titlebar / page-shell — those stay full-bleed relative
+ * to the shell. See AGENTS.md for the full rationale.
+ */
 .page-container {
 	width: 100%;
-	padding-inline: 1rem;
-}
-@media (min-width: 640px) {
-	.page-container {
-		padding-inline: 2rem;
-	}
-}
-@media (min-width: 1024px) {
-	.page-container {
-		padding-inline: 8rem;
-	}
-}
-@media (min-width: 1280px) {
-	.page-container {
-		padding-inline: 12rem;
-	}
-}
-@media (min-width: 1700px) {
-	.page-container {
-		padding-inline: 26rem;
-	}
+	max-width: 64rem;
+	margin-inline: auto;
+	padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
 
 /* Badge overrides — match the live site's flat border style */

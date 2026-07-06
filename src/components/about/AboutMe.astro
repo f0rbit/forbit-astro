@@ -73,12 +73,14 @@ const info = [
 		flex-direction: column;
 		align-items: center;
 		gap: var(--space-sm);
+		min-width: 0;
 	}
 
 	.about-right {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-md);
+		min-width: 0;
 	}
 
 	.about-avatar-tile {
@@ -145,6 +147,8 @@ const info = [
 	.about-value {
 		color: var(--term-gray-85);
 		text-align: left;
+		min-width: 0;
+		overflow-wrap: break-word;
 	}
 
 	.about-bio {
@@ -177,6 +181,22 @@ const info = [
 		}
 		.about-bio {
 			align-items: flex-start;
+		}
+	}
+
+	/* Below 1024px .about-info sizes via `width: max-content`, which assumes
+	   its rows never wrap — on narrow viewports the fixed 9rem key column
+	   plus a long value (eg. "University of Adelaide") overflows the shell.
+	   Force the list to the available width and let key/value wrap instead. */
+	@media (max-width: 1023px) {
+		.about-info {
+			width: 100%;
+		}
+		.about-row {
+			flex-wrap: wrap;
+		}
+		.about-key {
+			width: auto;
 		}
 	}
 </style>

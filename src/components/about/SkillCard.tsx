@@ -40,7 +40,17 @@ export default function SkillCard(props: Props) {
 	const level = skill_level(information);
 
 	return (
-		<div class="row row-sm" style={{ "align-items": "center", gap: "0.7rem", opacity: selected ? "1" : "0.85" }}>
+		<div
+			class="row row-sm"
+			style={{
+				"align-items": "center",
+				gap: "0.7rem",
+				"row-gap": "0.25rem",
+				"flex-wrap": "wrap",
+				"min-width": 0,
+				opacity: selected ? "1" : "0.85",
+			}}
+		>
 			<span class="font-mono text-sm" style={{ color, width: "6.5rem", "flex-shrink": "0", "text-align": "left" }}>
 				{skill}
 			</span>

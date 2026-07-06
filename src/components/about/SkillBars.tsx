@@ -19,7 +19,7 @@ function SkillBars(props: { skills: Record<string, SkillInformation> }) {
 					onClick={() => {
 						set_selected_skill(id);
 					}}
-					style={{ background: "none", border: "none", padding: 0, cursor: "pointer", width: "100%" }}
+					style={{ background: "none", border: "none", padding: 0, cursor: "pointer", width: "100%", "min-width": 0 }}
 				>
 					<SkillCard skill={id} information={data} color={skill_color(index)} selected={id === selected_skill()} />
 				</button>
