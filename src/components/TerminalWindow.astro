@@ -19,13 +19,15 @@ const { path = derive_path(Astro.url.pathname) } = Astro.props;
 		<div class="terminal-titlebar-label text-sm text-muted">forbit@dev — {path} — zsh</div>
 		<Navigation />
 	</div>
-	<div class="terminal-body page-container">
+	<div class="terminal-body">
 		<slot />
 	</div>
 </div>
 
 <style>
 	.terminal-window {
+		width: 100%;
+		max-width: 64rem;
 		margin-inline: auto;
 	}
 
@@ -34,7 +36,8 @@ const { path = derive_path(Astro.url.pathname) } = Astro.props;
 		z-index: 30;
 		background: var(--term-titlebar);
 		border-bottom: 1px solid var(--term-border-inner);
-		padding: var(--space-sm) var(--space-md);
+		padding-block: var(--space-sm);
+		padding-inline: clamp(1rem, 4vw, 2.5rem);
 		gap: var(--space-md);
 	}
 
@@ -70,6 +73,7 @@ const { path = derive_path(Astro.url.pathname) } = Astro.props;
 	}
 
 	.terminal-body {
+		padding-inline: clamp(1rem, 4vw, 2.5rem);
 		padding-block: var(--space-lg);
 	}
 
