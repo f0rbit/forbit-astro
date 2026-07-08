@@ -80,9 +80,9 @@ The experience timeline has two modes: `left` (vertical) and `middle` (alternati
 
 ### DECISION 7: Hydration strategy (DECIDED)
 
--   **Static render (no `client:*` needed)**: `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `Badge`, `Button` (without `loading`), `Status`, `Stat` — These are pure render functions with no signals/effects.
--   **Needs `client:load`**: `Clamp`, `Collapsible`, `Dropdown` — These use `createSignal` internally.
--   Components already using `client:load` (`Typewriter`, `SkillSelector`, `PublishTime`) keep their directives.
+- **Static render (no `client:*` needed)**: `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `Badge`, `Button` (without `loading`), `Status`, `Stat` — These are pure render functions with no signals/effects.
+- **Needs `client:load`**: `Clamp`, `Collapsible`, `Dropdown` — These use `createSignal` internally.
+- Components already using `client:load` (`Typewriter`, `SkillSelector`, `PublishTime`) keep their directives.
 
 ### DECISION NEEDED: astro-navbar dependency
 
@@ -128,9 +128,9 @@ Each phase is independently committable. If Phase N fails:
 **Est. LOC**: ~10
 **Deps**: None
 
--   `bun add @f0rbit/ui`
--   Remove `@astrojs/tailwind` from `astro.config.mjs` integrations array
--   Remove `tailwind` import from `astro.config.mjs`
+- `bun add @f0rbit/ui`
+- Remove `@astrojs/tailwind` from `astro.config.mjs` integrations array
+- Remove `tailwind` import from `astro.config.mjs`
 
 #### Task 0.2: Update Page.astro layout — import styles, remove Tailwind classes
 
@@ -138,9 +138,9 @@ Each phase is independently committable. If Phase N fails:
 **Est. LOC**: ~15
 **Deps**: Task 0.1
 
--   Add `import "@f0rbit/ui/styles";` in frontmatter
--   Replace `class="text-base-text-subtlish bg-base-bg-primary"` on `<body>` with no class (or blank — @f0rbit/ui sets `body` styles via reset + tokens)
--   The `pb-4` and `minHeight` calc can use plain CSS
+- Add `import "@f0rbit/ui/styles";` in frontmatter
+- Replace `class="text-base-text-subtlish bg-base-bg-primary"` on `<body>` with no class (or blank — @f0rbit/ui sets `body` styles via reset + tokens)
+- The `pb-4` and `minHeight` calc can use plain CSS
 
 #### Task 0.3: Rewrite global.css — remove @apply, use CSS variables
 
@@ -155,68 +155,68 @@ Replace all `@apply` directives with plain CSS using @f0rbit/ui design tokens:
 ```css
 /* Links */
 html a {
-    @apply text-blue-400 hover:text-blue-500;
+	@apply text-blue-400 hover:text-blue-500;
 }
 → html a {
-    color: var(--accent);
+	color: var(--accent);
 }
 html a:hover {
-    opacity: 0.8;
+	opacity: 0.8;
 }
 
 /* Headings */
 html h1 {
-    @apply text-3xl font-bold text-base-text-primary;
+	@apply text-3xl font-bold text-base-text-primary;
 }
 → html h1 {
-    font-size: var(--text-3xl);
-    font-weight: 700;
-    color: var(--fg);
-    line-height: unset;
+	font-size: var(--text-3xl);
+	font-weight: 700;
+	color: var(--fg);
+	line-height: unset;
 }
 
 html h2 {
-    @apply text-2xl font-bold text-base-text-primary;
+	@apply text-2xl font-bold text-base-text-primary;
 }
 → html h2 {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: var(--fg);
+	font-size: var(--text-2xl);
+	font-weight: 700;
+	color: var(--fg);
 }
 
 html h3 {
-    @apply text-xl font-bold text-base-text-secondary;
+	@apply text-xl font-bold text-base-text-secondary;
 }
 → html h3 {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--fg-muted);
+	font-size: var(--text-xl);
+	font-weight: 700;
+	color: var(--fg-muted);
 }
 
 html h4,
 html h5 {
-    @apply text-lg font-semibold text-base-text-secondary;
+	@apply text-lg font-semibold text-base-text-secondary;
 }
 → html h4,
 html h5 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-semibold);
-    color: var(--fg-muted);
+	font-size: var(--text-lg);
+	font-weight: var(--font-semibold);
+	color: var(--fg-muted);
 }
 
 /* Article styles — same pattern, all @apply → CSS vars */
 article h1 {
-    font-size: var(--text-4xl);
+	font-size: var(--text-4xl);
 } /* was text-5xl, scaled down */
 article h2 {
-    font-size: var(--text-3xl);
+	font-size: var(--text-3xl);
 }
 article h3 {
-    font-size: var(--text-2xl);
+	font-size: var(--text-2xl);
 }
 article h4,
 article h5 {
-    font-size: var(--text-xl);
+	font-size: var(--text-xl);
 }
 article h1,
 h2,
@@ -224,82 +224,82 @@ h3,
 h4,
 h5,
 h6 {
-    margin-top: 1rem;
-    margin-bottom: 0.25rem;
+	margin-top: 1rem;
+	margin-bottom: 0.25rem;
 }
 
 /* Lists */
 article ul {
-    list-style: disc;
-    list-style-position: inside;
+	list-style: disc;
+	list-style-position: inside;
 }
 article ol {
-    list-style: decimal;
-    list-style-position: inside;
+	list-style: decimal;
+	list-style-position: inside;
 }
 article ul > li > ul > li,
 article ol > li > ol > li {
-    margin-left: 1.5rem;
+	margin-left: 1.5rem;
 }
 article ul > li::marker,
 ol > li::marker {
-    color: var(--fg-faint);
+	color: var(--fg-faint);
 }
 
 /* Spacing */
 article p + p {
-    margin-top: 2ch;
+	margin-top: 2ch;
 }
 
 /* Code */
 article pre > code {
-    display: flex;
-    padding: var(--space-md);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    overflow: auto;
+	display: flex;
+	padding: var(--space-md);
+	border-radius: var(--radius);
+	border: 1px solid var(--border);
+	overflow: auto;
 }
 article pre {
-    padding: var(--space-sm);
-    background: var(--bg);
+	padding: var(--space-sm);
+	background: var(--bg);
 }
 article code {
-    font-size: var(--text-sm);
-    background: var(--bg-alt);
-    padding: 2px 6px;
-    display: inline-flex;
+	font-size: var(--text-sm);
+	background: var(--bg-alt);
+	padding: 2px 6px;
+	display: inline-flex;
 }
 
 /* Images */
 article img {
-    width: 100%;
-    height: auto;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 4px;
+	width: 100%;
+	height: auto;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 4px;
 }
 
 /* Blockquotes */
 article blockquote {
-    border-left: 4px solid var(--border);
-    padding-left: 0.5rem;
+	border-left: 4px solid var(--border);
+	padding-left: 0.5rem;
 }
 
 /* Specification article */
 article.specification h1 {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: var(--fg);
+	font-size: var(--text-2xl);
+	font-weight: 700;
+	color: var(--fg);
 }
 article.specification h2 {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--fg-muted);
+	font-size: var(--text-xl);
+	font-weight: 700;
+	color: var(--fg-muted);
 }
 article.specification h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-semibold);
-    color: var(--fg-muted);
+	font-size: var(--text-lg);
+	font-weight: var(--font-semibold);
+	color: var(--fg-muted);
 }
 
 /* Remove Google Font import */
@@ -349,13 +349,13 @@ Run `bun install` to clean lockfile.
 
 CenteredContainer is imported in:
 
--   `src/pages/index.astro` (4 uses)
--   `src/pages/about.astro` (1 use)
--   `src/pages/blog.astro` (1 use)
--   `src/pages/projects.astro` (1 use)
--   `src/pages/timeline.astro` (1 use)
--   `src/pages/projects/[project_id].astro` (1 use)
--   `src/components/Footer.astro` (1 use)
+- `src/pages/index.astro` (4 uses)
+- `src/pages/about.astro` (1 use)
+- `src/pages/blog.astro` (1 use)
+- `src/pages/projects.astro` (1 use)
+- `src/pages/timeline.astro` (1 use)
+- `src/pages/projects/[project_id].astro` (1 use)
+- `src/components/Footer.astro` (1 use)
 
 Replace `<CenteredContainer class="...">` with `<div class="center-wide ...">` (or `<main class="center-wide ...">`).
 
@@ -394,10 +394,10 @@ The scoped style `@apply text-white hover:text-blue-500` → plain CSS:
 
 ```css
 #navbar a {
-    color: var(--fg);
+	color: var(--fg);
 }
 #navbar a:hover {
-    color: var(--accent);
+	color: var(--accent);
 }
 ```
 
@@ -428,8 +428,8 @@ Actually — Task 1.1 touches ALL page files. If we need to also do page-level c
 **Phase 1 Execution Order**:
 
 1. Tasks 1.1, 1.2 (parallel — different files, though 1.1 touches pages and Footer)
-    - Actually, 1.1 touches Footer.astro too (removes CenteredContainer import). And 1.3 also touches Footer.astro. **Conflict!**
-    - Solution: Task 1.1 handles CenteredContainer replacement everywhere INCLUDING Footer. Task 1.3 then handles the remaining Tailwind class migration in Footer. This means 1.3 depends on 1.1.
+   - Actually, 1.1 touches Footer.astro too (removes CenteredContainer import). And 1.3 also touches Footer.astro. **Conflict!**
+   - Solution: Task 1.1 handles CenteredContainer replacement everywhere INCLUDING Footer. Task 1.3 then handles the remaining Tailwind class migration in Footer. This means 1.3 depends on 1.1.
 2. Task 1.3 (after 1.1)
 3. Verification: `bun run build`, check navigation renders, footer renders
 
@@ -449,14 +449,14 @@ Actually — Task 1.1 touches ALL page files. If we need to also do page-level c
 
 ```html
 <div class="flex items-center flex-col gap-4 rounded border border-borders-primary px-2 py-1 text-base-text-secondary">
-    <a href="..."><h2 class="text-2xl hover:text-blue-500">{name}</h2></a>
-    <p class="w-full h-full px-4">{description}</p>
-    <div class="flex flex-row gap-2 flex-wrap justify-center">
-        <Status ... />
-        <div class="rounded border ..."><a href="...">GitHub</a></div>
-        <div class="rounded border ..."><a href="...">{link_text}</a></div>
-        <div class="rounded border ...">tech icons</div>
-    </div>
+	<a href="..."><h2 class="text-2xl hover:text-blue-500">{name}</h2></a>
+	<p class="w-full h-full px-4">{description}</p>
+	<div class="flex flex-row gap-2 flex-wrap justify-center">
+		<Status ... />
+		<div class="rounded border ..."><a href="...">GitHub</a></div>
+		<div class="rounded border ..."><a href="...">{link_text}</a></div>
+		<div class="rounded border ...">tech icons</div>
+	</div>
 </div>
 ```
 
@@ -495,43 +495,46 @@ The card title link hover: use `.interactive` class on the card, or style `a` wi
 
 ```html
 <div class="p-3 rounded border-borders-primary border flex flex-col gap-2">
-    <h3 ...>{title}</h3>
-    <p class="text-base-text-subtle flex-grow">{description}</p>
-    <div class="flex justify-center flex-row gap-2">
-        <button class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary">Read</button>
-    </div>
+	<h3 ...>{title}</h3>
+	<p class="text-base-text-subtle flex-grow">{description}</p>
+	<div class="flex justify-center flex-row gap-2">
+		<button
+			class="bg-base-accent-primary px-4 py-1 border-borders-secondary border rounded hover:bg-base-accent-secondary"
+		>
+			Read
+		</button>
+	</div>
 </div>
 ```
 
 **New**:
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '@f0rbit/ui'
-
-;<Card>
-    <CardHeader>
-        <CardTitle transition:name={'title-' + post.slug}>{post.title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-        <p class="text-subtle">{post.description}</p>
-    </CardContent>
-    <CardFooter>
-        <div class="row">
-            <a href={`/blog/${relative_url}`}>
-                <Button variant="secondary" size="sm">
-                    Read
-                </Button>
-            </a>
-            {post.url && (
-                <a href={post.url}>
-                    <Button variant="ghost" size="sm">
-                        Visit
-                    </Button>
-                </a>
-            )}
-        </div>
-    </CardFooter>
-</Card>
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from "@f0rbit/ui";
+<Card>
+	<CardHeader>
+		<CardTitle transition:name={"title-" + post.slug}>{post.title}</CardTitle>
+	</CardHeader>
+	<CardContent>
+		<p class="text-subtle">{post.description}</p>
+	</CardContent>
+	<CardFooter>
+		<div class="row">
+			<a href={`/blog/${relative_url}`}>
+				<Button variant="secondary" size="sm">
+					Read
+				</Button>
+			</a>
+			{post.url && (
+				<a href={post.url}>
+					<Button variant="ghost" size="sm">
+						Visit
+					</Button>
+				</a>
+			)}
+		</div>
+	</CardFooter>
+</Card>;
 ```
 
 **Note on `transition:name`**: Astro's view transition API adds `transition:name` to elements. This works on any HTML element. Since `CardTitle` renders as a heading, this should work. If not, wrap in a span with the transition name.
@@ -544,11 +547,11 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '@f
 
 This is a timeline card with absolute positioning for the dot. Keep the dot + relative positioning. Replace:
 
--   `border border-borders-primary rounded px-2 py-1` (award badges) → `<Badge>` component
--   `text-sm scale-[0.75] pb-1 mt-[2px] border border-base-accent-tertiary px-2 rounded capitalize` (type tag) → `<Badge>`
--   `text-base-text-subtle` → `text-subtle`
--   `flex flex-col gap-1` → `stack-sm`
--   `flex flex-row gap-2` → `row`
+- `border border-borders-primary rounded px-2 py-1` (award badges) → `<Badge>` component
+- `text-sm scale-[0.75] pb-1 mt-[2px] border border-base-accent-tertiary px-2 rounded capitalize` (type tag) → `<Badge>`
+- `text-base-text-subtle` → `text-subtle`
+- `flex flex-col gap-1` → `stack-sm`
+- `flex flex-row gap-2` → `row`
 
 The experience card is NOT a full `<Card>` component because it's part of a custom timeline layout with absolute dots and connecting lines. Keep the outer `<div>` structure, just replace classes.
 
@@ -569,23 +572,22 @@ The experience card is NOT a full `<Card>` component because it's part of a cust
 **New**: Use `<Card interactive>` from @f0rbit/ui. Since this is already a `.tsx` file (SolidJS component), import Card directly:
 
 ```tsx
-import { Card, CardContent } from '@f0rbit/ui'
-
-;<Card interactive={!header}>
-    <CardContent>
-        <div class="stack-sm" style={{ 'text-align': 'center' }}>
-            <h3>{skill}</h3>
-            <SkillSubheading information={information} />
-        </div>
-    </CardContent>
-</Card>
+import { Card, CardContent } from "@f0rbit/ui";
+<Card interactive={!header}>
+	<CardContent>
+		<div class="stack-sm" style={{ "text-align": "center" }}>
+			<h3>{skill}</h3>
+			<SkillSubheading information={information} />
+		</div>
+	</CardContent>
+</Card>;
 ```
 
 Also update `SkillSubheading`:
 
--   `text-base-text-subtlish font-semibold` → `text-muted font-bold`
--   `text-base-text-subtle` → `text-subtle`
--   `flex flex-row gap-1` → `row-sm`
+- `text-base-text-subtlish font-semibold` → `text-muted font-bold`
+- `text-base-text-subtle` → `text-subtle`
+- `flex flex-row gap-1` → `row-sm`
 
 **Note**: In SolidJS, use `class` not `className`. Wait — the existing code uses `className`. Since this is a SolidJS component rendered in Astro, `className` works. But @f0rbit/ui components use `class`. To be consistent, switch to `class` (SolidJS supports both, `class` is preferred in Solid).
 
@@ -597,11 +599,11 @@ Also update `SkillSubheading`:
 
 Replace:
 
--   `className="flex flex-col gap-2"` → `class="stack"`
--   `className="flex items-center gap-y-0 flex-col"` → `class="stack-sm"` with center align
--   `className="flex flex-row gap-2 items-center"` → `class="row"`
--   `className="flex flex-row gap-1"` → `class="row-sm"`
--   `className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-2"` → `class="grid"`
+- `className="flex flex-col gap-2"` → `class="stack"`
+- `className="flex items-center gap-y-0 flex-col"` → `class="stack-sm"` with center align
+- `className="flex flex-row gap-2 items-center"` → `class="row"`
+- `className="flex flex-row gap-1"` → `class="row-sm"`
+- `className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-2"` → `class="grid"`
 
 Since SkillSelector already has `client:load`, no hydration issues.
 
@@ -615,36 +617,35 @@ Since SkillSelector already has `client:load`, no hydration issues.
 
 ```html
 <div class="flex gap-4 flex-col lg:flex-row items-center lg:items-unset">
-    <div class="lg:w-max flex items-center justify-center">avatar</div>
-    <ul class="w-min lg:w-max whitespace-nowrap px-3 py-2 border rounded border-borders-primary">
-        <li class="flex flex-row gap-2">...</li>
-    </ul>
-    <div class="lg:self-start">bio text</div>
+	<div class="lg:w-max flex items-center justify-center">avatar</div>
+	<ul class="w-min lg:w-max whitespace-nowrap px-3 py-2 border rounded border-borders-primary">
+		<li class="flex flex-row gap-2">...</li>
+	</ul>
+	<div class="lg:self-start">bio text</div>
 </div>
 ```
 
 **New**: Use a `Card` for the info list:
 
 ```tsx
-import { Card, CardContent } from '@f0rbit/ui'
-
-;<div class="row-lg" style={{ 'flex-wrap': 'wrap', 'align-items': 'start' }}>
-    <div>avatar</div>
-    <Card>
-        <CardContent>
-            <ul class="stack-sm">
-                <li class="row">
-                    <Laptop2 size={18} /> Software Engineer
-                </li>
-                ...
-            </ul>
-        </CardContent>
-    </Card>
-    <div>
-        <p class="text-muted">bio text...</p>
-        {more && <a href="/about">More Information</a>}
-    </div>
-</div>
+import { Card, CardContent } from "@f0rbit/ui";
+<div class="row-lg" style={{ "flex-wrap": "wrap", "align-items": "start" }}>
+	<div>avatar</div>
+	<Card>
+		<CardContent>
+			<ul class="stack-sm">
+				<li class="row">
+					<Laptop2 size={18} /> Software Engineer
+				</li>
+				...
+			</ul>
+		</CardContent>
+	</Card>
+	<div>
+		<p class="text-muted">bio text...</p>
+		{more && <a href="/about">More Information</a>}
+	</div>
+</div>;
 ```
 
 #### Task 2.7: Migrate ProjectPage.astro
@@ -655,11 +656,11 @@ import { Card, CardContent } from '@f0rbit/ui'
 
 This is the project detail view with two sections (main content + sidebar). Replace:
 
--   `flex flex-row gap-2 flex-wrap` → `cluster`
--   `rounded border border-borders-primary px-2 py-1 font-bold` → `<Badge>` for GitHub/link badges
--   Version badge: `border-1 border-accent-btn-primary ... rounded-md font-bold text-sm` → `<Badge variant="accent">`
--   `flex flex-col gap-0 tech-list` → `stack-sm`
--   `flex flex-row gap-2 items-center` → `row`
+- `flex flex-row gap-2 flex-wrap` → `cluster`
+- `rounded border border-borders-primary px-2 py-1 font-bold` → `<Badge>` for GitHub/link badges
+- Version badge: `border-1 border-accent-btn-primary ... rounded-md font-bold text-sm` → `<Badge variant="accent">`
+- `flex flex-col gap-0 tech-list` → `stack-sm`
+- `flex flex-row gap-2 items-center` → `row`
 
 The sidebar "Recent Commits" section stays as-is (structure), just class migration.
 
@@ -679,7 +680,7 @@ The sidebar "Recent Commits" section stays as-is (structure), just class migrati
 
 ```html
 <div>
-    <slot />
+	<slot />
 </div>
 ```
 
@@ -709,21 +710,20 @@ The sidebar "Recent Commits" section stays as-is (structure), just class migrati
 
 **Option B**: Use `<Badge>` with appropriate variant. Map:
 
--   DEVELOPMENT → `<Badge variant="accent">` (purple = development)
--   LIVE, FINISHED, RELEASED → `<Badge variant="success">` (green)
--   STOPPED, ABANDONED → `<Badge variant="error">` (red)
--   PAUSED → `<Badge variant="warning">` (orange/yellow)
+- DEVELOPMENT → `<Badge variant="accent">` (purple = development)
+- LIVE, FINISHED, RELEASED → `<Badge variant="success">` (green)
+- STOPPED, ABANDONED → `<Badge variant="error">` (red)
+- PAUSED → `<Badge variant="warning">` (orange/yellow)
 
 **Decision**: Use `<Badge>` with icons. The Badge component supports children including icons:
 
 ```tsx
-import { Badge } from '@f0rbit/ui'
-
-;<Badge variant={getVariant(status)}>
-    <span class="row-sm">
-        {icon} <span>{status.toLowerCase()}</span>
-    </span>
-</Badge>
+import { Badge } from "@f0rbit/ui";
+<Badge variant={getVariant(status)}>
+	<span class="row-sm">
+		{icon} <span>{status.toLowerCase()}</span>
+	</span>
+</Badge>;
 ```
 
 Keep the lucide icon switch statement. Add a `getVariant` helper.
@@ -738,24 +738,23 @@ Keep the lucide icon switch statement. Add a `getVariant` helper.
 
 ```html
 <div class="flex flex-row gap-2 border border-borders-primary rounded px-2 py-1">
-    <span class="flex flex-row gap-1 items-center">{icons}</span>
-    <span>{skill}</span>
+	<span class="flex flex-row gap-1 items-center">{icons}</span>
+	<span>{skill}</span>
 </div>
 ```
 
 **New**:
 
 ```tsx
-import { Badge } from '@f0rbit/ui'
-
-;<Badge title={title}>
-    <span class="row-sm">
-        {events.sort(sortSkillEvent).map((t) => (
-            <EventTypeIcon type={t} size={16} />
-        ))}
-    </span>
-    <span>{skill}</span>
-</Badge>
+import { Badge } from "@f0rbit/ui";
+<Badge title={title}>
+	<span class="row-sm">
+		{events.sort(sortSkillEvent).map((t) => (
+			<EventTypeIcon type={t} size={16} />
+		))}
+	</span>
+	<span>{skill}</span>
+</Badge>;
 ```
 
 #### Task 3.3: Update award badges in ExperienceCard.astro
@@ -768,8 +767,8 @@ The award badges currently:
 
 ```html
 <div class="flex flex-row items-center gap-2 border border-borders-primary rounded px-2 py-1">
-    <AwardTypeIcon type="{award.type}" size="{20}" />
-    <span>{award.title}</span>
+	<AwardTypeIcon type="{award.type}" size="{20}" />
+	<span>{award.title}</span>
 </div>
 ```
 
@@ -777,8 +776,8 @@ Replace with:
 
 ```tsx
 <Badge title={award.description}>
-    <AwardTypeIcon type={award.type} size={16} />
-    <span>{award.title}</span>
+	<AwardTypeIcon type={award.type} size={16} />
+	<span>{award.title}</span>
 </Badge>
 ```
 
@@ -817,27 +816,27 @@ Delete the file. All usages replaced in Phase 2 Task 2.3 with `<Clamp>`.
 
 Replace:
 
--   `relative pl-10` → keep `relative`, use padding via `style`
--   `absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3` → use `var(--fg-subtle)` for the line color
--   `w-2 h-2 rounded-full bg-base-text-subtlish` → use `var(--fg-muted)` for dot color
--   `text-sm -mb-1` → `text-sm`
--   `text-base-text-secondary` → `text-primary` (it's the event title)
--   `font-mono` → `font-mono`
--   `cursor-pointer flex border-1 border-borders-primary rounded px-2 justify-center items-center` → use `<Collapsible>` from @f0rbit/ui with `client:visible`
+- `relative pl-10` → keep `relative`, use padding via `style`
+- `absolute left-5 h-[calc(100%-20px)] w-[1px] bg-base-text-subtle mt-3` → use `var(--fg-subtle)` for the line color
+- `w-2 h-2 rounded-full bg-base-text-subtlish` → use `var(--fg-muted)` for dot color
+- `text-sm -mb-1` → `text-sm`
+- `text-base-text-secondary` → `text-primary` (it's the event title)
+- `font-mono` → `font-mono`
+- `cursor-pointer flex border-1 border-borders-primary rounded px-2 justify-center items-center` → use `<Collapsible>` from @f0rbit/ui with `client:visible`
 
 For the grouped commits `<details>`:
 
 ```tsx
-import { Collapsible } from '@f0rbit/ui'
+import { Collapsible } from "@f0rbit/ui";
 
 {
-    event.commits?.length > 5 ? (
-        <Collapsible client:visible trigger={`${event.commits.length} Commits`}>
-            <CommitList commits={event.commits} />
-        </Collapsible>
-    ) : (
-        <CommitList commits={event.commits} />
-    )
+	event.commits?.length > 5 ? (
+		<Collapsible client:visible trigger={`${event.commits.length} Commits`}>
+			<CommitList commits={event.commits} />
+		</Collapsible>
+	) : (
+		<CommitList commits={event.commits} />
+	);
 }
 ```
 
@@ -851,9 +850,9 @@ Remove the custom `<style>` block for chevron show/hide (Collapsible handles thi
 
 Replace:
 
--   `flex flex-row gap-3 p-2` → `row` with padding
--   `w-[1px] bg-borders-primary` → vertical line using `var(--border)`
--   `font-mono` → `font-mono`
+- `flex flex-row gap-3 p-2` → `row` with padding
+- `w-[1px] bg-borders-primary` → vertical line using `var(--border)`
+- `font-mono` → `font-mono`
 
 ```html
 <div class="row" style={{ padding: "var(--space-sm)" }}>
@@ -872,11 +871,11 @@ Replace:
 
 Replace:
 
--   `pl-[32px] relative flex flex-col gap-5` → `stack-lg` with padding-left and relative
--   `absolute left-[19.5px] h-[calc(100%-15px)] w-[1px] bg-base-text-subtle` → inline style with `var(--fg-subtle)`
--   The middle mode grid: `relative grid gap-5 w-full` with `gridTemplateColumns` → keep the grid template, replace gap/flex classes
--   `flex flex-grow flex-col gap-16` → `stack` with custom gap
--   `min-h-full min-w-[1px] w-[1px] bg-gray-50` → inline style with `var(--fg-subtle)`
+- `pl-[32px] relative flex flex-col gap-5` → `stack-lg` with padding-left and relative
+- `absolute left-[19.5px] h-[calc(100%-15px)] w-[1px] bg-base-text-subtle` → inline style with `var(--fg-subtle)`
+- The middle mode grid: `relative grid gap-5 w-full` with `gridTemplateColumns` → keep the grid template, replace gap/flex classes
+- `flex flex-grow flex-col gap-16` → `stack` with custom gap
+- `min-h-full min-w-[1px] w-[1px] bg-gray-50` → inline style with `var(--fg-subtle)`
 
 **Phase 4 Parallelism**: All tasks touch different files. Task 4.1 is just a deletion (only if Phase 2 already removed the import). Tasks 4.2, 4.3 are activity components. Task 4.4 is about component.
 
@@ -918,8 +917,8 @@ The homepage two-column layout (content + sidebar timeline):
 ```html
 <!-- Current -->
 <div class="flex gap-2">
-    <div class="w-max flex flex-col gap-2">content</div>
-    <section class="hidden min-w-[300px] 2xl:min-w-[400px] xl:flex gap-2 flex-col">sidebar</section>
+	<div class="w-max flex flex-col gap-2">content</div>
+	<section class="hidden min-w-[300px] 2xl:min-w-[400px] xl:flex gap-2 flex-col">sidebar</section>
 </div>
 ```
 
@@ -927,31 +926,31 @@ New approach: CSS grid with explicit columns for the two-column layout:
 
 ```html
 <div class="home-layout">
-    <div class="stack">content</div>
-    <section class="stack home-sidebar">sidebar</section>
+	<div class="stack">content</div>
+	<section class="stack home-sidebar">sidebar</section>
 </div>
 
 <style>
-    .home-layout {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--space-sm);
-    }
-    @media (min-width: 1280px) {
-        .home-layout {
-            grid-template-columns: 1fr min(400px, 30vw);
-        }
-    }
-    .home-sidebar {
-        display: none;
-    }
-    @media (min-width: 1280px) {
-        .home-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-sm);
-        }
-    }
+	.home-layout {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-sm);
+	}
+	@media (min-width: 1280px) {
+		.home-layout {
+			grid-template-columns: 1fr min(400px, 30vw);
+		}
+	}
+	.home-sidebar {
+		display: none;
+	}
+	@media (min-width: 1280px) {
+		.home-sidebar {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-sm);
+		}
+	}
 </style>
 ```
 
@@ -975,10 +974,10 @@ The `text-[4vw] font-bold` hero title — use scoped style: `.hero-title { font-
 
 Replace:
 
--   `flex flex-col gap-2` → `stack`
--   `hidden lg:block` / `block lg:hidden` → media query or `.hide-mobile` / `.hide-desktop` scoped styles
--   `grid gap-2 p-2 grid-cols-1 xl:grid-cols-3` → `grid`
--   `grid gap-2 p-2 grid-cols-2 xl:grid-cols-4` → `grid-4` (or `grid` with `--grid-min: 150px`)
+- `flex flex-col gap-2` → `stack`
+- `hidden lg:block` / `block lg:hidden` → media query or `.hide-mobile` / `.hide-desktop` scoped styles
+- `grid gap-2 p-2 grid-cols-1 xl:grid-cols-3` → `grid`
+- `grid gap-2 p-2 grid-cols-2 xl:grid-cols-4` → `grid-4` (or `grid` with `--grid-min: 150px`)
 
 Hobbies cards: Keep custom `bg-cover` approach — this is one-off styling that @f0rbit/ui doesn't address. Use inline styles for the background image and overlay.
 
@@ -1002,8 +1001,8 @@ Simple: `<div class="grid">` around blog cards. The CenteredContainer is already
 
 Replace:
 
--   `max-w-[100ch] mx-auto px-6` → `center-wide` (or `center` for narrower reading width — `center` is 65ch which is ideal for reading)
--   `text-4xl` → scoped style or `text-4xl` (available in @f0rbit/ui utilities)
+- `max-w-[100ch] mx-auto px-6` → `center-wide` (or `center` for narrower reading width — `center` is 65ch which is ideal for reading)
+- `text-4xl` → scoped style or `text-4xl` (available in @f0rbit/ui utilities)
 
 ```html
 <main class="center">
@@ -1027,9 +1026,9 @@ Use `center` (65ch) for blog posts — better reading width than `center-wide` (
 
 Replace:
 
--   `flex flex-col gap-2` → `stack`
--   `grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4` → `grid`
--   `text-red-500 text-center` → use inline style or `text-accent` for error, or `color: var(--error)` inline
+- `flex flex-col gap-2` → `stack`
+- `grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4` → `grid`
+- `text-red-500 text-center` → use inline style or `text-accent` for error, or `color: var(--error)` inline
 
 #### Task 5.6: Migrate projects/[project_id].astro
 
@@ -1039,9 +1038,9 @@ Replace:
 
 Replace:
 
--   `flex flex-col gap-2 overflow-x-hidden` → `stack` with `overflow-x: hidden`
--   `flex xl:flex-row flex-col gap-y-2` → responsive layout (stack on mobile, row on desktop)
--   `text-red-500 text-center` → `color: var(--error); text-align: center`
+- `flex flex-col gap-2 overflow-x-hidden` → `stack` with `overflow-x: hidden`
+- `flex xl:flex-row flex-col gap-y-2` → responsive layout (stack on mobile, row on desktop)
+- `text-red-500 text-center` → `color: var(--error); text-align: center`
 
 #### Task 5.7: Migrate timeline.astro
 
@@ -1051,11 +1050,11 @@ Replace:
 
 Replace:
 
--   `flex justify-center` → remove (center-wide handles centering)
+- `flex justify-center` → remove (center-wide handles centering)
 
 ```html
 <div class="center-wide">
-    <TimelineComponent group_commits="{true}" limit="{null}" />
+	<TimelineComponent group_commits="{true}" limit="{null}" />
 </div>
 ```
 
@@ -1067,7 +1066,7 @@ Replace:
 
 Replace:
 
--   `grid gap-2 grid-cols-1 lg:grid-cols-2 3xl:grid-cols-3` → `grid`
+- `grid gap-2 grid-cols-1 lg:grid-cols-2 3xl:grid-cols-3` → `grid`
 
 #### Task 5.9: Migrate ProjectList.astro
 
@@ -1128,11 +1127,11 @@ Verify `tailwind.config.cjs` is already deleted (Phase 0).
 
 Search for patterns that indicate leftover Tailwind:
 
--   `@apply`
--   `bg-base-`, `text-base-`, `border-borders-`, `accent-btn-`
--   Common Tailwind patterns: `flex-col`, `flex-row`, `gap-`, `grid-cols-`, `px-`, `py-`, `mt-`, `mb-`, `ml-`, `mr-`, `pt-`, `pb-`, `pl-`, `pr-`
--   `hover:bg-`, `hover:text-`, `hover:border-`
--   `lg:`, `xl:`, `2xl:`, `3xl:`, `sm:` (responsive prefixes)
+- `@apply`
+- `bg-base-`, `text-base-`, `border-borders-`, `accent-btn-`
+- Common Tailwind patterns: `flex-col`, `flex-row`, `gap-`, `grid-cols-`, `px-`, `py-`, `mt-`, `mb-`, `ml-`, `mr-`, `pt-`, `pb-`, `pl-`, `pr-`
+- `hover:bg-`, `hover:text-`, `hover:border-`
+- `lg:`, `xl:`, `2xl:`, `3xl:`, `sm:` (responsive prefixes)
 
 Any remaining instances need manual migration. This is the safety net.
 
@@ -1142,11 +1141,11 @@ Any remaining instances need manual migration. This is the safety net.
 **Est. LOC**: 0
 **Deps**: Task 6.2
 
--   `bun run build` — must succeed with zero errors
--   Check for unused imports
--   Verify no `@tailwind` directives remain
--   Test dark mode toggle
--   Spot-check every page renders correctly
+- `bun run build` — must succeed with zero errors
+- Check for unused imports
+- Verify no `@tailwind` directives remain
+- Test dark mode toggle
+- Spot-check every page renders correctly
 
 **Phase 6 Execution Order**:
 
@@ -1239,14 +1238,14 @@ After this migration completes, add to AGENTS.md:
 ```markdown
 ## UI System
 
--   Uses `@f0rbit/ui` SolidJS component library — NOT Tailwind CSS
--   Import styles in layout: `import "@f0rbit/ui/styles";`
--   Layout: `.stack`, `.row`, `.grid`, `.center-wide` utility classes
--   Text: `.text-primary`, `.text-muted`, `.text-subtle`, `.text-faint`
--   Components: `Card`, `Badge`, `Button`, `Status`, `Clamp`, `Collapsible` from `@f0rbit/ui`
--   Hydration: Card/Badge/Button/Status are static (no client:\* needed). Clamp/Collapsible need `client:load` or `client:visible`.
--   Article styles in `global.css` use CSS variables (`var(--fg)`, `var(--border)`, etc.)
--   No Google Fonts — system font stack via @f0rbit/ui tokens
--   Dark mode: automatic via `prefers-color-scheme: dark`
--   Responsive: use @f0rbit/ui auto-fit `.grid`, media queries for specific layouts
+- Uses `@f0rbit/ui` SolidJS component library — NOT Tailwind CSS
+- Import styles in layout: `import "@f0rbit/ui/styles";`
+- Layout: `.stack`, `.row`, `.grid`, `.center-wide` utility classes
+- Text: `.text-primary`, `.text-muted`, `.text-subtle`, `.text-faint`
+- Components: `Card`, `Badge`, `Button`, `Status`, `Clamp`, `Collapsible` from `@f0rbit/ui`
+- Hydration: Card/Badge/Button/Status are static (no client:\* needed). Clamp/Collapsible need `client:load` or `client:visible`.
+- Article styles in `global.css` use CSS variables (`var(--fg)`, `var(--border)`, etc.)
+- No Google Fonts — system font stack via @f0rbit/ui tokens
+- Dark mode: automatic via `prefers-color-scheme: dark`
+- Responsive: use @f0rbit/ui auto-fit `.grid`, media queries for specific layouts
 ```

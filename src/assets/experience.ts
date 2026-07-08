@@ -97,8 +97,7 @@ export const experience: { [id: string]: Experience } = {
 			{
 				type: AWARD_TYPE.EDUCATION,
 				title: "Cert III in Programming",
-				description:
-					"Certificate III in C++ Programming, by the Adelaide Institute of Entertainment",
+				description: "Certificate III in C++ Programming, by the Adelaide Institute of Entertainment",
 			},
 		],
 	},
@@ -129,8 +128,7 @@ export const experience: { [id: string]: Experience } = {
 			{
 				type: AWARD_TYPE.AWARD,
 				title: "Grill Master",
-				description:
-					"Awarded to the top performing staff member in kitchen over 3 months",
+				description: "Awarded to the top performing staff member in kitchen over 3 months",
 			},
 		],
 	},
@@ -236,7 +234,7 @@ export const experience: { [id: string]: Experience } = {
 	},
 };
 
-export function getExperienceRelatingToSkill(skill: Skill) {
+export function get_experience_relating_to_skill(skill: Skill) {
 	const relevant = new Set<string>();
 	Object.entries(experience).forEach(([id, data]) => {
 		if (data.skills.find((s) => s.skill == skill)) relevant.add(id);

@@ -36,20 +36,20 @@ src/utils.ts
 
 ### Removed
 
--   `BLOG_URL` and `BLOG_TOKEN` from `secrets` object
--   `BLOG_ENV` config object
--   `parseDevBlog()` function
--   `getBlogServerPosts()` function
--   `fetchBlogPost()` function
--   `VITE_BLOG_URL` and `VITE_BLOG_TOKEN` from `.env.example`
+- `BLOG_URL` and `BLOG_TOKEN` from `secrets` object
+- `BLOG_ENV` config object
+- `parseDevBlog()` function
+- `getBlogServerPosts()` function
+- `fetchBlogPost()` function
+- `VITE_BLOG_URL` and `VITE_BLOG_TOKEN` from `.env.example`
 
 ### Unchanged
 
--   Local `Post` type in `src/types.ts` (display contract)
--   `BlogGroup`, `BLOG_GROUP` constants
--   Dev.to integration (`fetchDevToAPI`, `getDevToHeaders`, `secrets.DEVTO_KEY`)
--   SWR cache layer (`caches.blog`, `get_data`, `update_cache`)
--   All consumer files (zero changes: `blog.astro`, `[group]/[slug].astro`, `BlogCard.astro`, `RecentBlogs.astro`, `PublishTime.tsx`, `astro.config.mjs`)
+- Local `Post` type in `src/types.ts` (display contract)
+- `BlogGroup`, `BLOG_GROUP` constants
+- Dev.to integration (`fetchDevToAPI`, `getDevToHeaders`, `secrets.DEVTO_KEY`)
+- SWR cache layer (`caches.blog`, `get_data`, `update_cache`)
+- All consumer files (zero changes: `blog.astro`, `[group]/[slug].astro`, `BlogCard.astro`, `RecentBlogs.astro`, `PublishTime.tsx`, `astro.config.mjs`)
 
 ---
 
@@ -58,31 +58,31 @@ src/utils.ts
 The key type mapping from `@devpad/api Post` to local `Post`:
 
 ```typescript
-import type { Post as DevpadPost } from '@devpad/api'
+import type { Post as DevpadPost } from "@devpad/api";
 
 function devpadPostToLocal(post: DevpadPost): Post {
-    const publish_at = post.publish_at
-    // publish_at comes over JSON — could be Date object or ISO string depending on client internals
-    const published_at =
-        publish_at instanceof Date
-            ? publish_at.toISOString()
-            : typeof publish_at === 'string'
-              ? publish_at
-              : post.created_at instanceof Date
-                ? post.created_at.toISOString()
-                : String(post.created_at)
+	const publish_at = post.publish_at;
+	// publish_at comes over JSON — could be Date object or ISO string depending on client internals
+	const published_at =
+		publish_at instanceof Date
+			? publish_at.toISOString()
+			: typeof publish_at === "string"
+				? publish_at
+				: post.created_at instanceof Date
+					? post.created_at.toISOString()
+					: String(post.created_at);
 
-    return {
-        slug: post.slug,
-        group: BLOG_GROUP.DEV,
-        title: post.title,
-        description: post.description ?? post.content.substring(0, 80),
-        published: true,
-        published_at,
-        tag_list: post.tags,
-        content: post.content,
-        // no `url` — devpad posts are hosted locally, not external links
-    }
+	return {
+		slug: post.slug,
+		group: BLOG_GROUP.DEV,
+		title: post.title,
+		description: post.description ?? post.content.substring(0, 80),
+		published: true,
+		published_at,
+		tag_list: post.tags,
+		content: post.content,
+		// no `url` — devpad posts are hosted locally, not external links
+	};
 }
 ```
 
@@ -122,45 +122,45 @@ Changes:
 
 2. **Add `devpadPostToLocal()` adapter** (replaces `parseDevBlog()`):
 
-    - Map `tags` → `tag_list`
-    - Map `publish_at` → `published_at` (handle Date vs string)
-    - Map `description ?? content.substring(0,80)` → `description`
-    - Hard-code `group: BLOG_GROUP.DEV`, `published: true`
-    - No `url` field (local posts)
+   - Map `tags` → `tag_list`
+   - Map `publish_at` → `published_at` (handle Date vs string)
+   - Map `description ?? content.substring(0,80)` → `description`
+   - Hard-code `group: BLOG_GROUP.DEV`, `published: true`
+   - No `url` field (local posts)
 
 3. **Replace `getBlogServerPosts()`** with `getDevpadBlogPosts()`:
 
-    ```typescript
-    async function getDevpadBlogPosts(): Promise<Post[]> {
-        const result = await devpad.blog.posts.list({ status: 'published', limit: 100, archived: false })
-        if (!result.ok) {
-            console.error('BLOG: devpad fetch error', result.error.message)
-            return []
-        }
-        return result.value.posts.map(devpadPostToLocal)
-    }
-    ```
+   ```typescript
+   async function getDevpadBlogPosts(): Promise<Post[]> {
+   	const result = await devpad.blog.posts.list({ status: "published", limit: 100, archived: false });
+   	if (!result.ok) {
+   		console.error("BLOG: devpad fetch error", result.error.message);
+   		return [];
+   	}
+   	return result.value.posts.map(devpadPostToLocal);
+   }
+   ```
 
 4. **Replace `fetchBlogPost(slug)`** with `fetchDevpadBlogPost(slug)`:
 
-    ```typescript
-    async function fetchDevpadBlogPost(slug: string): Promise<Post | null> {
-        const result = await devpad.blog.posts.getBySlug(slug)
-        if (!result.ok) {
-            console.error('BLOG: devpad slug fetch error', result.error.message)
-            return null
-        }
-        return devpadPostToLocal(result.value)
-    }
-    ```
+   ```typescript
+   async function fetchDevpadBlogPost(slug: string): Promise<Post | null> {
+   	const result = await devpad.blog.posts.getBySlug(slug);
+   	if (!result.ok) {
+   		console.error("BLOG: devpad slug fetch error", result.error.message);
+   		return null;
+   	}
+   	return devpadPostToLocal(result.value);
+   }
+   ```
 
 5. **Update `fetch_blog()`** (line 199-210):
 
-    - Replace `getBlogServerPosts()` → `getDevpadBlogPosts()`
+   - Replace `getBlogServerPosts()` → `getDevpadBlogPosts()`
 
 6. **Update `getBlogPost(group, slug)`** (line 212-224):
 
-    - Replace `fetchBlogPost(slug)` → `fetchDevpadBlogPost(slug)` in the `BLOG_GROUP.DEV` branch
+   - Replace `fetchBlogPost(slug)` → `fetchDevpadBlogPost(slug)` in the `BLOG_GROUP.DEV` branch
 
 7. **Delete** `parseDevBlog()`, `getBlogServerPosts()`, `fetchBlogPost()` functions
 
@@ -191,10 +191,10 @@ In `.env.example`:
 
 **Verification**: After both tasks, run typecheck + build. Manually verify:
 
--   `/blog` page renders blog list (mixed devpad + dev.to posts)
--   `/blog/dev/{slug}` renders a devpad blog post with correct content
--   `/blog/devto/{slug}` still works (dev.to posts unaffected)
--   Sitemap generation in `astro.config.mjs` succeeds
+- `/blog` page renders blog list (mixed devpad + dev.to posts)
+- `/blog/dev/{slug}` renders a devpad blog post with correct content
+- `/blog/devto/{slug}` still works (dev.to posts unaffected)
+- Sitemap generation in `astro.config.mjs` succeeds
 
 ---
 
@@ -205,9 +205,9 @@ After this migration, add to a future `AGENTS.md`:
 ```markdown
 ## Blog Architecture
 
--   Two blog sources: devpad API (via `@devpad/api` client) + dev.to (raw fetch)
--   `devpadPostToLocal()` adapter in `src/utils.ts` bridges `@devpad/api Post` → local `Post` type
--   Local `Post` type in `src/types.ts` is the display contract — all components use this
--   Blog URLs: `/blog/dev/{slug}` (devpad) and `/blog/devto/{slug}` (dev.to)
--   `VITE_BLOG_URL` and `VITE_BLOG_TOKEN` env vars are no longer needed (removed in blog migration)
+- Two blog sources: devpad API (via `@devpad/api` client) + dev.to (raw fetch)
+- `devpadPostToLocal()` adapter in `src/utils.ts` bridges `@devpad/api Post` → local `Post` type
+- Local `Post` type in `src/types.ts` is the display contract — all components use this
+- Blog URLs: `/blog/dev/{slug}` (devpad) and `/blog/devto/{slug}` (dev.to)
+- `VITE_BLOG_URL` and `VITE_BLOG_TOKEN` env vars are no longer needed (removed in blog migration)
 ```

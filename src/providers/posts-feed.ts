@@ -1,26 +1,26 @@
-import { ok, err } from '@devpad/api'
-import type { Result, ProviderError } from './types'
+import { ok, err } from "@devpad/api";
+import type { Result, ProviderError } from "./types";
 
-export interface PostsFeedProvider {
-    fetchTimeline(): Promise<Result<unknown[], ProviderError>>
-}
+export type PostsFeedProvider = {
+	fetchTimeline(): Promise<Result<unknown[], ProviderError>>;
+};
 
-type PostsFeedConfig = { url: string }
+type PostsFeedConfig = { url: string };
 
 export class HttpPostsFeedProvider implements PostsFeedProvider {
-    constructor(private config: PostsFeedConfig) {}
+	constructor(private readonly config: PostsFeedConfig) {}
 
-    async fetchTimeline(): Promise<Result<unknown[], ProviderError>> {
-        try {
-            const response = await fetch(this.config.url)
-            if (!response.ok) {
-                return err({ code: 'fetch_failed', message: `posts-feed returned ${response.status}` })
-            }
-            const data = (await response.json()) as unknown[]
-            return ok(data)
-        } catch (e) {
-            const message = e instanceof Error ? e.message : String(e)
-            return err({ code: 'network_error', message })
-        }
-    }
+	async fetchTimeline(): Promise<Result<unknown[], ProviderError>> {
+		try {
+			const response = await fetch(this.config.url);
+			if (!response.ok) {
+				return err({ code: "fetch_failed", message: `posts-feed returned ${response.status.toString()}` });
+			}
+			const data = await response.json();
+			return ok(data as unknown[]);
+		} catch (e) {
+			const message = e instanceof Error ? e.message : String(e);
+			return err({ code: "network_error", message });
+		}
+	}
 }

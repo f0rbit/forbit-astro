@@ -60,8 +60,8 @@ src/types.ts      ─── Re-exports Project, Post from @devpad/api
 
 **Breaking change**: The blog `Post` type differs significantly:
 
--   Local: `{ slug, group, title, description, published, url?, published_at, tag_list, content }`
--   Schema: `{ id, uuid, author_id, slug, title, content, description?, format, category, tags, archived, publish_at, created_at, updated_at, project_ids, corpus_version }`
+- Local: `{ slug, group, title, description, published, url?, published_at, tag_list, content }`
+- Schema: `{ id, uuid, author_id, slug, title, content, description?, format, category, tags, archived, publish_at, created_at, updated_at, project_ids, corpus_version }`
 
 We need an adapter type or to update all blog consumers to use the new shape. A unified `DisplayPost` type that works for both devpad and dev.to posts is the cleanest approach.
 
@@ -113,9 +113,9 @@ The new client defaults to `/api/v1`. This is intentional — the API version ha
 
 Each phase produces a working commit. If Phase N breaks:
 
--   Revert to Phase N-1 commit
--   The site still works with the prior phase's state
--   Phase 1 is the riskiest (type changes cascade) — if it fails, `git revert` back to pre-migration
+- Revert to Phase N-1 commit
+- The site still works with the prior phase's state
+- Phase 1 is the riskiest (type changes cascade) — if it fails, `git revert` back to pre-migration
 
 ---
 
@@ -131,18 +131,18 @@ All changes in this phase are interdependent and touch shared files. Must be seq
 **LOC**: ~20
 **Dependencies**: None
 
--   `npm install @devpad/api`
--   Create `src/client.ts`:
+- `npm install @devpad/api`
+- Create `src/client.ts`:
 
-    ```typescript
-    import ApiClient from '@devpad/api'
+  ```typescript
+  import ApiClient from "@devpad/api";
 
-    export const devpad = new ApiClient({
-        base_url: import.meta.env.VITE_DEVPAD_URL ?? process.env.VITE_DEVPAD_URL ?? 'https://devpad.tools/api/v1',
-        api_key: import.meta.env.VITE_DEVPAD_API_KEY ?? process.env.VITE_DEVPAD_API_KEY,
-        auth_mode: 'key',
-    })
-    ```
+  export const devpad = new ApiClient({
+  	base_url: import.meta.env.VITE_DEVPAD_URL ?? process.env.VITE_DEVPAD_URL ?? "https://devpad.tools/api/v1",
+  	api_key: import.meta.env.VITE_DEVPAD_API_KEY ?? process.env.VITE_DEVPAD_API_KEY,
+  	auth_mode: "key",
+  });
+  ```
 
 #### Task 1.2: Migrate Project types in `src/types.ts`
 
@@ -150,11 +150,11 @@ All changes in this phase are interdependent and touch shared files. Must be seq
 **LOC**: ~15 changed
 **Dependencies**: Task 1.1
 
--   Remove local `Project`, `PROJECT_STATUS`, `PROJECT_VISIBILITY` type definitions
--   Re-export `Project` from `@devpad/api`
--   Keep `PROJECT_STATUS` and `PROJECT_VISIBILITY` const objects for runtime usage, but type them against the schema's string literals
--   Remove `ApiResult<T>` type (no longer needed — internal to utils.ts)
--   Keep all non-project types: `SKILL`, `SkillEvent`, `Award`, `Post`, `BlogGroup`, etc. (blog Post migrates in Phase 2)
+- Remove local `Project`, `PROJECT_STATUS`, `PROJECT_VISIBILITY` type definitions
+- Re-export `Project` from `@devpad/api`
+- Keep `PROJECT_STATUS` and `PROJECT_VISIBILITY` const objects for runtime usage, but type them against the schema's string literals
+- Remove `ApiResult<T>` type (no longer needed — internal to utils.ts)
+- Keep all non-project types: `SKILL`, `SkillEvent`, `Award`, `Post`, `BlogGroup`, etc. (blog Post migrates in Phase 2)
 
 #### Task 1.3: Migrate project fetching in `src/utils.ts`
 
@@ -162,37 +162,37 @@ All changes in this phase are interdependent and touch shared files. Must be seq
 **LOC**: ~40 changed
 **Dependencies**: Task 1.1, 1.2
 
--   Import `devpad` client from `./client`
--   Replace `devpad_fetch<T>()` usage in `fetch_projects()`:
-    ```typescript
-    async function fetch_projects(): DataFetch<Project[]> {
-        const result = await devpad.projects.list({ private: false })
-        if (!result.ok) {
-            console.error('PROJECTS: fetch error', result.error.message)
-            return { data: [], invalid_response: true }
-        }
-        // list() already filters by private:false, but keep PUBLIC filter for visibility
-        const data = result.value.filter((p) => p.visibility === 'PUBLIC')
-        console.log('PROJECTS: new entry')
-        return { data, invalid_response: false }
-    }
-    ```
--   Replace `getProject()`:
-    ```typescript
-    export async function getProject(project_id: string) {
-        if (cache_status(caches['project']) != 'empty') {
-            const data = await get_data(caches['project'])
-            const project = data.find((p) => p.project_id === project_id)
-            if (project) return project
-        }
-        const result = await devpad.projects.getByName(project_id)
-        if (!result.ok) return null
-        return result.value
-    }
-    ```
--   Remove the generic `devpad_fetch<T>()` function (no longer needed after blog migrates in Phase 2 — or keep it temporarily if blog isn't migrated yet)
--   Remove `devpad_url` constant
--   Remove `DEVPAD_API_KEY` from `secrets` object (now in client.ts)
+- Import `devpad` client from `./client`
+- Replace `devpad_fetch<T>()` usage in `fetch_projects()`:
+  ```typescript
+  async function fetch_projects(): DataFetch<Project[]> {
+  	const result = await devpad.projects.list({ private: false });
+  	if (!result.ok) {
+  		console.error("PROJECTS: fetch error", result.error.message);
+  		return { data: [], invalid_response: true };
+  	}
+  	// list() already filters by private:false, but keep PUBLIC filter for visibility
+  	const data = result.value.filter((p) => p.visibility === "PUBLIC");
+  	console.log("PROJECTS: new entry");
+  	return { data, invalid_response: false };
+  }
+  ```
+- Replace `getProject()`:
+  ```typescript
+  export async function getProject(project_id: string) {
+  	if (cache_status(caches["project"]) != "empty") {
+  		const data = await get_data(caches["project"]);
+  		const project = data.find((p) => p.project_id === project_id);
+  		if (project) return project;
+  	}
+  	const result = await devpad.projects.getByName(project_id);
+  	if (!result.ok) return null;
+  	return result.value;
+  }
+  ```
+- Remove the generic `devpad_fetch<T>()` function (no longer needed after blog migrates in Phase 2 — or keep it temporarily if blog isn't migrated yet)
+- Remove `devpad_url` constant
+- Remove `DEVPAD_API_KEY` from `secrets` object (now in client.ts)
 
 #### Task 1.4: Update `src/types.ts` Project type consumers
 
@@ -203,9 +203,9 @@ All changes in this phase are interdependent and touch shared files. Must be seq
 
 These files import `Project` and `PROJECT_STATUS` from `../../types`. Since we're re-exporting from `@devpad/api`, the imports stay the same. However, verify:
 
--   `project.deleted` field exists in schema ✓ (via `entity()` helper)
--   `project.status` values match ✓ (same enum values)
--   `project.visibility` values match ✓ (same enum values)
+- `project.deleted` field exists in schema ✓ (via `entity()` helper)
+- `project.status` values match ✓ (same enum values)
+- `project.visibility` values match ✓ (same enum values)
 
 **Likely no changes needed** in consumers — the re-export preserves the import path. But verify type compatibility in the verification step.
 
@@ -224,31 +224,31 @@ These files import `Project` and `PROJECT_STATUS` from `../../types`. Since we'r
 The devpad `Post` type (from `@devpad/schema/blog`) and dev.to posts have different shapes. Create a unified display type:
 
 ```typescript
-import type { Post as DevpadPost } from '@devpad/api'
+import type { Post as DevpadPost } from "@devpad/api";
 
 // Unified post type for display - works for both devpad and dev.to sources
 export type DisplayPost = {
-    slug: string
-    group: BlogGroup
-    title: string
-    description: string
-    published_at: string
-    tag_list: string[]
-    content: string
-    url?: string
-}
+	slug: string;
+	group: BlogGroup;
+	title: string;
+	description: string;
+	published_at: string;
+	tag_list: string[];
+	content: string;
+	url?: string;
+};
 
 // Adapter: devpad Post → DisplayPost
 export function toDisplayPost(post: DevpadPost): DisplayPost {
-    return {
-        slug: post.slug,
-        group: BLOG_GROUP.DEV,
-        title: post.title,
-        description: post.description ?? '',
-        published_at: post.publish_at?.toISOString() ?? post.created_at.toISOString(),
-        tag_list: post.tags,
-        content: post.content,
-    }
+	return {
+		slug: post.slug,
+		group: BLOG_GROUP.DEV,
+		title: post.title,
+		description: post.description ?? "",
+		published_at: post.publish_at?.toISOString() ?? post.created_at.toISOString(),
+		tag_list: post.tags,
+		content: post.content,
+	};
 }
 ```
 
@@ -260,26 +260,26 @@ Rename the current `Post` type to `DisplayPost` across the codebase (or alias it
 **LOC**: ~50 changed
 **Dependencies**: Task 2.1
 
--   Replace `getBlogServerPosts()` with client call:
-    ```typescript
-    async function getDevpadBlogPosts(): Promise<DisplayPost[]> {
-        const result = await devpad.blog.posts.list({ status: 'published', limit: 100, archived: false })
-        if (!result.ok) return []
-        return result.value.posts.map(toDisplayPost)
-    }
-    ```
--   Replace `fetchBlogPost(slug)` with:
-    ```typescript
-    async function fetchDevpadBlogPost(slug: string): Promise<DisplayPost | null> {
-        const result = await devpad.blog.posts.getBySlug(slug)
-        if (!result.ok) return null
-        return toDisplayPost(result.value)
-    }
-    ```
--   Update `fetch_blog()` to use `getDevpadBlogPosts()` instead of `getBlogServerPosts()`
--   Update `getBlogPost(group, slug)` to use `fetchDevpadBlogPost(slug)` for the `DEV` group
--   Remove `BLOG_ENV` object, `BLOG_URL` and `BLOG_TOKEN` from secrets
--   Remove `parseDevBlog()` helper (no longer needed)
+- Replace `getBlogServerPosts()` with client call:
+  ```typescript
+  async function getDevpadBlogPosts(): Promise<DisplayPost[]> {
+  	const result = await devpad.blog.posts.list({ status: "published", limit: 100, archived: false });
+  	if (!result.ok) return [];
+  	return result.value.posts.map(toDisplayPost);
+  }
+  ```
+- Replace `fetchBlogPost(slug)` with:
+  ```typescript
+  async function fetchDevpadBlogPost(slug: string): Promise<DisplayPost | null> {
+  	const result = await devpad.blog.posts.getBySlug(slug);
+  	if (!result.ok) return null;
+  	return toDisplayPost(result.value);
+  }
+  ```
+- Update `fetch_blog()` to use `getDevpadBlogPosts()` instead of `getBlogServerPosts()`
+- Update `getBlogPost(group, slug)` to use `fetchDevpadBlogPost(slug)` for the `DEV` group
+- Remove `BLOG_ENV` object, `BLOG_URL` and `BLOG_TOKEN` from secrets
+- Remove `parseDevBlog()` helper (no longer needed)
 
 #### Task 2.3: Update blog consumer types
 
@@ -287,9 +287,9 @@ Rename the current `Post` type to `DisplayPost` across the codebase (or alias it
 **LOC**: ~15 changed
 **Dependencies**: Task 2.1
 
--   Update `Post` imports to `DisplayPost` (or keep aliased re-export)
--   Verify field accesses: `post.slug`, `post.group`, `post.title`, `post.description`, `post.published_at`, `post.url`, `post.content`
--   All these fields exist on `DisplayPost` ✓
+- Update `Post` imports to `DisplayPost` (or keep aliased re-export)
+- Verify field accesses: `post.slug`, `post.group`, `post.title`, `post.description`, `post.published_at`, `post.url`, `post.content`
+- All these fields exist on `DisplayPost` ✓
 
 **Simplification**: Instead of renaming everywhere, just keep `Post` as the re-exported alias for `DisplayPost` in `src/types.ts`. This means zero changes in consumers.
 
@@ -305,20 +305,20 @@ Rename the current `Post` type to `DisplayPost` across the codebase (or alias it
 **LOC**: ~15 changed
 **Dependencies**: Phase 2 complete
 
--   Replace `fetch_timeline()`:
-    ```typescript
-    async function fetch_timeline(): DataFetch<any[]> {
-        const result = await devpad.user.history()
-        if (!result.ok) {
-            console.error('TIMELINE: fetch error', result.error.message)
-            return { data: [], invalid_response: true }
-        }
-        console.log('TIMELINE: new entry')
-        return { data: result.value, invalid_response: false }
-    }
-    ```
--   Remove `POSTS_URL` from secrets object
--   `getTimeline()` stays unchanged (pure transform on `any[]`)
+- Replace `fetch_timeline()`:
+  ```typescript
+  async function fetch_timeline(): DataFetch<any[]> {
+  	const result = await devpad.user.history();
+  	if (!result.ok) {
+  		console.error("TIMELINE: fetch error", result.error.message);
+  		return { data: [], invalid_response: true };
+  	}
+  	console.log("TIMELINE: new entry");
+  	return { data: result.value, invalid_response: false };
+  }
+  ```
+- Remove `POSTS_URL` from secrets object
+- `getTimeline()` stays unchanged (pure transform on `any[]`)
 
 #### Task 3.2: Clean up dead code and env vars
 
@@ -328,24 +328,24 @@ Rename the current `Post` type to `DisplayPost` across the codebase (or alias it
 
 In `src/utils.ts`:
 
--   Remove `devpad_url` constant (if not already removed)
--   Remove `devpad_fetch<T>()` function
--   Remove `BLOG_URL`, `BLOG_TOKEN`, `POSTS_URL` from `secrets` object
--   Remove `BLOG_ENV` object
--   Remove `parseDevBlog()` function
--   Remove `getBlogServerPosts()` export (now internal)
--   Remove `fetchBlogPost()` export (now internal)
--   Clean up `secrets` validation loop (only 2 secrets left: `DEVPAD_API_KEY`, `DEVTO_KEY` — and `DEVPAD_API_KEY` may not even need to be here since it's in client.ts)
+- Remove `devpad_url` constant (if not already removed)
+- Remove `devpad_fetch<T>()` function
+- Remove `BLOG_URL`, `BLOG_TOKEN`, `POSTS_URL` from `secrets` object
+- Remove `BLOG_ENV` object
+- Remove `parseDevBlog()` function
+- Remove `getBlogServerPosts()` export (now internal)
+- Remove `fetchBlogPost()` export (now internal)
+- Clean up `secrets` validation loop (only 2 secrets left: `DEVPAD_API_KEY`, `DEVTO_KEY` — and `DEVPAD_API_KEY` may not even need to be here since it's in client.ts)
 
 In `src/types.ts`:
 
--   Remove `ApiResult<T>` type
--   Verify all dead types are gone
+- Remove `ApiResult<T>` type
+- Verify all dead types are gone
 
 In `.env.example`:
 
--   Remove `VITE_BLOG_URL`, `VITE_BLOG_TOKEN`, `VITE_POSTS_URL`
--   Optionally add `VITE_DEVPAD_URL` (with comment that it defaults to production)
+- Remove `VITE_BLOG_URL`, `VITE_BLOG_TOKEN`, `VITE_POSTS_URL`
+- Optionally add `VITE_DEVPAD_URL` (with comment that it defaults to production)
 
 #### Task 3.3: Update astro.config.mjs for blog type compatibility
 
@@ -353,9 +353,9 @@ In `.env.example`:
 **LOC**: ~5 changed
 **Dependencies**: Phase 2 complete
 
--   Verify `getBlogPosts()` return type works with `post.group` and `post.slug` accesses
--   Verify `getProjects()` return type works with `project.project_id` access
--   Likely no changes needed if types are aliased correctly
+- Verify `getBlogPosts()` return type works with `post.group` and `post.slug` accesses
+- Verify `getProjects()` return type works with `project.project_id` access
+- Likely no changes needed if types are aliased correctly
 
 → **Verification**: typecheck, build, full manual smoke test of all pages. Commit.
 
@@ -400,20 +400,20 @@ Personal portfolio/blog site built with Astro 4 SSR, deployed as a standalone No
 
 ## Key Architecture
 
--   **Data fetching**: All devpad API calls go through `@devpad/api` client singleton in `src/client.ts`
--   **Caching**: In-memory SWR cache in `src/utils.ts` with 10-min TTL. Cache wraps client calls.
--   **Blog sources**: Two sources — devpad blog API (via client) + dev.to API (raw fetch). Unified via `DisplayPost` adapter type.
--   **Types**: Project types from `@devpad/api` (re-exported via `src/types.ts`). Blog display types are local adapters.
+- **Data fetching**: All devpad API calls go through `@devpad/api` client singleton in `src/client.ts`
+- **Caching**: In-memory SWR cache in `src/utils.ts` with 10-min TTL. Cache wraps client calls.
+- **Blog sources**: Two sources — devpad blog API (via client) + dev.to API (raw fetch). Unified via `DisplayPost` adapter type.
+- **Types**: Project types from `@devpad/api` (re-exported via `src/types.ts`). Blog display types are local adapters.
 
 ## Env Vars
 
--   `VITE_DEVPAD_API_KEY` — API key for devpad client
--   `VITE_DEVTO_KEY` — dev.to API key for blog integration
--   `VITE_DEVPAD_URL` — (optional) Override devpad API base URL
+- `VITE_DEVPAD_API_KEY` — API key for devpad client
+- `VITE_DEVTO_KEY` — dev.to API key for blog integration
+- `VITE_DEVPAD_URL` — (optional) Override devpad API base URL
 
 ## Conventions
 
--   Astro pages use `export const prerender = false` for SSR pages
--   `astro.config.mjs` has top-level awaits for sitemap generation
--   Process env fallback pattern: `import.meta.env.X ?? process.env.X` (Vite/Node compat)
+- Astro pages use `export const prerender = false` for SSR pages
+- `astro.config.mjs` has top-level awaits for sitemap generation
+- Process env fallback pattern: `import.meta.env.X ?? process.env.X` (Vite/Node compat)
 ```

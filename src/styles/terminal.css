@@ -1,0 +1,102 @@
+/**
+ * Tokyo Night terminal theme.
+ *
+ * This is the single source of truth for the site's palette. It:
+ *
+ *   1. Overrides @f0rbit/ui's layered semantic tokens (--bg, --bg-alt, --border,
+ *      --fg, --fg-muted, --fg-subtle, --fg-faint, --accent, --font-mono) with the
+ *      Tokyo Night ramp. @f0rbit/ui defines these inside `@layer tokens`
+ *      (including a `@media (prefers-color-scheme: dark)` variant and a
+ *      `[data-theme="dark"]` variant) — this file is intentionally NOT wrapped in
+ *      `@layer`, so as unlayered CSS it wins the cascade over every layered
+ *      variant regardless of import order or the visitor's OS theme. The site
+ *      is always-dark by design; there is no light mode.
+ *   2. Declares terminal-specific tokens (`--term-*`) used by the shared shell
+ *      (TerminalWindow, PromptLine, Navigation, Footer) and, in later phases,
+ *      by page bodies.
+ *
+ * Import this file in Page.astro immediately after "@f0rbit/ui/styles" (belt
+ * and braces — the unlayered rule below already wins regardless of order).
+ */
+
+:root {
+	/* ---- shadowed @f0rbit/ui semantic tokens ---- */
+	--bg: oklch(19% 0.03 274);
+	--bg-alt: oklch(25% 0.03 271);
+	--border: oklch(37% 0.04 268);
+
+	--fg: oklch(97% 0.015 270);
+	--fg-muted: oklch(72% 0.016 274);
+	--fg-subtle: oklch(58% 0.016 274);
+	--fg-faint: oklch(45% 0.014 274);
+
+	--accent: oklch(70% 0.12 258);
+
+	--font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+	/* ---- terminal chrome tokens ---- */
+	--term-panel: oklch(19% 0.03 274);
+	--term-titlebar: oklch(25% 0.03 271);
+	--term-border: oklch(37% 0.04 268);
+	--term-border-inner: oklch(31% 0.035 270);
+
+	/* gray ramp, hue 274 */
+	--term-gray-30: oklch(30% 0.012 274);
+	--term-gray-45: oklch(45% 0.014 274);
+	--term-gray-58: oklch(58% 0.016 274);
+	--term-gray-72: oklch(72% 0.016 274);
+	--term-gray-85: oklch(85% 0.017 274);
+	--term-gray-97: oklch(97% 0.018 274);
+
+	/* accents */
+	--term-prompt-user: oklch(74% 0.11 150); /* green */
+	--term-status-finished: oklch(74% 0.11 150); /* green */
+	--term-link: oklch(70% 0.12 258); /* blue */
+	--term-status-dev: oklch(70% 0.12 258); /* blue */
+	--term-keyword: oklch(71% 0.11 300); /* purple */
+}
+
+/*
+ * Font: the mockup's mono stack (`--font-mono` above) is entirely system fonts
+ * (ui-monospace, SF Mono, Menlo) — no webfont is required, so no @font-face /
+ * <link rel="preload"> is added. The pre-existing @f0rbit/ui `--font` token
+ * (a webfont name, "neue-haas-grotesk-text") is unused by this design and is
+ * left un-shadowed/untouched rather than pointed at a real font — nothing in
+ * this codebase references `var(--font)` for body copy once the terminal
+ * theme lands.
+ */
+
+body {
+	font-family: var(--font-mono);
+}
+
+@keyframes blink {
+	0%,
+	50% {
+		opacity: 1;
+	}
+	50.01%,
+	100% {
+		opacity: 0;
+	}
+}
+
+.cursor {
+	display: inline-block;
+	animation: blink 1s step-end infinite;
+}
+.cursor::after {
+	content: "█";
+}
+
+.lift {
+	transition:
+		border-color var(--transition),
+		transform var(--transition),
+		box-shadow var(--transition);
+}
+.lift:hover {
+	border-color: var(--term-link);
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-lg);
+}

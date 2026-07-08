@@ -1,38 +1,149 @@
 ---
-import Page from '../layouts/Page.astro'
-import Navigation from '../components/Navigation.astro'
-import { getBlogPosts, type AppLocals } from '../utils';
-import BlogCard from '../components/blog/BlogCard.astro';
+import Page from "../layouts/Page.astro";
+import PromptLine from "../components/PromptLine.astro";
+import BlogCard from "../components/blog/BlogCard.astro";
+import { get_blog_posts, type AppLocals } from "../utils";
+import { BLOG_GROUP } from "../types";
+import { Rss, BookOpen, ExternalLink } from "lucide-astro";
 
-const posts = await getBlogPosts(Astro.locals as AppLocals);
+const posts = await get_blog_posts(Astro.locals as AppLocals);
+
+const tag_counts = new Map<string, number>();
+for (const post of posts) {
+	for (const tag of post.tag_list) {
+		tag_counts.set(tag, (tag_counts.get(tag) ?? 0) + 1);
+	}
+}
+const popular_tags = [...tag_counts.entries()]
+	.toSorted((a, b) => b[1] - a[1])
+	.slice(0, 8)
+	.map(([tag]) => tag);
+
+const personal_count = posts.filter((post) => post.group === BLOG_GROUP.DEV).length;
+const devto_count = posts.filter((post) => post.group === BLOG_GROUP.DEVTO).length;
 
 export const prerender = false;
 ---
 
-<Page title="Blog" description="Just some of my thoughts" keywords={["blog", "devblog", "programming blog"]} canonical='https://forbit.dev/blog' ogImage="https://forbit.dev/og/default.png">
-    <Navigation home={false} />
-    <div class="page-container">
-        <div class="blog-grid">
-            {posts.map((post) => <BlogCard post={post} />)}
-        </div>
-    </div>
+<Page
+	title="Blog"
+	description="Just some of my thoughts"
+	keywords={["blog", "devblog", "programming blog"]}
+	canonical="https://forbit.dev/blog"
+	ogImage="https://forbit.dev/og/default.png"
+>
+	<div class="blog-header row row-between">
+		<div>
+			<PromptLine cmd="ls -lt --posts" />
+			<h1>Writing</h1>
+		</div>
+		<span class="row row-sm rss-chip font-mono text-sm">
+			<Rss size={14} />
+			rss
+		</span>
+	</div>
+
+	<div class="blog-layout">
+		<div class="blog-row-list">
+			{posts.map((post) => <BlogCard post={post} />)}
+		</div>
+
+		<div class="blog-sidebar stack">
+			<div>
+				<p class="sidebar-heading font-mono text-sm text-subtle"># popular_tags</p>
+				<div class="row row-sm tag-chips">
+					{popular_tags.map((tag) => <span class="tag-chip font-mono text-xs">{tag}</span>)}
+				</div>
+			</div>
+			<div>
+				<p class="sidebar-heading font-mono text-sm text-subtle"># sources</p>
+				<div class="stack stack-sm sources-list font-mono text-sm">
+					<div class="row row-between">
+						<span class="row row-sm source-personal">
+							<BookOpen size={14} />
+							personal
+						</span>
+						<span class="text-subtle">{personal_count}</span>
+					</div>
+					<div class="row row-between">
+						<span class="row row-sm source-devto">
+							<ExternalLink size={14} />
+							dev.to
+						</span>
+						<span class="text-subtle">{devto_count}</span>
+					</div>
+				</div>
+			</div>
+			<div class="subscribe-box">
+				<p class="subscribe-heading font-mono text-sm">$ subscribe</p>
+				<p class="subscribe-body text-sm text-muted">
+					Aggregated feed from the personal blog server &amp; dev.to. Grab the RSS.
+				</p>
+			</div>
+		</div>
+	</div>
 </Page>
 
 <style>
-    .blog-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
+	.blog-header {
+		align-items: flex-end;
+		margin-bottom: var(--space-lg);
+	}
+	.rss-chip {
+		color: var(--term-gray-72);
+		border: 1px solid var(--term-gray-72);
+		border-radius: var(--radius);
+		padding: 0.35rem 0.7rem;
+	}
 
-    }
-    @media (min-width: 1024px) {
-        .blog-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    @media (min-width: 1536px) {
-        .blog-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
+	.blog-layout {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-lg);
+		align-items: start;
+	}
+	.blog-row-list {
+		display: flex;
+		flex-direction: column;
+		border-bottom: 1px solid var(--term-border-inner);
+	}
+
+	.blog-sidebar {
+		gap: var(--space-lg);
+	}
+	.sidebar-heading {
+		margin-bottom: var(--space-sm);
+	}
+	.tag-chips {
+		flex-wrap: wrap;
+	}
+	.tag-chip {
+		color: var(--fg-muted);
+		border: 1px solid var(--term-border-inner);
+		border-radius: var(--radius);
+		padding: 0.2rem 0.5rem;
+	}
+	.source-personal {
+		color: var(--term-link);
+	}
+	.source-devto {
+		color: var(--term-gray-72);
+	}
+	.subscribe-box {
+		border: 1px solid var(--term-border-inner);
+		border-radius: var(--radius);
+		padding: var(--space-md);
+		background: var(--term-titlebar);
+	}
+	.subscribe-heading {
+		color: var(--fg);
+		font-weight: 600;
+		margin-bottom: var(--space-sm);
+	}
+
+	@media (min-width: 1024px) {
+		.blog-layout {
+			grid-template-columns: minmax(0, 1fr) 260px;
+		}
+	}
 </style>

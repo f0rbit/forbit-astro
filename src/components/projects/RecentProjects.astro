@@ -1,8 +1,8 @@
 ---
 import ProjectList from './ProjectList.astro'
-import { getProjects, type AppLocals } from '../../utils';
-const projects = await getProjects(Astro.locals as AppLocals);
-const recent_projects = projects.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 3) ?? []
+import { get_projects, type AppLocals } from '../../utils';
+const projects = await get_projects(Astro.locals as AppLocals);
+const recent_projects = projects.toSorted((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 3) ?? []
 ---
 
 <ProjectList select={null} projects={recent_projects} />

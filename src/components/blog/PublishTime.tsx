@@ -1,28 +1,28 @@
-import moment from 'moment'
+import { MS_PER_DAY, format_calendar, format_full_date_time, format_relative_time } from "../../lib/time";
 
-interface Props {
-    date: string
-}
+type Props = {
+	date: string;
+};
 
 export default function PublishTime(props: Props) {
-    const { date } = props
-    // if the date was withing the past 2 days we want to use fromNow()
-    // other wise calendar({ sameElse: "DD/MM/yyyy" }) will be used
+	const { date } = props;
+	const target = new Date(date);
+	const now = new Date();
+	// if the date was withing the past 2 days we want to use the relative form
+	// otherwise fall back to a calendar-style date (DD/MM/YYYY once >1 week away)
 
-    let time = null
-    if (moment(date).isAfter(moment().subtract(2, 'days'))) {
-        time = moment(date).fromNow()
-    } else {
-        time = moment(date).calendar({ sameElse: 'DD/MM/yyyy' })
-    }
+	const time =
+		now.getTime() - target.getTime() < 2 * MS_PER_DAY
+			? format_relative_time(target, now)
+			: format_calendar(target, now);
 
-    const title = moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a')
+	const title = format_full_date_time(target);
 
-    return (
-        <>
-            <time datetime={date} class="text-sm" style={{ 'text-transform': 'lowercase' }} title={title}>
-                {time}
-            </time>
-        </>
-    )
+	return (
+		<>
+			<time datetime={date} class="text-sm" style={{ "text-transform": "lowercase" }} title={title}>
+				{time}
+			</time>
+		</>
+	);
 }

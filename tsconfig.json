@@ -1,9 +1,10 @@
 {
-    "extends": "astro/tsconfigs/strict",
-    "compilerOptions": {
-        "esModuleInterop": true,
-        "jsx": "preserve",
-        "jsxImportSource": "solid-js",
-        "types": ["./worker-configuration.d.ts", "@types/bun"]
-    }
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"jsx": "preserve",
+		"jsxImportSource": "solid-js",
+		"types": ["./worker-configuration.d.ts", "@types/bun"]
+	},
+	"exclude": ["node_modules", "dist", "eslint.config.ts"]
 }

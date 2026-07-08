@@ -1,172 +1,121 @@
 ---
-import moment from 'moment'
-import type { Experience } from '../../assets/experience'
-import { formatDuration } from '../../utils'
-import SkillEvents from '../about/SkillEvents.astro'
-import AwardTypeIcon from '../projects/AwardTypeIcon.astro'
-import { Badge, Clamp } from "@f0rbit/ui"
+import type { Experience } from "../../assets/experience";
+import { format_duration } from "../../utils";
+import { format_calendar } from "../../lib/time";
+import SkillEvents from "../about/SkillEvents.astro";
+import AwardTypeIcon from "../projects/AwardTypeIcon.astro";
+import { Badge, Clamp } from "@f0rbit/ui";
+
 interface Props {
-    experience: Experience & { id: string }
-    type: 'left' | 'right' | 'normal'
-    tags: boolean
-    isLast?: boolean
+	experience: Experience & { id: string };
+	isLast?: boolean;
 }
 
-const { experience, type, tags, isLast = false } = Astro.props
+const { experience, isLast = false } = Astro.props;
 
-const date_string = `${moment(experience.start_date).calendar()} - ${experience.end_date ? moment(experience.end_date).calendar() : 'Present'}`
-const duration = experience.end_date ? moment.duration(moment(experience.end_date).diff(experience.start_date)) : moment.duration(moment().diff(experience.start_date))
-const { title, awards } = experience
+const end_date = experience.end_date ?? new Date();
+const date_string = `${format_calendar(experience.start_date)} - ${experience.end_date ? format_calendar(experience.end_date) : "Present"}`;
+const duration = format_duration(experience.start_date, end_date);
+const { title, company, awards, type } = experience;
 ---
 
-{type === 'normal' ? (
-    <div class="experience-row">
-        <div class="experience-indicator">
-            <div class="experience-dot-centered" />
-            {!isLast && <div class="experience-connector" />}
-        </div>
-        <div class="experience-content stack stack-sm">
-            <label class="text-sm experience-label">
-                <span>{date_string}</span>
-                {duration && <span class="text-subtle"> ({formatDuration(duration)})</span>}
-            </label>
-            <div class="experience-title">
-                <h3 id={experience.id}>{title}</h3>
-                {tags && <Badge variant="accent"><span style="text-transform: capitalize;">{experience.type}</span></Badge>}
-            </div>
-            {experience.company && <div class="text-xs text-subtle" style="margin-top: -0.25rem;">{experience.company}</div>}
-            <div class="stack stack-sm">
-                <Clamp client:load lines={2} showMoreText="Read More" showLessText="Read Less">
-                    <p class="text-muted">{experience.description}</p>
-                </Clamp>
-                <div class="cluster experience-awards">
-                    {awards.map((award) => (
-                        <Badge title={award.description}>
-                            <AwardTypeIcon type={award.type} size={20} />
-                            <span>{award.title}</span>
-                        </Badge>
-                    ))}
-                    {experience.skills.map((event) => <SkillEvents event={event} />)}
-                </div>
-            </div>
-        </div>
-    </div>
-) : (
-    <div class={`stack stack-sm experience-card ${['left', 'right'].includes(type) ? 'experience-card--timeline' : ''} ${type == 'left' ? 'experience-card--left' : ''}`}>
-        <div
-            class={`experience-dot 
-                ${type == 'right' ? 'experience-dot--right' : ''} 
-                ${type == 'left' ? 'experience-dot--left' : ''}
-            `}
-        >
-        </div>
-        <div class="stack stack-sm">
-            <label class="text-sm experience-label">
-                <span>{date_string}</span>
-                {duration && <span class="text-subtle"> ({formatDuration(duration)})</span>}
-            </label>
-            <div class={`experience-title ${type == 'left' ? 'experience-title--reverse' : ''}`}>
-                <h3 id={experience.id}>{title}</h3>
-                {tags && <Badge variant="accent"><span style="text-transform: capitalize;">{experience.type}</span></Badge>}
-            </div>
-            {experience.company && <div class="text-xs text-subtle" style="margin-top: -0.25rem;">{experience.company}</div>}
-        </div>
-        <div class={`stack stack-sm ${type == 'left' ? 'experience-body--left' : 'experience-body--right'}`}>
-            <Clamp client:load lines={2} showMoreText="Read More" showLessText="Read Less">
-                <p class="text-muted">{experience.description}</p>
-            </Clamp>
-            <div class={`cluster experience-awards ${type == 'left' ? 'experience-awards--left' : ''}`}>
-                {awards.map((award) => (
-                    <Badge title={award.description}>
-                        <AwardTypeIcon type={award.type} size={20} />
-                        <span>{award.title}</span>
-                    </Badge>
-                ))}
-                {experience.skills.map((event) => <SkillEvents event={event} />)}
-            </div>
-        </div>
-    </div>
-)}
+<div class="experience-row">
+	<div class="experience-indicator">
+		<span class:list={["experience-dot", `experience-dot--${type}`]} />
+		{!isLast && <span class="experience-connector" />}
+	</div>
+	<div class="experience-content stack stack-sm">
+		<label class="text-sm text-subtle experience-label">
+			<span>{date_string}</span>
+			{duration && <span> ({duration})</span>}
+		</label>
+		<div class="experience-title">
+			<h3 id={experience.id}>{title}</h3>
+			{company && <span class:list={["experience-company", `experience-company--${type}`]}>{company}</span>}
+		</div>
+		<div class="stack stack-sm">
+			{/* below-fold in the experience timeline — hydrate once it scrolls into view, not on load */}
+			<Clamp client:visible lines={2} showMoreText="Read More" showLessText="Read Less">
+				<p class="text-muted">{experience.description}</p>
+			</Clamp>
+			<div class="cluster experience-awards">
+				{
+					awards.map((award) => (
+						<Badge title={award.description}>
+							<AwardTypeIcon type={award.type} size={20} />
+							<span>{award.title}</span>
+						</Badge>
+					))
+				}
+				{experience.skills.map((event) => <SkillEvents event={event} />)}
+			</div>
+		</div>
+	</div>
+</div>
 
 <style>
-  .experience-card {
-    position: relative;
-  }
-  .experience-card--timeline {
-    min-height: 10rem;
-  }
-  .experience-card--left {
-    align-items: flex-end;
-    text-align: right;
-  }
-  .experience-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--fg-muted);
-    position: absolute;
-    border: 4px solid var(--bg);
-  }
-  .experience-row {
-    display: flex;
-    gap: var(--space-sm);
-  }
-  .experience-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 20px;
-    flex-shrink: 0;
-    padding-top: 6px;
-  }
-  .experience-dot-centered {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--fg-muted);
-    flex-shrink: 0;
-  }
-  .experience-connector {
-    width: 1px;
-    flex-grow: 1;
-    background: var(--fg-subtle);
-    margin-top: 4px;
-  }
-  .experience-content {
-    flex: 1;
-    min-width: 0;
-    padding-bottom: var(--space-md);
-  }
-  .experience-dot--right {
-    top: 2px;
-    left: calc(-1 * (var(--space-lg) + 8.5px));
-  }
-  .experience-dot--left {
-    top: 2px;
-    right: calc(-1 * (var(--space-lg) + 8.5px));
-  }
-  .experience-label {
-    margin-bottom: -0.25rem;
-  }
-  .experience-title {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .experience-title--reverse {
-    flex-direction: row-reverse;
-  }
-  .experience-body--left {
-    padding-right: var(--space-md);
-  }
-  .experience-body--right {
-    padding-left: var(--space-md);
-  }
-  .experience-awards {
-    align-items: center;
-  }
-  .experience-awards--left {
-    justify-content: flex-end;
-  }
+	.experience-row {
+		display: flex;
+		gap: var(--space-sm);
+	}
+	.experience-indicator {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 20px;
+		flex-shrink: 0;
+		padding-top: 6px;
+	}
+	.experience-dot {
+		width: 11px;
+		height: 11px;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+	.experience-dot--professional {
+		background: var(--term-gray-85);
+	}
+	.experience-dot--hobby {
+		background: var(--term-gray-72);
+	}
+	.experience-dot--learning {
+		background: var(--term-link);
+	}
+	.experience-connector {
+		width: 1px;
+		flex-grow: 1;
+		background: var(--term-border-inner);
+		margin-top: 4px;
+	}
+	.experience-content {
+		flex: 1;
+		min-width: 0;
+		padding-bottom: var(--space-lg);
+	}
+	.experience-label {
+		margin-bottom: -0.25rem;
+	}
+	.experience-title {
+		display: flex;
+		flex-direction: row;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+	}
+	.experience-company {
+		font-size: 0.82rem;
+		font-style: italic;
+	}
+	.experience-company--professional {
+		color: var(--term-gray-85);
+	}
+	.experience-company--hobby {
+		color: var(--term-gray-72);
+	}
+	.experience-company--learning {
+		color: var(--term-link);
+	}
+	.experience-awards {
+		align-items: center;
+	}
 </style>

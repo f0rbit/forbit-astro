@@ -3,10 +3,8 @@ import { remark } from 'remark'
 import { TECH_MAP, type Technology } from '../../assets/technology'
 import type { Project } from '../../types'
 import remarkHtml from 'remark-html'
-import TechnologyIcon from './TechnologyIcon.astro'
 import Status from './Status.astro'
-import { Github } from 'lucide-astro'
-import { Badge } from "@f0rbit/ui"
+import { ArrowLeft, ExternalLink, Github } from 'lucide-astro'
 import PublishTime from '../blog/PublishTime'
 import Timeline from '../activity/Timeline.astro'
 
@@ -21,132 +19,232 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 const parsed = project.specification ? await remark().use(remarkHtml).process(project.specification) : null
 ---
 
-<section class="stack project-main">
-<div class="row project-heading">
-    <h1>{project.name}</h1>
-    {
-        project.current_version ? (
-            <Badge variant="accent" title={`Current version: ${project.current_version}`}>
-                <span>{project.current_version}</span>
-            </Badge>
-        ) : null
-    }
-</div>
-<div class="cluster text-sm project-meta">
-    <Status status={project.status} size={16} />
-    {
-        project.repo_url && (
-            <Badge>
-                <a href={project.repo_url} class="row row-sm">
-                    <Github size={16} />
-                    <p>GitHub</p>
-                </a>
-            </Badge>
-        )
-    }
-    {
-        project.link_url && (
-            <Badge>
-                <a href={project.link_url}>{project.link_text}</a>
-            </Badge>
-        )
-    }
-</div>
-{
-    project.updated_at ? (
-        <div class="text-sm project-meta">
-            <>
-                <span>Last updated </span>
-                <PublishTime client:load date={project.updated_at} />
-            </>
+<a class="back-link row row-sm text-sm text-muted" href="/projects">
+    <ArrowLeft size={15} />
+    <span>cd ..</span>
+</a>
+
+<header class="row row-between project-header">
+    <div>
+        <p class="text-sm text-muted project-breadcrumb">~/work/<span class="text-primary">{project.name}</span></p>
+        <div class="row project-heading">
+            <h1>{project.name}</h1>
+            <Status status={project.status} size={13} />
         </div>
-    ) : null
-}
+        <p class="project-description">{project.description}</p>
+    </div>
+    {
+        (project.repo_url || project.link_url) && (
+            <div class="stack stack-sm project-actions">
+                {
+                    project.repo_url && (
+                        <a class="lift project-action" href={project.repo_url}>
+                            <Github size={16} />
+                            <span>GitHub</span>
+                        </a>
+                    )
+                }
+                {
+                    project.link_url && (
+                        <a class="lift project-action project-action--primary" href={project.link_url}>
+                            <ExternalLink size={16} />
+                            <span>{project.link_text ?? 'Live'}</span>
+                        </a>
+                    )
+                }
+            </div>
+        )
+    }
+</header>
 
-<h2 class="project-section-heading">Description</h2>
-<p>{project.description}</p>
+<div class="project-body">
+    <article class="project-article">
+        <p class="text-sm text-muted project-readme-prompt">$ cat README.md</p>
+        <h2 class="project-section-heading">Overview</h2>
+        <p>{project.description}</p>
+        {
+            project.specification ? (
+                <article class="specification">{parsed}</article>
+            ) : null
+        }
+    </article>
 
-{
-    project.specification ? (
-        <>
-            <h2 class="project-spec-heading">Specification</h2>
-            <article class="specification">{parsed}</article>
-        </>
-    ) : null
-}
+    <aside class="stack project-sidebar">
+        <div class="sidebar-box">
+            <p class="text-xs text-muted sidebar-heading"># metadata</p>
+            <dl class="sidebar-meta">
+                <div class="row row-between">
+                    <dt class="text-muted">status</dt>
+                    <dd><Status status={project.status} size={13} /></dd>
+                </div>
+                {
+                    project.current_version && (
+                        <div class="row row-between">
+                            <dt class="text-muted">version</dt>
+                            <dd class="text-primary">{project.current_version}</dd>
+                        </div>
+                    )
+                }
+                {
+                    project.updated_at && (
+                        <div class="row row-between">
+                            <dt class="text-muted">last updated</dt>
+                            {/* sidebar metadata, below the fold on first paint — defer hydration until visible */}
+                            <dd class="text-primary"><PublishTime client:visible date={project.updated_at} /></dd>
+                        </div>
+                    )
+                }
+            </dl>
+        </div>
 
-{
-    technologies.length > 0 ? (
-        <>
-            <h2 class="project-tech-heading">Technologies</h2>
-            <ul class="stack stack-sm tech-list project-tech-list">
-                {technologies.map((tech) => (
-                    <div class="row tech-item">
-                        <span>•</span>
-                        <span class="tech-icon">
-                            <TechnologyIcon tech={tech} />
-                        </span>
-                        <span class="tech-name">{tech}</span>
+        {
+            technologies.length > 0 && (
+                <div>
+                    <p class="text-xs text-muted sidebar-heading"># stack</p>
+                    <div class="cluster sidebar-tags">
+                        {technologies.map((tech) => <span class="tag">{tech}</span>)}
                     </div>
-                ))}
-            </ul>
-        </>
-    ) : null
-}
-</section>
+                </div>
+            )
+        }
 
-<section class="stack sidebar">
-{
-    project.repo_url ? (
-        <>
-            <h2>Recent Commits</h2>
-            <Timeline project_repo={project.repo_url} limit={10} group_commits={false} /> 
-        </>
-    ) : null
-}
-</section>
-
-<!-- TODO: screenshots -->
-
-<!-- TODO: recent releases -->
-
-
-<!-- TODO: roadmap -->
+        {
+            project.repo_url && (
+                <div class="sidebar-commits">
+                    <p class="text-xs text-muted sidebar-heading"># recent commits</p>
+                    <Timeline project_repo={project.repo_url} limit={10} group_commits={false} />
+                </div>
+            )
+        }
+    </aside>
+</div>
 
 <style>
-    .project-main {
-        flex-grow: 1;
-        width: 100%;
+    .back-link {
+        margin-bottom: var(--space-md);
+        width: fit-content;
+    }
+    .project-header {
+        align-items: flex-start;
+        gap: var(--space-xl);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--term-border-inner);
+        margin-bottom: var(--space-lg);
     }
     .project-heading {
         align-items: center;
-    }
-    .project-meta {
+        gap: var(--space-sm);
         margin-top: var(--space-xs);
     }
-    .project-section-heading {
+    .project-heading h1 {
+        font-size: var(--text-4xl);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    .project-description {
+        color: var(--fg-muted);
         margin-top: var(--space-sm);
+        max-width: 60ch;
     }
-    .project-spec-heading {
-        margin-top: var(--space-sm);
-        margin-bottom: calc(-1 * var(--space-sm));
+    .project-actions {
+        flex-shrink: 0;
     }
-    .project-tech-heading {
-        margin-top: var(--space-md);
-    }
-    .project-tech-list {
-        margin-top: 0.125rem;
-    }
-    .tech-item {
+    .project-action {
+        display: inline-flex;
         align-items: center;
+        gap: var(--space-xs);
+        font-size: var(--text-sm);
+        border: 1px solid var(--term-border-inner);
+        border-radius: var(--radius);
+        padding: var(--space-xs) var(--space-md);
+        background: var(--term-titlebar);
+        color: var(--fg);
     }
-    .tech-icon {
-        margin-top: 2.2px;
+    .project-action--primary {
+        background: var(--term-gray-72);
+        border-color: var(--term-gray-72);
+        color: var(--bg);
     }
-    .tech-name {
-        text-transform: capitalize;
+    .project-body {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+        align-items: start;
     }
-    .sidebar {
-        width: min(400px, 100%);
+    @media (min-width: 1024px) {
+        .project-body {
+            grid-template-columns: minmax(0, 1fr) 280px;
+        }
+    }
+    .project-readme-prompt {
+        margin-bottom: var(--space-md);
+    }
+    .project-section-heading {
+        font-size: var(--text-xl);
+        font-weight: 700;
+    }
+    .specification {
+        margin-top: var(--space-md);
+        color: var(--fg-subtle);
+        line-height: 1.7;
+    }
+    .specification :global(h1),
+    .specification :global(h2),
+    .specification :global(h3) {
+        color: var(--fg);
+        font-weight: 700;
+        margin: var(--space-md) 0 var(--space-sm);
+    }
+    .specification :global(pre) {
+        background: var(--bg);
+        border: 1px solid var(--term-border-inner);
+        border-radius: var(--radius);
+        padding: var(--space-md);
+        overflow-x: auto;
+        font-size: var(--text-sm);
+    }
+    .specification :global(code) {
+        font-family: var(--font-mono);
+    }
+    .specification :global(a) {
+        color: var(--term-link);
+    }
+    .specification :global(blockquote) {
+        border-left: 3px solid var(--term-gray-72);
+        padding-left: var(--space-md);
+        color: var(--fg-muted);
+        font-style: italic;
+    }
+    .sidebar-box {
+        border: 1px solid var(--term-border-inner);
+        border-radius: var(--radius);
+        background: var(--term-titlebar);
+        padding: var(--space-md);
+    }
+    .sidebar-heading {
+        margin-bottom: var(--space-sm);
+    }
+    .sidebar-meta {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+        font-size: var(--text-sm);
+    }
+    .sidebar-meta dt,
+    .sidebar-meta dd {
+        margin: 0;
+    }
+    .sidebar-tags {
+        gap: var(--space-xs);
+    }
+    .tag {
+        font-size: var(--text-xs);
+        color: var(--fg-muted);
+        border: 1px solid var(--term-border-inner);
+        border-radius: var(--radius);
+        padding: 0.2rem 0.5rem;
+    }
+    .sidebar-commits :global(*) {
+        font-size: var(--text-sm);
     }
 </style>

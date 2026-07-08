@@ -1,51 +1,187 @@
 ---
-import remarkHtml from 'remark-html'
-import Navigation from '../../../components/Navigation.astro'
-import Page from '../../../layouts/Page.astro'
-import type { BlogGroup } from '../../../types'
-const { group, slug } = Astro.params
-import { getBlogPost, type AppLocals } from '../../../utils'
-import { remark } from 'remark';
+import remarkHtml from "remark-html";
+import Page from "../../../layouts/Page.astro";
+import PromptLine from "../../../components/PromptLine.astro";
+import type { BlogGroup } from "../../../types";
+const { group, slug } = Astro.params;
+import { get_blog_post, get_blog_post_html, get_blog_posts, type AppLocals } from "../../../utils";
+import { remark } from "remark";
 import PublishTime from "../../../components/blog/PublishTime.tsx";
-import { articleJsonLd } from '../../../lib/json-ld'
+import { post_category, read_minutes } from "../../../components/blog/BlogCard.astro";
+import { article_json_ld } from "../../../lib/json-ld";
+import { ArrowLeft, ChevronRight, Calendar, Clock, ExternalLink } from "lucide-astro";
 
-const post = await getBlogPost(Astro.locals as AppLocals, group as BlogGroup, slug as string)
+const post = await get_blog_post(Astro.locals as AppLocals, group as BlogGroup, slug as string);
 
-const parsed = await remark().use(remarkHtml).process(post?.content ?? "no content"); 
+// Cache the rendered HTML (not just the raw markdown) so repeat requests
+// within the SWR TTL skip the remark parse entirely — see get_blog_post_html
+// in utils.ts, which reuses the same lib/cache.ts SWR infra as the post data.
+const html = post
+	? await get_blog_post_html(Astro.locals as AppLocals, group as BlogGroup, slug as string, async () => {
+			const file = await remark().use(remarkHtml).process(post.content);
+			return file.toString();
+		})
+	: "";
 
-export const prerender = false
+const posts = await get_blog_posts(Astro.locals as AppLocals);
+const current_index = posts.findIndex((p) => p.group === group && p.slug === slug);
+const prev_post = current_index >= 0 ? posts[current_index + 1] : undefined;
+const next_post = current_index > 0 ? posts[current_index - 1] : undefined;
+
+const category = post ? post_category(post) : undefined;
+const minutes = post ? read_minutes(post.content) : 0;
+
+export const prerender = false;
 
 const title = post && post.title ? post.title : "Blog Post";
-const canonical = `https://forbit.dev/blog/${group}/${slug}`
-const ogImage = `https://forbit.dev/og/blog/${group}/${slug}.png`
-const jsonLd = post ? articleJsonLd(post, canonical, ogImage) : undefined
+const canonical = `https://forbit.dev/blog/${group}/${slug}`;
+const og_image = `https://forbit.dev/og/blog/${group}/${slug}.png`;
+const jsonLd = post ? article_json_ld(post, canonical, og_image) : undefined;
 ---
 
-<Page title={title} description={post?.description ?? "Blog Post"} canonical={canonical} ogImage={ogImage} ogType="article" jsonLd={jsonLd}>
-    <Navigation home={false} />
-    <main class="blog-post">
-        {
-            !post ? (
-                <p>Error fetching blog post</p>
-            ) : (
-                <>
-                    <h1 class="text-4xl" transition:name={"title-"+post.slug}>{post.title}</h1>
-                    <div class="row row-sm text-muted">
-                        <span>Published </span>
-                        <PublishTime client:load date={post.published_at} />
-                    </div>
-                    <article>{parsed}</article>
-                </>
-            )
-        }
-    </main>
+<Page
+	title={title}
+	description={post?.description ?? "Blog Post"}
+	canonical={canonical}
+	ogImage={og_image}
+	ogType="article"
+	jsonLd={jsonLd}
+>
+	<div class="blog-post-column">
+		{
+			!post || !category ? (
+				<p>Error fetching blog post</p>
+			) : (
+				<>
+					<a href="/blog" class="row row-sm back-link text-sm text-subtle">
+						<ArrowLeft size={15} />
+						cd ~/blog
+					</a>
+
+					<PromptLine cmd={`cat ${post.slug}.md`} />
+					<h1 class="post-title" transition:name={"title-" + post.slug}>
+						{post.title}
+					</h1>
+					<div class="row row-between post-meta font-mono text-sm text-subtle">
+						<div class="row row-sm">
+							<span class="row row-sm author">
+								<span class="author-avatar" aria-hidden="true">
+									f
+								</span>
+								forbit
+							</span>
+							<span class="row row-sm">
+								<Calendar size={13} />
+								<PublishTime client:visible date={post.published_at} />
+							</span>
+							<span class="row row-sm">
+								<Clock size={13} />
+								{minutes} min read
+							</span>
+							<span class:list={["post-category", category.class_name]}>{category.label}</span>
+						</div>
+						{post.url && (
+							<a href={post.url} class="row row-sm original-link">
+								<ExternalLink size={13} />
+								open on {category.label}
+							</a>
+						)}
+					</div>
+
+					<article class="post-prose" set:html={html} />
+
+					{post.tag_list.length > 0 && (
+						<div class="row row-sm post-tags text-xs">
+							{post.tag_list.map((tag) => (
+								<span class="post-tag">#{tag}</span>
+							))}
+						</div>
+					)}
+
+					<div class="row row-between post-nav text-sm">
+						{prev_post ? (
+							<a href={`/blog/${prev_post.group}/${prev_post.slug}`} class="lift row row-sm post-nav-link">
+								<ArrowLeft size={15} />
+								{prev_post.title}
+							</a>
+						) : (
+							<span />
+						)}
+						{next_post ? (
+							<a href={`/blog/${next_post.group}/${next_post.slug}`} class="lift row row-sm post-nav-link">
+								{next_post.title}
+								<ChevronRight size={15} />
+							</a>
+						) : (
+							<span />
+						)}
+					</div>
+				</>
+			)
+		}
+	</div>
 </Page>
 
 <style>
-    .blog-post {
-        max-width: 800px;
-        margin-inline: auto;
-        padding-inline: 1rem;
-    }
-</style>
+	.blog-post-column {
+		max-width: 74ch;
+		margin-inline: auto;
+	}
+	.back-link {
+		text-decoration: none;
+		margin-bottom: var(--space-md);
+	}
+	.post-title {
+		font-size: var(--text-4xl);
+		line-height: 1.1;
+		margin-bottom: var(--space-sm);
+	}
+	.post-meta {
+		padding-bottom: var(--space-md);
+		border-bottom: 1px solid var(--term-border-inner);
+		margin-bottom: var(--space-lg);
+	}
+	.author-avatar {
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 30%;
+		background: linear-gradient(135deg, var(--term-gray-85), var(--term-gray-72));
+		color: var(--bg);
+		font-weight: 800;
+		font-size: var(--text-xs);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.post-category {
+		color: var(--term-link);
+	}
+	.post-category.category-devto {
+		color: var(--term-gray-72);
+	}
+	.original-link {
+		text-decoration: none;
+	}
 
+	.post-prose {
+		font-size: var(--text-md, 1rem);
+		line-height: 1.75;
+		color: var(--term-gray-85);
+	}
+
+	.post-tags {
+		margin: var(--space-lg) 0 var(--space-md);
+	}
+	.post-tag {
+		color: var(--fg-faint);
+	}
+
+	.post-nav {
+		border-top: 1px solid var(--term-border-inner);
+		padding-top: var(--space-md);
+	}
+	.post-nav-link {
+		color: var(--fg-muted);
+		text-decoration: none;
+	}
+</style>

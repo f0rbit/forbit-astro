@@ -4,11 +4,11 @@ Personal portfolio website built with Astro, showcasing my projects, experience,
 
 ## Tech Stack
 
--   **Framework**: Astro with SSR (Node.js adapter)
--   **Styling**: Tailwind CSS
--   **UI**: Solid.js components with React components
--   **Icons**: Astro Icon with Iconify collections
--   **Deployment**: Static generation with dynamic routes
+- **Framework**: Astro with SSR (Node.js adapter)
+- **Styling**: Tailwind CSS
+- **UI**: Solid.js components with React components
+- **Icons**: Astro Icon with Iconify collections
+- **Deployment**: Static generation with dynamic routes
 
 ## Project Structure
 
@@ -30,19 +30,19 @@ src/
 
 ## Key Features
 
--   **Dynamic Content**: Projects and blog posts fetched from external APIs
--   **Timeline View**: GitHub activity visualization with commit grouping
--   **Skills Tracking**: Interactive experience timeline with skill progression
--   **Multi-source Blog**: Aggregates posts from Dev.to and personal blog server
--   **Project Showcase**: Auto-generated project pages with specifications and status
--   **Responsive Design**: Tailwind-based responsive layouts
+- **Dynamic Content**: Projects and blog posts fetched from external APIs
+- **Timeline View**: GitHub activity visualization with commit grouping
+- **Skills Tracking**: Interactive experience timeline with skill progression
+- **Multi-source Blog**: Aggregates posts from Dev.to and personal blog server
+- **Project Showcase**: Auto-generated project pages with specifications and status
+- **Responsive Design**: Tailwind-based responsive layouts
 
 ## Data Sources
 
--   **Projects**: DevPad API for project management and tracking
--   **Blog Posts**: Dev.to API + personal blog server
--   **Timeline**: GitHub activity feed
--   **Experience**: Static TypeScript data with detailed career progression
+- **Projects**: DevPad API for project management and tracking
+- **Blog Posts**: Dev.to API + personal blog server
+- **Timeline**: GitHub activity feed
+- **Experience**: Static TypeScript data with detailed career progression
 
 ## Commands
 

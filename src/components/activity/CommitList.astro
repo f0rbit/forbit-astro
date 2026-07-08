@@ -1,23 +1,42 @@
 ---
+// commits come from utils.ts's get_timeline(), which has a `@todo fix typings`
+// (untyped intermediate shape) — matching `any` here rather than fabricating
+// a type for a shape that's about to be retyped upstream.
 interface Props {
+    // oxlint-disable-next-line typescript/no-explicit-any -- see above
     commits: any[]
 }
 
 const { commits } = Astro.props;
 ---
 
-<div class="row" style="padding: var(--space-sm);">
-    <div style="width: 1px; background: var(--border); align-self: stretch;"></div>
+<div class="row commit-list" style="padding: var(--space-sm);">
+    <div class="commit-list-rail"></div>
     <div class="stack stack-sm">
         {
+            // oxlint-disable-next-line typescript/no-explicit-any -- see @todo above interface Props
             commits.map((commit: any) => (
-                <p>
-                    <a href={commit.permalink}>
-                        <span class="font-mono">{commit.sha.slice(0, 7)}</span>
+                <p class="text-sm commit-entry">
+                    <a href={commit.permalink} class="font-mono commit-entry-hash">
+                        {commit.sha.slice(0, 7)}
                     </a>{' '}
-                    - <span>{commit.title}</span>
+                    <span class="commit-entry-message">{commit.title}</span>
                 </p>
             ))
         }
     </div>
 </div>
+
+<style>
+    .commit-list-rail {
+        width: 1px;
+        background: var(--term-border-inner);
+        align-self: stretch;
+    }
+    .commit-entry-hash {
+        color: var(--term-gray-85);
+    }
+    .commit-entry-message {
+        color: var(--fg-muted);
+    }
+</style>

@@ -1,6 +1,6 @@
 ---
 import type { SkillEvent } from '../../types';
-import { SKILL_EVENT_TYPE, sortSkillEvent } from '../../types'
+import { SKILL_EVENT_TYPE, sort_skill_event } from '../../types'
 import EventTypeIcon from "../projects/EventTypeIcon.astro";
 import { Badge } from "@f0rbit/ui";
 
@@ -28,7 +28,7 @@ title += (title.length > 1 ? ' ' : '') + (skill ? skill + " skills" : "")
 
 <Badge title={title}>
     <span class="row row-sm">
-        {events.sort(sortSkillEvent).map((t) => <EventTypeIcon type={t} size={16} />)}
+        {events.sort(sort_skill_event).map((t) => <EventTypeIcon type={t} size={16} />)}
     </span>
-    <span>{skill}</span>
+    <span class="font-mono text-xs">{skill}</span>
 </Badge>

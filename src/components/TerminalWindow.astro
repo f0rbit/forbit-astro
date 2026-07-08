@@ -1,0 +1,88 @@
+---
+import Navigation from "./Navigation.astro";
+import { derive_path } from "../lib/path-nav";
+
+interface Props {
+	path?: string;
+}
+
+const { path = derive_path(Astro.url.pathname) } = Astro.props;
+---
+
+<div class="terminal-window">
+	<div class="terminal-titlebar row row-between">
+		<div class="terminal-dots row row-sm" aria-hidden="true">
+			<span class="terminal-dot terminal-dot--gray"></span>
+			<span class="terminal-dot terminal-dot--light"></span>
+			<span class="terminal-dot terminal-dot--blue"></span>
+		</div>
+		<div class="terminal-titlebar-label text-sm text-muted">forbit@dev — {path} — zsh</div>
+		<Navigation />
+	</div>
+	<div class="terminal-body">
+		<slot />
+	</div>
+</div>
+
+<style>
+	.terminal-window {
+		width: 100%;
+		max-width: 64rem;
+		margin-inline: auto;
+	}
+
+	.terminal-titlebar {
+		position: relative;
+		z-index: 30;
+		background: var(--term-titlebar);
+		border-bottom: 1px solid var(--term-border-inner);
+		padding-block: var(--space-sm);
+		padding-inline: clamp(1rem, 4vw, 2.5rem);
+		gap: var(--space-md);
+	}
+
+	.terminal-dots {
+		position: relative;
+		z-index: 21;
+		flex-shrink: 0;
+	}
+	.terminal-dot {
+		width: 0.7rem;
+		height: 0.7rem;
+		border-radius: 50%;
+		display: inline-block;
+	}
+	.terminal-dot--gray {
+		background: var(--term-gray-58);
+	}
+	.terminal-dot--light {
+		background: var(--term-gray-85);
+	}
+	.terminal-dot--blue {
+		background: var(--term-link);
+	}
+
+	.terminal-titlebar-label {
+		flex: 1;
+		min-width: 0;
+		text-align: center;
+		font-family: var(--font-mono);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.terminal-body {
+		padding-inline: clamp(1rem, 4vw, 2.5rem);
+		padding-block: var(--space-lg);
+	}
+
+	@media (max-width: 640px) {
+		.terminal-titlebar-label {
+			display: none;
+		}
+		.terminal-body {
+			padding-block: var(--space-md);
+		}
+	}
+</style>

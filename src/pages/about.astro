@@ -1,121 +1,135 @@
 ---
-import Page from '../layouts/Page.astro'
-import Navigation from '../components/Navigation.astro'
-import { personJsonLd } from '../lib/json-ld'
-import AboutMe from '../components/about/AboutMe.astro'
-import Experience from '../components/about/Experience.astro'
-import RecentProjects from '../components/projects/RecentProjects.astro'
-import SkillSelector from '../components/about/SkillSelector'
-import { skills } from '../assets/skills'
+import { Image } from "astro:assets";
+import Page from "../layouts/Page.astro";
+import PromptLine from "../components/PromptLine.astro";
+import { person_json_ld } from "../lib/json-ld";
+import AboutMe from "../components/about/AboutMe.astro";
+import Experience from "../components/about/Experience.astro";
+import RecentProjects from "../components/projects/RecentProjects.astro";
+import SkillBars from "../components/about/SkillBars";
+import SkillDetail from "../components/about/SkillDetail";
+import { skills } from "../assets/skills";
 
 const hobbies = [
-    {
-        title: "Photography",
-        background: "\"https://images.pexels.com/photos/12882429/pexels-photo-12882429.jpeg\"",
-        url: "https://www.flickr.com/tmaterne/"
-    },
-    {
-        title: "Painting",
-        background: "https://images.squarespace-cdn.com/content/5942c23d8419c2dea969941a/1594788901787-3H2JUWI1097AF8HV6OMI/YT_PWMChallenge.png?content-type=image%2Fpng",
-        url: "https://pin.it/6j3Ka81sa"
-    }, {
-        title: "Music",
-        background: "https://preview.redd.it/started-a-vinyl-collection-in-september-its-grown-very-fast-v0-n2xm1g3iz7dc1.jpeg?width=1080&crop=smart&auto=webp&s=c055e82d09fdff2d230486115176ef0771e9377d",
-        url: "https://blends.blog/music"
-    }, {
-        title: "Badminton",
-        background: "https://www.westtorrens.sa.gov.au/files/content/public/v/2/events-directory/come-and-try-badminton-session-a/badminton.png?w=1200",
-        url: null
-    }
-]
+	{
+		title: "Photography",
+		image: "https://images.pexels.com/photos/12882429/pexels-photo-12882429.jpeg",
+		url: "https://www.flickr.com/tmaterne/",
+	},
+	{
+		title: "Painting",
+		image:
+			"https://images.squarespace-cdn.com/content/5942c23d8419c2dea969941a/1594788901787-3H2JUWI1097AF8HV6OMI/YT_PWMChallenge.png?content-type=image%2Fpng",
+		url: "https://pin.it/6j3Ka81sa",
+	},
+	{
+		title: "Music",
+		image:
+			"https://preview.redd.it/started-a-vinyl-collection-in-september-its-grown-very-fast-v0-n2xm1g3iz7dc1.jpeg?width=1080&crop=smart&auto=webp&s=c055e82d09fdff2d230486115176ef0771e9377d",
+		url: "https://blends.blog/music",
+	},
+	{
+		title: "Badminton",
+		image: "https://www.westtorrens.sa.gov.au/files/content/public/v/2/events-directory/come-and-try-badminton-session-a/badminton.png?w=1200",
+		url: null,
+	},
+];
 
 export const prerender = false;
 ---
 
-<Page title="About Me" description="Read to find out about what I'm currently working on, my professional experience and personal projects, and what my aspirations are for the future" keywords={["about", "resume", "hobbies", "tech journey", "minecraft plugins advanced", "becoming software engineer"]} canonical='https://forbit.dev/about' ogImage="https://forbit.dev/og/default.png" jsonLd={personJsonLd()}>
-    <Navigation home={false} />
-    <main class="page-container stack">
-        <section id="info">
-            <h2>About Me</h2>
-            <AboutMe more={false} />
-        </section>
-        <section id="experience">
-            <h2>My Journey</h2>
-            <div class="hide-mobile">
-                <Experience types={['learning', 'hobby', 'professional']} sort={'earliest'} mode={'middle'} />
-            </div>
-            <div class="hide-desktop">
-                <Experience types={['learning', 'hobby', 'professional']} sort={'earliest'} mode={'left'} />
-            </div>
-        </section>
-        <section id="working-on">
-            <h2>Recent Projects</h2>
-            <div class="grid" style="padding: var(--space-sm);">
-                <RecentProjects />
-            </div>
-        </section>
-        <section id="hobbies">
-            <h2>Hobbies</h2>
-            <div class="grid grid-4" style="padding: var(--space-sm);">
-            {Object.values(hobbies).map(({ title, background, url }) => (
-            <a href={url}>
-                <div class="hobby-card" style={`background-image: url(${background});`}>
-                    <div class="hobby-overlay">
-                        <h3>{title}</h3>
-                    </div>
-                </div>
-            </a>
-            ))}
-            </div>
-        </section>
-        <section id="skillset">
-            <h2>Skills</h2>
-            <SkillSelector client:load skills={skills} />
-        </section>
-    </main>
+<Page
+	title="About Me"
+	description="Read to find out about what I'm currently working on, my professional experience and personal projects, and what my aspirations are for the future"
+	keywords={["about", "resume", "hobbies", "tech journey", "minecraft plugins advanced", "becoming software engineer"]}
+	canonical="https://forbit.dev/about"
+	ogImage="https://forbit.dev/og/default.png"
+	jsonLd={person_json_ld()}
+>
+	<main class="stack stack-lg about-page">
+		<section class="stack">
+			<PromptLine cmd="cat about.md" />
+			<AboutMe more={false} />
+		</section>
+
+		<section class="stack">
+			<PromptLine cmd="cat skills.json" />
+			<SkillBars client:visible skills={skills} />
+		</section>
+
+		<section class="stack">
+			<PromptLine cmd="git log --all experience/" />
+			<Experience types={["learning", "hobby", "professional"]} sort={"latest"} mode={"left"} />
+		</section>
+
+		<section class="stack">
+			<PromptLine cmd="ls -la projects/" />
+			<div class="grid grid-3">
+				<RecentProjects />
+			</div>
+		</section>
+
+		<section class="stack">
+			<PromptLine cmd="cat hobbies.json" />
+			<div class="grid grid-4 hobby-grid">
+				{
+					hobbies.map(({ title, image, url }) => (
+						<a href={url ?? undefined} class:list={["hobby-card lift", { "hobby-card--static": !url }]}>
+							<Image src={image} alt={title} width={480} height={336} class="hobby-bg" />
+							<div class="hobby-overlay">
+								<span class="text-sm font-mono">{title}</span>
+							</div>
+						</a>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="stack">
+			<PromptLine cmd="cat skills/selected.md" />
+			<SkillDetail client:visible skills={skills} />
+		</section>
+	</main>
 </Page>
 
 <style>
-    .hide-mobile {
-        display: none;
-    }
-    .hide-desktop {
-        display: block;
-    }
-    @media (min-width: 1024px) {
-        .hide-mobile {
-            display: block;
-        }
-        .hide-desktop {
-            display: none;
-        }
-    }
+	.about-page {
+		padding-block: var(--space-sm);
+	}
 
-    .hobby-card {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: var(--radius-md, 0.25rem);
-        border: 1px solid var(--border);
-        background-size: cover;
-        background-position: center;
-        height: 6rem;
-    }
+	.hobby-grid {
+		gap: var(--space-sm);
+	}
 
-    .hobby-overlay {
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: var(--radius-md, 0.25rem);
-    }
+	.hobby-card {
+		position: relative;
+		display: flex;
+		align-items: flex-end;
+		border-radius: var(--radius-md);
+		border: 1px solid var(--term-border);
+		height: 7rem;
+		overflow: hidden;
+	}
 
-    .hobby-overlay h3 {
-        font-size: 1.5rem;
-        color: white;
-        text-align: center;
-        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
-    }
+	.hobby-card--static {
+		cursor: default;
+	}
+
+	.hobby-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0;
+	}
+
+	.hobby-overlay {
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		padding: var(--space-xs) var(--space-sm);
+		background: linear-gradient(to top, var(--term-titlebar), transparent);
+		color: var(--term-gray-97);
+	}
 </style>

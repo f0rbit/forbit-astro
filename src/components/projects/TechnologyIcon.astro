@@ -8,8 +8,8 @@ interface Props {
 
 const { tech } = Astro.props
 
-export const getIconName = (tech: Technology) => {
-	switch (tech) {
+export const getIconName = (technology: Technology) => {
+	switch (technology) {
 		case TECHNOLOGY.JAVA:
 			return 'ri:java-line'
 		case TECHNOLOGY.GAMEMAKER:

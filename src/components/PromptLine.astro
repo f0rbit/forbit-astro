@@ -1,0 +1,39 @@
+---
+import { derive_path } from "../lib/path-nav";
+
+interface Props {
+	path?: string;
+	cmd: string;
+	cursor?: boolean;
+}
+
+const { path = derive_path(Astro.url.pathname), cmd, cursor = false } = Astro.props;
+---
+
+<p class="prompt-line font-mono text-sm">
+	<span class="prompt-user">forbit@dev</span><span class="prompt-punct">:</span><span class="prompt-path"
+		>{path}</span
+	><span class="prompt-punct">$</span> <span class="prompt-cmd">{cmd}</span>{cursor && <span class="cursor" aria-hidden="true" />}
+</p>
+
+<style>
+	.prompt-line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.35em;
+	}
+	.prompt-user {
+		color: var(--term-prompt-user);
+		font-weight: 600;
+	}
+	.prompt-punct {
+		color: var(--fg-faint);
+	}
+	.prompt-path {
+		color: var(--fg-muted);
+	}
+	.prompt-cmd {
+		color: var(--fg);
+	}
+</style>
