@@ -63,7 +63,7 @@ const jsonLd = post ? article_json_ld(post, canonical, og_image) : undefined;
 						{post.title}
 					</h1>
 					<div class="row row-between post-meta font-mono text-sm text-subtle">
-						<div class="row row-sm">
+						<div class="row row-sm post-meta-group">
 							<span class="row row-sm author">
 								<span class="author-avatar" aria-hidden="true">
 									f
@@ -140,6 +140,12 @@ const jsonLd = post ? article_json_ld(post, canonical, og_image) : undefined;
 		padding-bottom: var(--space-md);
 		border-bottom: 1px solid var(--term-border-inner);
 		margin-bottom: var(--space-lg);
+		flex-wrap: wrap;
+		row-gap: var(--space-xs);
+	}
+	.post-meta-group {
+		flex-wrap: wrap;
+		row-gap: var(--space-xs);
 	}
 	.author-avatar {
 		width: 1.5rem;
