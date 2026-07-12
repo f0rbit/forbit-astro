@@ -131,6 +131,9 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         border-bottom: 1px solid var(--term-border-inner);
         margin-bottom: var(--space-lg);
     }
+    .project-breadcrumb {
+        overflow-wrap: anywhere;
+    }
     .project-heading {
         align-items: center;
         gap: var(--space-sm);
@@ -148,6 +151,9 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     }
     .project-actions {
         flex-shrink: 0;
+    }
+    .project-sidebar {
+        min-width: 0;
     }
     .project-action {
         display: inline-flex;
@@ -167,7 +173,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     }
     .project-body {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: var(--space-xl);
         align-items: start;
     }
@@ -175,6 +181,10 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         .project-body {
             grid-template-columns: minmax(0, 1fr) 280px;
         }
+    }
+    .project-article {
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
     .project-readme-prompt {
         margin-bottom: var(--space-md);
