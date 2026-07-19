@@ -32,7 +32,7 @@
 
 	--accent: oklch(70% 0.12 258);
 
-	--font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+	--font-mono: "SF Mono", ui-monospace, Menlo, monospace;
 
 	/* ---- terminal chrome tokens ---- */
 	--term-panel: oklch(19% 0.03 274);
@@ -58,7 +58,7 @@
 
 /*
  * Font: the mockup's mono stack (`--font-mono` above) is entirely system fonts
- * (ui-monospace, SF Mono, Menlo) — no webfont is required, so no @font-face /
+ * (SF Mono, ui-monospace, Menlo) — no webfont is required, so no @font-face /
  * <link rel="preload"> is added. The pre-existing @f0rbit/ui `--font` token
  * (a webfont name, "neue-haas-grotesk-text") is unused by this design and is
  * left un-shadowed/untouched rather than pointed at a real font — nothing in
