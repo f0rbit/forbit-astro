@@ -124,8 +124,6 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     .project-header {
         align-items: flex-start;
         gap: var(--space-xl);
-        padding-bottom: var(--space-md);
-        border-bottom: 1px solid var(--term-border-inner);
         margin-bottom: var(--space-lg);
         flex-wrap: wrap;
     }
@@ -192,15 +190,21 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         }
         .sidebar-box {
             order: -1;
+            width: 100%;
+            align-self: stretch;
         }
         .project-article {
             order: 1;
         }
         .sidebar-stack {
             order: 2;
+            width: 100%;
+            align-self: stretch;
         }
         .sidebar-commits {
             order: 3;
+            width: 100%;
+            align-self: stretch;
         }
         .project-actions {
             display: flex;
