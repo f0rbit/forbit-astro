@@ -208,3 +208,18 @@ article.specification h3 {
 .grid-4 {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 }
+
+/* @f0rbit/ui ships a mobile collapse for `.grid-2/-3/-4` (1 column below
+   768px) inside its own `@layer utilities`. Because the overrides above are
+   unlayered, they always win over ANY layered rule regardless of specificity
+   or source order (CSS Cascade Layers: unlayered > layered, always) — which
+   silently swallowed the upstream mobile collapse at every width, including
+   mobile. Re-declare the same collapse here, unlayered, so it actually wins
+   on small screens instead of being permanently shadowed. */
+@media (max-width: 768px) {
+	.grid-2,
+	.grid-3,
+	.grid-4 {
+		grid-template-columns: 1fr;
+	}
+}

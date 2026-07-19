@@ -12,7 +12,7 @@ const { commits } = Astro.props;
 
 <div class="row commit-list" style="padding: var(--space-sm);">
     <div class="commit-list-rail"></div>
-    <div class="stack stack-sm">
+    <div class="stack stack-sm commit-list-entries">
         {
             // oxlint-disable-next-line typescript/no-explicit-any -- see @todo above interface Props
             commits.map((commit: any) => (
@@ -32,11 +32,21 @@ const { commits } = Astro.props;
         width: 1px;
         background: var(--term-border-inner);
         align-self: stretch;
+        flex-shrink: 0;
+    }
+    /* `.commit-list` is a `.row` (flex row) — the automatic minimum size on
+       the main axis means this flex item won't shrink below its own
+       content's min-content width by default. Without `min-width: 0` here,
+       a long unbroken commit message forces this column (and the page)
+       wider instead of wrapping. */
+    .commit-list-entries {
+        min-width: 0;
     }
     .commit-entry-hash {
         color: var(--term-gray-85);
     }
     .commit-entry-message {
         color: var(--fg-muted);
+        overflow-wrap: anywhere;
     }
 </style>
