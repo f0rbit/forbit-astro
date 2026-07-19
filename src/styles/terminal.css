@@ -68,6 +68,16 @@
 
 body {
 	font-family: var(--font-mono);
+	/* monospace means every space is a full character cell — inter-word
+	   gaps read too wide (eg. the AboutMe bio) without this trim. */
+	word-spacing: -0.15ch;
+}
+
+pre,
+code,
+.specification pre,
+.specification code {
+	word-spacing: normal;
 }
 
 @keyframes blink {
