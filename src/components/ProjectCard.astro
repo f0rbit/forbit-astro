@@ -17,7 +17,7 @@ const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
     <div class="row row-between">
         <span class="row row-sm text-sm text-muted project-card-path">
             <FolderGit2 size={16} />
-            <span>~/work/<span class="text-primary project-card-name">{project.name}</span></span>
+            <span>~/projects/<span class="text-primary project-card-name">{project.name}</span></span>
         </span>
         <Status status={project.status} />
     </div>

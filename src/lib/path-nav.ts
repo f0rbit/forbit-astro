@@ -1,6 +1,6 @@
 /**
  * Single source of truth for the site's five routes as terminal-style
- * "paths" (~/home, ~/work, ...). Consumed by both Navigation.astro (tab
+ * "paths" (~/home, ~/projects, ...). Consumed by both Navigation.astro (tab
  * strip + mobile path menu) and TerminalWindow.astro (titlebar label).
  */
 
@@ -11,7 +11,7 @@ export type PathTab = {
 
 export const PATH_TABS: readonly PathTab[] = [
 	{ href: "/", label: "~/home" },
-	{ href: "/projects", label: "~/work" },
+	{ href: "/projects", label: "~/projects" },
 	{ href: "/about", label: "~/about" },
 	{ href: "/blog", label: "~/blog" },
 	{ href: "/timeline", label: "~/timeline" },
@@ -27,9 +27,9 @@ export function derive_path(pathname: string): string {
 	if (pathname === "/") return "~/home";
 
 	const project_match = /^\/projects\/([^/]+)\/?$/.exec(pathname);
-	if (project_match) return `~/work/${project_match[1]}`;
+	if (project_match) return `~/projects/${project_match[1]}`;
 
-	if (pathname.startsWith("/projects")) return "~/work";
+	if (pathname.startsWith("/projects")) return "~/projects";
 	if (pathname.startsWith("/about")) return "~/about";
 	if (pathname.startsWith("/blog")) return "~/blog";
 	if (pathname.startsWith("/timeline")) return "~/timeline";

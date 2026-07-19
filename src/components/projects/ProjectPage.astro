@@ -26,7 +26,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 
 <header class="row row-between project-header">
     <div>
-        <p class="text-sm text-muted project-breadcrumb">~/work/<span class="text-primary">{project.name}</span></p>
+        <p class="text-sm text-muted project-breadcrumb">~/projects/<span class="text-primary">{project.name}</span></p>
         <div class="row project-heading">
             <h1>{project.name}</h1>
             <Status status={project.status} size={13} />
