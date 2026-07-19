@@ -68,9 +68,13 @@
 
 body {
 	font-family: var(--font-mono);
-	/* monospace means every space is a full character cell — inter-word
-	   gaps read too wide (eg. the AboutMe bio) without this trim. */
-	word-spacing: -0.15ch;
+	/* monospace means every space is a full character cell, and every
+	   character sits in a fixed-width cell too — both read too airy
+	   (eg. the AboutMe bio) without this trim. -0.15ch word-spacing alone
+	   (an earlier pass) wasn't a clearly visible enough reduction; -0.3ch
+	   plus a small letter-spacing trim gets there while staying readable. */
+	word-spacing: -0.3ch;
+	letter-spacing: -0.02em;
 }
 
 pre,
@@ -78,6 +82,22 @@ code,
 .specification pre,
 .specification code {
 	word-spacing: normal;
+	letter-spacing: normal;
+}
+
+/* Large bold headings read wrong with the tightened body letter-spacing
+   (hero-name/project-heading already tune their own letter-spacing
+   independently; h1/h2 elsewhere had none and would otherwise inherit it). */
+h1,
+h2 {
+	letter-spacing: normal;
+}
+
+/* Terminal chrome (prompt line, titlebar label) reads cramped with the
+   tightened body letter-spacing — keep it untouched. */
+.prompt-line,
+.terminal-titlebar-label {
+	letter-spacing: normal;
 }
 
 @keyframes blink {
