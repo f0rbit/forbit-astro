@@ -27,10 +27,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 <header class="row row-between project-header">
     <div>
         <p class="text-sm text-muted project-breadcrumb">~/projects/<span class="text-primary">{project.name}</span></p>
-        <div class="row project-heading">
-            <h1>{project.name}</h1>
-            <Status status={project.status} size={13} />
-        </div>
+        <h1 class="project-heading">{project.name}</h1>
         <p class="project-description">{project.description}</p>
     </div>
     {
@@ -99,7 +96,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
 
         {
             technologies.length > 0 && (
-                <div>
+                <div class="sidebar-stack">
                     <p class="text-xs text-muted sidebar-heading"># stack</p>
                     <div class="cluster sidebar-tags">
                         {technologies.map((tech) => <span class="tag">{tech}</span>)}
@@ -136,11 +133,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         overflow-wrap: anywhere;
     }
     .project-heading {
-        align-items: center;
-        gap: var(--space-sm);
         margin-top: var(--space-xs);
-    }
-    .project-heading h1 {
         font-size: var(--text-4xl);
         font-weight: 700;
         letter-spacing: -0.02em;
@@ -181,6 +174,43 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
     @media (min-width: 1024px) {
         .project-body {
             grid-template-columns: minmax(0, 1fr) 280px;
+        }
+    }
+    @media (max-width: 1023px) {
+        /* Reorder so the metadata card reads before the README on mobile,
+           while stack/recent-commits stay after it. `display: contents` on
+           the sidebar unwraps it so its children become direct flex items
+           of `.project-body`, orderable alongside `.project-article` — the
+           sidebar boxes keep their own border/padding since those live on
+           the boxes, not the aside wrapper. Desktop grid/markup untouched. */
+        .project-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .project-sidebar {
+            display: contents;
+        }
+        .sidebar-box {
+            order: -1;
+        }
+        .project-article {
+            order: 1;
+        }
+        .sidebar-stack {
+            order: 2;
+        }
+        .sidebar-commits {
+            order: 3;
+        }
+        .project-actions {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            gap: var(--space-sm);
+        }
+        .project-action {
+            flex: 1;
+            justify-content: center;
         }
     }
     .project-article {
