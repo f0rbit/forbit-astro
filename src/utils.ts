@@ -100,6 +100,15 @@ export async function get_blog_post_html(
 	return result_to_value(result, "BLOG_POST_HTML") ?? "";
 }
 
+export async function get_project_html(
+	locals: AppLocals,
+	project_id: string,
+	render: () => Promise<string>,
+): Promise<string> {
+	const result = await get_cached<string>(locals, `project-html:${project_id}`, async () => ok(await render()));
+	return result_to_value(result, "PROJECT_HTML") ?? "";
+}
+
 /** @todo fix typings */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/restrict-template-expressions -- everything below cascades from the untyped params above, see @todo */
 // oxlint-disable-next-line typescript/no-explicit-any -- see @todo above, deferred out of lint-adoption scope

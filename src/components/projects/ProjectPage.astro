@@ -7,6 +7,7 @@ import Status from './Status.astro'
 import { ArrowLeft, ExternalLink, Github } from 'lucide-astro'
 import PublishTime from '../blog/PublishTime'
 import Timeline from '../activity/Timeline.astro'
+import { get_project_html, type AppLocals } from '../../utils'
 
 interface Props {
     project: Project
@@ -16,7 +17,16 @@ const { project } = Astro.props
 
 const technologies: Technology[] = TECH_MAP[project.project_id] ?? []
 
-const parsed = project.specification ? await remark().use(remarkHtml).process(project.specification) : null
+// Cache the rendered HTML (not just the raw markdown) so repeat requests
+// within the SWR TTL skip the remark parse entirely — see get_project_html
+// in utils.ts, which reuses the same lib/cache.ts SWR infra as get_blog_post_html.
+const specification = project.specification
+const html = specification
+    ? await get_project_html(Astro.locals as AppLocals, project.project_id, async () => {
+        const file = await remark().use(remarkHtml).process(specification)
+        return file.toString()
+    })
+    : ''
 ---
 
 <a class="back-link row row-sm text-sm text-muted" href="/projects">
@@ -61,7 +71,7 @@ const parsed = project.specification ? await remark().use(remarkHtml).process(pr
         <p>{project.description}</p>
         {
             project.specification ? (
-                <article class="specification">{parsed}</article>
+                <article class="specification" set:html={html} />
             ) : null
         }
     </article>
