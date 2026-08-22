@@ -5,7 +5,15 @@ import type { AppProviders, ProviderError, Result } from "./providers/types";
 
 export { format_duration } from "./lib/time";
 
-const DEFAULT_TTL_SECONDS = 10 * 60; // 10 minutes
+const DEFAULT_TTL_SECONDS = 10 * 60; // 10 minutes, fallback for any uncategorised cache name
+
+const TTL_SECONDS = {
+	projects: 3600,
+	"project-html": 3600,
+	blog: 1800,
+	"blog-html": 1800,
+	timeline: 300,
+} as const;
 
 export type AppLocals = {
 	providers: AppProviders;
@@ -29,46 +37,67 @@ async function get_cached<T>(
 	locals: AppLocals,
 	name: string,
 	fetcher: () => Promise<Result<T, ProviderError>>,
+	ttl_seconds: number = DEFAULT_TTL_SECONDS,
 ): Promise<Result<T, ProviderError>> {
 	if (!locals.cache) return await fetcher();
 	return await cached_fetch({
 		cache: locals.cache,
 		ctx: locals.ctx,
 		name,
-		ttlSeconds: DEFAULT_TTL_SECONDS,
+		ttlSeconds: ttl_seconds,
 		fetcher,
 	});
 }
 
 export async function get_projects(locals: AppLocals): Promise<Project[]> {
-	const result = await get_cached(locals, "projects", () => locals.providers.devpad.listProjects());
+	const result = await get_cached(
+		locals,
+		"projects",
+		() => locals.providers.devpad.listProjects(),
+		TTL_SECONDS.projects,
+	);
 	return result_to_array(result, "PROJECTS");
 }
 
 export async function get_blog_posts(locals: AppLocals): Promise<Post[]> {
-	const result = await get_cached(locals, "blog", async () => {
-		const [devto_result, devpad_result] = await Promise.all([
-			locals.providers.devto.listMyArticles(),
-			locals.providers.devpad.listPosts(),
-		]);
-		const devto_posts = devto_result.ok ? devto_result.value : [];
-		const devpad_posts = devpad_result.ok ? devpad_result.value : [];
-		if (!devto_result.ok) console.error("BLOG: devto fetch error", devto_result.error.message);
-		if (!devpad_result.ok) console.error("BLOG: devpad fetch error", devpad_result.error.message);
-		const posts = [...devto_posts, ...devpad_posts];
-		posts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
-		return { ok: true, value: posts };
-	});
+	const result = await get_cached(
+		locals,
+		"blog",
+		async () => {
+			const [devto_result, devpad_result] = await Promise.all([
+				locals.providers.devto.listMyArticles(),
+				locals.providers.devpad.listPosts(),
+			]);
+			const devto_posts = devto_result.ok ? devto_result.value : [];
+			const devpad_posts = devpad_result.ok ? devpad_result.value : [];
+			if (!devto_result.ok) console.error("BLOG: devto fetch error", devto_result.error.message);
+			if (!devpad_result.ok) console.error("BLOG: devpad fetch error", devpad_result.error.message);
+			const posts = [...devto_posts, ...devpad_posts];
+			posts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+			return { ok: true, value: posts };
+		},
+		TTL_SECONDS.blog,
+	);
 	return result_to_array(result, "BLOG");
 }
 
 export async function fetch_timeline(locals: AppLocals): Promise<unknown[]> {
-	const result = await get_cached(locals, "timeline", () => locals.providers.postsFeed.fetchTimeline());
+	const result = await get_cached(
+		locals,
+		"timeline",
+		() => locals.providers.postsFeed.fetchTimeline(),
+		TTL_SECONDS.timeline,
+	);
 	return result_to_array(result, "TIMELINE");
 }
 
 export async function get_project(locals: AppLocals, project_id: string): Promise<Project | null> {
-	const cached = await get_cached(locals, "projects", () => locals.providers.devpad.listProjects());
+	const cached = await get_cached(
+		locals,
+		"projects",
+		() => locals.providers.devpad.listProjects(),
+		TTL_SECONDS.projects,
+	);
 	if (cached.ok) {
 		const found = cached.value.find((p) => p.project_id == project_id);
 		if (found) return found;
@@ -96,7 +125,12 @@ export async function get_blog_post_html(
 	slug: string,
 	render: () => Promise<string>,
 ): Promise<string> {
-	const result = await get_cached<string>(locals, `blog-html:${group}:${slug}`, async () => ok(await render()));
+	const result = await get_cached<string>(
+		locals,
+		`blog-html:${group}:${slug}`,
+		async () => ok(await render()),
+		TTL_SECONDS["blog-html"],
+	);
 	return result_to_value(result, "BLOG_POST_HTML") ?? "";
 }
 
@@ -105,7 +139,12 @@ export async function get_project_html(
 	project_id: string,
 	render: () => Promise<string>,
 ): Promise<string> {
-	const result = await get_cached<string>(locals, `project-html:${project_id}`, async () => ok(await render()));
+	const result = await get_cached<string>(
+		locals,
+		`project-html:${project_id}`,
+		async () => ok(await render()),
+		TTL_SECONDS["project-html"],
+	);
 	return result_to_value(result, "PROJECT_HTML") ?? "";
 }
 
