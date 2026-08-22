@@ -145,66 +145,201 @@ the proposed edge Cache Rule are **two independent caches in series**
 4. (Optional, low-risk) Rule 3 for `/og/*.png` — same settings, expression
    `http.request.uri.path matches "^/og/.*\.png$"`.
 
-### (b) Infra-as-code — Terraform (recommended path)
+### (b) Worker Cache API via wrangler — cache the full SSR response in-Worker
 
-This repo has **no IaC file today** — confirmed per this repo's own
-`AGENTS.md` ("Infra file ignores": no `infra.ts`/`pipeline.ts`/`grants.ts`
-exists). The user's broader devpad/pipelines stack uses Alchemy IaC
-elsewhere, but this is a standalone marketing/portfolio site, not a
-platform service in that stack — introducing a new IaC tool + provider
-just for two Cache Rules is disproportionate to the payoff (§6). **If** IaC
-is wanted anyway (e.g. this site later gets other Cloudflare config that
-benefits from version control), the Terraform `cloudflare_ruleset` shape is:
+**What a zone Cache Rule actually is, and why wrangler can't declare one.**
+A Cloudflare Cache Rule is a **Rulesets-API object** — `phase =
+"http_request_cache_settings"` on the zone, created via the dashboard, the
+Cloudflare REST API, or an IaC tool that wraps that API. `wrangler.jsonc`
+has no schema field for it (confirmed against
+`node_modules/wrangler/config-schema.json` — no `rulesets`/`cache_rules`
+key exists), and `wrangler` itself is a Workers deployment CLI, not a zone
+config tool. **There is no `wrangler`-native way to declare a true zone
+Cache Rule.**
 
-```hcl
-resource "cloudflare_ruleset" "forbit_astro_cache_rules" {
-  zone_id     = var.zone_id
-  kind        = "zone"
-  phase       = "http_request_cache_settings"
-  name        = "forbit-astro cache rules"
-  description = "Edge-cache SSR detail/list pages per docs/cloudflare-cache-rule.md"
+What `wrangler` _can_ deploy is code that calls the **Workers Cache API**
+(`caches.default` — the same primitive this repo already uses for
+per-provider data, see `src/lib/cache.ts`'s `cached_fetch` /
+`src/middleware.ts`'s `resolve_cache`). Applying it to the **whole HTML
+`Response`**, not just provider JSON, in `src/middleware.ts` would look
+like:
 
-  rules {
-    description = "cache-detail-pages"
-    expression  = "(http.request.uri.path matches \"^/projects/[^/]+$\") or (http.request.uri.path matches \"^/blog/[^/]+/[^/]+$\")"
-    action      = "set_cache_settings"
+```ts
+// src/middleware.ts — sketch, NOT implemented by this doc
+const CACHEABLE_PATH = /^\/(projects(\/[^/]+)?|blog(\/[^/]+\/[^/]+)?)$/;
 
-    action_parameters {
-      cache = true
-      edge_ttl {
-        mode = "respect_origin"
-      }
-    }
-  }
+export const onRequest = defineMiddleware(async (context, next) => {
+	// ...existing provider/cache wiring...
+	const cache = resolve_cache(context.locals.runtime);
+	const url = new URL(context.request.url);
 
-  rules {
-    description = "cache-list-pages"
-    expression  = "(http.request.uri.path eq \"/projects\") or (http.request.uri.path eq \"/blog\") or (http.request.uri.path eq \"/\")"
-    action      = "set_cache_settings"
+	if (cache && context.request.method === "GET" && CACHEABLE_PATH.test(url.pathname)) {
+		const key = new Request(url.toString()); // per-URL key, not per-provider-call
+		const hit = await cache.match(key);
+		if (hit) return hit;
 
-    action_parameters {
-      cache = true
-      edge_ttl {
-        mode = "respect_origin"
-      }
-    }
-  }
-}
+		const response = await next();
+		if (response.status === 200 && response.headers.get("Cache-Control")) {
+			context.locals.ctx.waitUntil(cache.put(key, response.clone()));
+		}
+		return response;
+	}
+
+	return next();
+});
 ```
 
-> Field names/values above are drawn from the `cloudflare_ruleset` resource
-> docs (`phase = "http_request_cache_settings"`, `action = "set_cache_settings"`,
-> `edge_ttl.mode`). **Verify against the live Terraform Cloudflare provider
-> docs before running `terraform apply`** — provider schema does shift
-> between versions; treat this snippet as a starting point, not a
-> copy-exact contract.
+Points that matter if this path is chosen:
 
-**Recommendation for this repo specifically: use the dashboard, not
-Terraform.** Two rules, changed rarely, on a single non-platform site with
-no existing IaC — standing up a Terraform state file + provider config for
-this is more process than the change warrants. Revisit if this site ever
-grows more Cloudflare-side config that would benefit from being
-version-controlled alongside the rest of it.
+- **Two layers, not a replacement.** This sits _above_ the existing
+  `get_cached`/`cached_fetch` per-provider cache, not instead of it. Full
+  hierarchy becomes: full-page Worker-cache MISS → Worker runs →
+  `get_project_html`/`get_blog_post_html`/provider calls hit their own SWR
+  cache (usually a HIT) → HTML assembled → both caches populated. This is
+  coherent (nothing conflicts), but it's two independent TTL surfaces to
+  reason about instead of one.
+- **Cache key strategy.** Mirror `build_key` in `src/lib/cache.ts` — key on
+  `` `https://cache.local/${BUILD_SHA}/${url.pathname}` `` (or similar) so a
+  deploy busts the full-page cache exactly the way it already busts the
+  data cache, rather than serving a stale page shell against a new build's
+  assets/markup.
+- **TTLs already exist — reuse, don't reinvent.** The per-route
+  `Cache-Control: s-maxage=<3600|1800|300>` headers already set in
+  `src/pages/projects/[project_id].astro` and
+  `src/pages/blog/[group]/[slug].astro` are exactly what this middleware
+  would key its own in-memory TTL check off (or, simpler, just trust
+  `cache.put`'s own `Cache-Control`-driven expiry — the Workers Cache API
+  honors the stored response's own `Cache-Control` header for eviction).
+  `TTL_SECONDS` in `src/utils.ts` stays the single source of truth either
+  way.
+- **What must stay excluded.** Same exclusion list as §3: `/timeline` (no
+  `Cache-Control` header today, and its render cost is the actual open
+  problem), `/_image` (Astro's image-proxy — response shape not audited),
+  `/og/*.png` (already self-cached by `og_response()`, no need to double up
+  in middleware). `CACHEABLE_PATH` above only matches the two route
+  families §2 already scoped. No per-visitor state today (same explicit
+  assumption as §3) — re-audit before caching any route that gains
+  auth/cookies/personalization.
+- **The honest gain analysis — this is the sharp edge.** Caching the full
+  HTML `Response` inside the Worker still **invokes the Worker** on every
+  request (`onRequest` runs, `cache.match` is checked, the Worker pays its
+  own cold/warm invocation cost) — unlike a true zone Cache Rule, which
+  serves the cached response **without invoking the Worker at all**
+  (`cf-cache-status: HIT` with zero Worker execution). Given `docs/perf-ttfb.md`'s
+  own measurement — `/projects/devpad` browser-nav TTFB already dropped to
+  ~18-23ms from the in-Worker **data** cache alone (recs #4/#5) — the
+  _incremental_ win from also skipping remark re-render + the
+  `get_project_html`/`get_blog_post_html` cache lookup (both already fast
+  in-memory-equivalent operations) is small. **Be honest: for this site's
+  traffic level, the marginal gain of Worker Cache API over the status quo
+  is real but small — most of the TTFB win is already banked by the
+  existing per-provider SWR cache.** The only case where this path clearly
+  pays for itself is if Worker invocation count/cost itself becomes a
+  concern (billed requests, CPU time) — not likely at personal-site
+  traffic.
+
+### (c) Alchemy `Ruleset` — a true zone Cache Rule, IaC-declared
+
+**Alchemy does support this.** `alchemy/cloudflare` exports a generic
+`Ruleset(id, props)` resource (source:
+`alchemy/src/cloudflare/ruleset.ts` in the `sam-goodwin/alchemy` repo,
+docs: `https://alchemy.run/providers/cloudflare/ruleset/ruleset/`) that
+`PUT`s `/zones/{zoneId}/rulesets/phases/{phase}/entrypoint` — the exact
+Rulesets-API endpoint a Cache Rule lives at. Its `phase` field is typed
+`RulePhase`, whose union explicitly includes
+`"http_request_cache_settings"` (`rule.ts`), and its `Rule` union includes
+`SetCacheSettingsRule` (`action: "set_cache_settings"`, with
+`action_parameters.cache: boolean` and `action_parameters.edge_ttl: {
+mode: "respect_origin" | "override_origin" | "bypass_by_default", ... }`)
+— a 1:1 typed mirror of the dashboard/API cache-settings action used in §2.
+This is a real, typed, purpose-built resource — not a generic raw-API
+escape hatch.
+
+```ts
+// infra.ts — sketch, NOT implemented by this doc; this repo has no infra.ts today
+import alchemy from "alchemy";
+import { Ruleset } from "alchemy/cloudflare";
+
+const app = await alchemy("forbit-astro");
+
+await Ruleset("cache-rules", {
+	zone: "forbit.dev",
+	phase: "http_request_cache_settings",
+	rules: [
+		{
+			description: "cache-detail-pages",
+			expression:
+				'(http.request.uri.path matches "^/projects/[^/]+$") or (http.request.uri.path matches "^/blog/[^/]+/[^/]+$")',
+			action: "set_cache_settings",
+			action_parameters: { cache: true, edge_ttl: { mode: "respect_origin" } },
+		},
+		{
+			description: "cache-list-pages",
+			expression:
+				'(http.request.uri.path eq "/projects") or (http.request.uri.path eq "/blog") or (http.request.uri.path eq "/")',
+			action: "set_cache_settings",
+			action_parameters: { cache: true, edge_ttl: { mode: "respect_origin" } },
+		},
+	],
+});
+
+await app.finalize();
+```
+
+Notes if this path is chosen:
+
+- **This is a real zone Cache Rule** — identical mechanism to §2/§4a, just
+  declared in code instead of clicked in the dashboard. No Worker
+  invocation on a cache HIT (`cf-cache-status: HIT` served entirely at the
+  edge) — this is the "true edge offload" `docs/perf-ttfb.md`'s caveat was
+  asking for, unlike (b) above.
+- **This repo has no IaC file today.** Per this repo's own `AGENTS.md`
+  ("Infra file ignores"), `infra.ts`/`pipeline.ts`/`grants.ts` don't exist
+  here. Choosing this path means introducing the **first** IaC file in
+  this repo: `infra.ts` (per the `alchemy.run` shape used elsewhere in the
+  user's devpad/pipelines stack — see the `pipelines-setup` skill), wiring
+  `bunx alchemy deploy ./infra.ts` into a deploy step, and configuring an
+  Alchemy OAuth profile (`bunx alchemy configure` — does not inherit
+  `wrangler login`). `Ruleset` needs zone-level API permissions on
+  whatever Cloudflare credential Alchemy runs as (`Zone > Cache Rules >
+Edit` at minimum) — narrower than the account-wide credential this site
+  otherwise doesn't need.
+- **Idempotent by construction, but overwrites the whole phase.**
+  `Ruleset`'s `updateRuleset` call replaces the **entire**
+  `http_request_cache_settings` entrypoint ruleset for the zone on every
+  deploy — fine here (nothing else uses that phase on `forbit.dev` today,
+  confirmed by this doc's own §2/§4a being the first rules proposed for
+  it), but a footgun if any other tool or the dashboard is ever used to
+  add a third cache rule out-of-band — the next Alchemy deploy would
+  silently delete it.
+
+### Which to use for this repo
+
+Neither is clearly "better" in the abstract — they trade off differently:
+
+|                                       | Worker Cache API (b)                                                  | Alchemy `Ruleset` (c)                                                  |
+| ------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Skips Worker invocation on a HIT      | No — Worker still runs                                                | Yes — true edge offload                                                |
+| New infra needed                      | None — code change in an existing file                                | First IaC file in this repo (`infra.ts` + Alchemy setup)               |
+| Deploy path                           | Existing `wrangler`/CI pipeline                                       | New: `bunx alchemy deploy` step                                        |
+| Blast radius if wrong                 | Scoped to this repo's own middleware                                  | Zone-wide cache phase, deployed outside this repo's normal review path |
+| Matches existing pattern in this repo | Yes — same `caches.default` primitive `src/lib/cache.ts` already uses | No — net-new tool for a single-file, non-platform site                 |
+
+**Recommendation: Alchemy `Ruleset`, not the Worker Cache API — but only if
+the IaC overhead is wanted at all; otherwise the dashboard (§4a) remains
+the pragmatic default.** Reasoning in one line: the Worker Cache API (b)
+doesn't actually solve the problem this doc exists for (per
+`docs/perf-ttfb.md`'s caveat — "Cloudflare is not edge-caching these
+routes today," meaning the Worker isn't skipped) and its win over the
+already-banked in-Worker data-cache TTFB is small per the honest analysis
+above, whereas Alchemy's `Ruleset` produces the exact same artifact as the
+dashboard path (a real zone Cache Rule) with the added benefit of being
+version-controlled and reproducible. The **first** IaC file in a
+previously-IaC-free repo is real overhead, though, and this site is a
+personal portfolio, not a platform service — if that overhead isn't
+wanted, **§4a (dashboard) is still the lowest-effort correct choice** and
+delivers the identical runtime behavior as (c), just without the
+version-controlled deploy story.
 
 ## 5. Verification plan
 
@@ -271,6 +406,8 @@ Reasoning:
   no effect at the edge, per `docs/perf-ttfb.md`'s caveat) — for a
   five-minute dashboard action, closing that gap is worth doing.
 
-**If go: apply exactly rule 1 + rule 2 from §2 (dashboard path, §4a), skip
-the optional OG-image rule and Terraform unless a future need justifies
-the IaC overhead, then run the §5 verification + re-measurement.**
+**If go: apply exactly rule 1 + rule 2 from §2, via Alchemy's `Ruleset`
+(§4c) if the IaC overhead is wanted, otherwise the dashboard (§4a) — skip
+the Worker Cache API path (§4b, doesn't solve the "Worker still invoked"
+problem) and the optional OG-image rule unless a future need justifies
+them, then run the §5 verification + re-measurement.**
