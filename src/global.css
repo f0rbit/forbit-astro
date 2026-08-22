@@ -2,6 +2,22 @@
 
 /* Links — @f0rbit/ui reset handles color, text-decoration, and hover filter */
 
+/*
+ * Keyboard focus ring — one global rule, unlayered so it wins over
+ * @f0rbit/ui's own `@layer reset` :focus-visible rule (which already points
+ * at `--accent`, currently identical to `--term-link`, but this makes the
+ * site's own intent explicit rather than relying on incidental token
+ * equality). No `.input:focus`/`.select:focus`/`.textarea:focus` element in
+ * @f0rbit/ui leaves a stray non-:focus-visible outline (checked
+ * node_modules/@f0rbit/ui/dist/{reset,styles,components}.css — every
+ * `:focus { outline: none }` there is paired with its own `:focus-visible`
+ * rule), so no `:focus:not(:focus-visible)` reset is needed here.
+ */
+:focus-visible {
+	outline: 2px solid var(--term-link);
+	outline-offset: 2px;
+}
+
 /* Headings */
 h1 {
 	font-size: var(--text-3xl);
