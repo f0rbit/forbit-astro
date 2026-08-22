@@ -167,7 +167,9 @@ contains "text/html"`) enabling caching for this zone/route, or the Worker
   a Cache Rule for this zone (or route) that caches by content-type/status
   for HTML responses, then re-measure for a `cf-cache-status: HIT` on repeat
   requests — until then, rec #3 is only partially delivered (the header is
-  correct and present, but has no edge-caching effect).
+  correct and present, but has no edge-caching effect). See
+  `docs/cloudflare-cache-rule.md` for the full scoping doc (exact rule
+  config, IaC vs dashboard, exclusions, and a go/no-go recommendation).
   Raw samples saved to (session-local, not checked in):
   `/private/tmp/claude-501/-Users-tom-dev-forbit-astro/63e8a367-e2ba-441e-95ae-34545ca1c53b/scratchpad/perf/{before,after}-ttfb.txt`,
   `{before,after}-nav-timing.json`, `{before,after}-{project,blog}-headers.txt`.
