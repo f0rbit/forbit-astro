@@ -1,19 +1,12 @@
 ---
 import { Laptop2, GraduationCap, MapPin, Camera } from "lucide-astro";
-import forbitIconSrc from "../../assets/forbit-icon.png";
+import forbit_icon from "../../assets/forbit-icon.png";
 
 interface Props {
 	more: boolean;
 }
 
 const { more } = Astro.props;
-
-// `forbitIconSrc` should type as astro's `ImageMetadata` ({ src, width, height, ... }),
-// but a conflicting `*.png` ambient module from vite/client.d.ts (declaring the default
-// export as a plain `string`) is also visible to `astro check` in this project, and the
-// two get merged into a type that has neither shape's members. Recast to the shape astro's
-// image pipeline actually produces at build/runtime — see AGENTS.md for the full note.
-const forbitIcon = forbitIconSrc as unknown as { src: string; width: number; height: number };
 
 const info = [
 	{ icon: Laptop2, key: "role", value: "Software Engineer @ Amazon" },
@@ -25,7 +18,7 @@ const info = [
 
 <div class="about-me">
 	<div class="about-left">
-		<img src={forbitIcon.src} width={forbitIcon.width} height={forbitIcon.height} alt="forbit" class="about-avatar-tile" />
+		<img src={forbit_icon.src} width={forbit_icon.width} height={forbit_icon.height} alt="forbit" class="about-avatar-tile" />
 		<div class="about-identity">
 			<span class="about-name">Tom Materne</span>
 			<span class="about-handle text-sm">@f0rbit</span>
