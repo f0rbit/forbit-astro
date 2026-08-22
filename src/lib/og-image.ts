@@ -2,18 +2,21 @@ import { ImageResponse } from "workers-og";
 import type { Project, Post, BlogGroup } from "../types";
 import { TECH_MAP } from "../assets/technology";
 
+// Palette derived from src/styles/terminal.css's oklch :root tokens (converted to hex).
+// warning/error have no site-token equivalent — OG-only in-hue approximations.
 export const OG = {
-	bg: "#1a1a2e",
-	bgAlt: "#242440",
-	border: "#353555",
-	fg: "#ffffff",
-	fgMuted: "#c8c8d8",
-	fgSubtle: "#a0a0b8",
-	accent: "#8888b0",
-	success: "#66cc88",
-	error: "#cc6666",
-	warning: "#ccaa44",
-	info: "#6688cc",
+	bg: "#101321", // --bg
+	bgAlt: "#1c2130", // --bg-alt
+	border: "#373f55", // --border
+	fg: "#f1f5ff", // --fg
+	fgMuted: "#a1a4af", // --fg-muted
+	fgSubtle: "#777a84", // --fg-subtle
+	accent: "#6ea0e8", // --accent / --term-link (blue)
+	success: "#76be86", // --term-status-finished (green)
+	info: "#6ea0e8", // --term-status-dev / --term-link (blue)
+	warning: "#e29e47", // OG-only approximation, no site token
+	error: "#ed5350", // OG-only approximation, no site token
+	purple: "#ac91dc", // --term-keyword, available as an accent
 	width: 1200,
 	height: 630,
 } as const;
