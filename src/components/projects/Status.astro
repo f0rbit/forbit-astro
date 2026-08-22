@@ -20,7 +20,7 @@ function get_visual(project_status: PROJECT_STATUS): StatusVisual {
         case 'DEVELOPMENT':
             return { label: 'dev', glyph: '●', color: 'var(--term-status-dev)' }
         case 'PAUSED':
-            return { label: 'paused', glyph: '●', color: 'var(--term-gray-58)' }
+            return { label: 'paused', glyph: '●', color: 'var(--fg-subtle)' }
         case 'LIVE':
         case 'FINISHED':
             return { label: 'finished', glyph: '✓', color: 'var(--term-status-finished)' }
