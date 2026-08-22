@@ -83,6 +83,20 @@ const pathname = Astro.url.pathname;
 		display: flex;
 		align-items: center;
 	}
+	/* astro-navbar's MenuIcon renders a plain <button> with no styling of
+	   its own; @f0rbit/ui's reset (`@layer reset`) sets font/line-height on
+	   `button` but leaves `background`/`border` untouched, so the browser's
+	   UA-default button chrome (a light `buttonface` fill + border) shows
+	   through as a stray white box behind the hamburger icon. Strip it here
+	   at the button itself, using the terminal's own chrome tokens. */
+	.menu-icon :global(button) {
+		background: transparent;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+	}
 	.menu-icon-size {
 		width: 1.25rem;
 		height: 1.25rem;
