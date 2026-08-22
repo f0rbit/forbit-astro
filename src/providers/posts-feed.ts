@@ -16,7 +16,7 @@ export class HttpPostsFeedProvider implements PostsFeedProvider {
 			if (!response.ok) {
 				return err({ code: "fetch_failed", message: `posts-feed returned ${response.status.toString()}` });
 			}
-			const data = await response.json();
+			const data: unknown = await response.json();
 			return ok(data as unknown[]);
 		} catch (e) {
 			const message = e instanceof Error ? e.message : String(e);

@@ -13,7 +13,7 @@
 		"test": "bun test",
 		"check": "rm -rf dist && bun run typecheck && bun run test",
 		"smoke": "bun run scripts/smoke.ts",
-		"postinstall": "wrangler types",
+		"postinstall": "wrangler types --include-runtime=false",
 		"lint": "oxlint . && eslint .",
 		"lint:fix": "oxlint --fix . && eslint --fix .",
 		"fmt": "oxfmt .",
@@ -37,6 +37,7 @@
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.9",
+		"@cloudflare/workers-types": "^4.20260508.1",
 		"@f0rbit/lint": "0.2.0",
 		"@iconify-json/ri": "^1.1.20",
 		"@iconify-json/simple-icons": "^1.1.94",
