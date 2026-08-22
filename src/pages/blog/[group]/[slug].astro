@@ -33,6 +33,11 @@ const minutes = post ? read_minutes(post.content) : 0;
 
 export const prerender = false;
 
+// No per-visitor state on this route (no auth/cookies/personalisation — all
+// data comes from Astro.locals.providers), so the edge can safely cache the
+// response. s-maxage mirrors the blog/blog-html SWR TTL (1800s).
+Astro.response.headers.set("Cache-Control", "public, s-maxage=1800, stale-while-revalidate=86400");
+
 const title = post && post.title ? post.title : "Blog Post";
 const canonical = `https://forbit.dev/blog/${group}/${slug}`;
 const og_image = `https://forbit.dev/og/blog/${group}/${slug}.png`;

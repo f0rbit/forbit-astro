@@ -8,6 +8,9 @@ const projects = (await get_projects(Astro.locals as AppLocals)).toSorted((a, b)
 const invalid = projects.length === 0
 
 export const prerender = false
+
+// No per-visitor state on this route — safe for the edge to cache briefly.
+Astro.response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400')
 ---
 
 <Page title="Projects" description="A list of all my projects, including specifcation and recent activity" keywords={["projects", "programming", "software engineer", "side projects", "web dev side projects", "tech journey"]} canonical='https://forbit.dev/projects' ogImage="https://forbit.dev/og/default.png">

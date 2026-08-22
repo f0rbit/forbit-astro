@@ -9,6 +9,11 @@ const project = project_id ? await get_project(Astro.locals as AppLocals, projec
 
 const description = project?.description ?? (project?.name ? `Project page for ${project.name}` : `Invalid project`)
 const ogImage = `https://forbit.dev/og/project/${project_id}.png`
+
+// No per-visitor state on this route (no auth/cookies/personalisation — all
+// data comes from Astro.locals.providers), so the edge can safely cache the
+// response. s-maxage mirrors the project/project-html SWR TTL (3600s).
+Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
 ---
 
 <Page title={project?.name ?? '404'} description={description} canonical={`https://forbit.dev/projects/${project_id}`} ogImage={ogImage}>

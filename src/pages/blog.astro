@@ -23,6 +23,9 @@ const personal_count = posts.filter((post) => post.group === BLOG_GROUP.DEV).len
 const devto_count = posts.filter((post) => post.group === BLOG_GROUP.DEVTO).length;
 
 export const prerender = false;
+
+// No per-visitor state on this route — safe for the edge to cache briefly.
+Astro.response.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=86400");
 ---
 
 <Page
