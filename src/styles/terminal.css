@@ -130,3 +130,17 @@ h2 {
 	transform: translateY(-2px);
 	box-shadow: var(--shadow-lg);
 }
+
+@media (prefers-reduced-motion: reduce) {
+	.cursor {
+		animation: none;
+	}
+
+	.lift {
+		transition: border-color var(--transition);
+	}
+	.lift:hover {
+		transform: none;
+		box-shadow: none;
+	}
+}

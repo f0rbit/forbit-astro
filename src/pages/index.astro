@@ -5,7 +5,7 @@ import Experience from "../components/about/Experience.astro";
 import Timeline from "../components/activity/Timeline.astro";
 import ProjectList from "../components/projects/ProjectList.astro";
 import RecentBlogs from "../components/blog/RecentBlogs.astro";
-import { Typewriter } from "solidjs-typewriter";
+import HeroRole from "../components/HeroRole.tsx";
 import { MapPin, Briefcase, CircleDot } from "lucide-astro";
 
 export const prerender = false;
@@ -26,8 +26,10 @@ export const prerender = false;
 				<span class="hero-role-word">
 					{/* above-fold hero animation — always in the initial viewport, so
 					client:idle hydrates as soon as the main thread is free instead of
-					paying for an IntersectionObserver that would fire immediately anyway */}
-					<Typewriter
+					paying for an IntersectionObserver that would fire immediately anyway.
+					HeroRole guards the third-party Typewriter with a
+					prefers-reduced-motion check and falls back to a static word. */}
+					<HeroRole
 						client:idle
 						words={[
 							"computer science student",
@@ -35,8 +37,6 @@ export const prerender = false;
 							"open source contributor",
 							"programming enthusiast",
 						]}
-						cursor={false}
-						loop={-1}
 					/>
 				</span>
 				<span class="cursor" aria-hidden="true"></span>
