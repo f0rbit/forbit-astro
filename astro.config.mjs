@@ -65,6 +65,23 @@ export default defineConfig({
 					access: "secret",
 					default: "https://devpad.tools/api/v1",
 				}),
+				// Pulse analytics config — pk_* ingest keys are write-only and public-safe by
+				// design. Defaults mirror wrangler.jsonc vars so local `astro dev` works as-is.
+				PUBLIC_PULSE_INGEST_URL: envField.string({
+					context: "server",
+					access: "secret",
+					default: "https://pulse.devpad.tools",
+				}),
+				PUBLIC_PULSE_PROJECT_ID: envField.string({
+					context: "server",
+					access: "secret",
+					default: "project_9a4e5f36-6555-4a75-9dac-413686f4e35b",
+				}),
+				PUBLIC_PULSE_INGEST_KEY: envField.string({
+					context: "server",
+					access: "secret",
+					default: "pk_project9_1ea7bfc70ccc38ddfc6da2bf",
+				}),
 			},
 		},
 	},

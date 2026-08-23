@@ -13,5 +13,9 @@
 	},
 	"vars": {
 		"DEVPAD_URL": "https://devpad.tools/api/v1",
+		// pk_* ingest keys are write-only and public-safe by design — meant to ship in browser bundles.
+		"PUBLIC_PULSE_INGEST_URL": "https://pulse.devpad.tools",
+		"PUBLIC_PULSE_PROJECT_ID": "project_9a4e5f36-6555-4a75-9dac-413686f4e35b",
+		"PUBLIC_PULSE_INGEST_KEY": "pk_project9_1ea7bfc70ccc38ddfc6da2bf",
 	},
 }

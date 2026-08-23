@@ -25,6 +25,12 @@
 			"rules": {
 				"import/no-unassigned-import": "off"
 			}
+		},
+		{
+			"files": ["src/layouts/Page.astro", "src/lib/pulse.ts"],
+			"rules": {
+				"no-underscore-dangle": ["error", { "allow": ["__PULSE_CONFIG__"] }]
+			}
 		}
 	]
 }

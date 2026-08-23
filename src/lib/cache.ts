@@ -1,5 +1,6 @@
 import { ok } from "@devpad/api";
 import type { Result, ProviderError } from "../providers/types";
+import { BUILD_SHA } from "./build-sha";
 
 export type CacheCtx = { waitUntil(promise: Promise<unknown>): void };
 
@@ -12,8 +13,7 @@ export type CachedFetchOpts<T> = {
 };
 
 function build_key(name: string): Request {
-	const sha = (import.meta.env.BUILD_SHA as string | undefined) ?? "dev";
-	return new Request(`https://cache.local/${sha}/${name}`);
+	return new Request(`https://cache.local/${BUILD_SHA}/${name}`);
 }
 
 async function refresh_and_store<T>(opts: CachedFetchOpts<T>, key: Request): Promise<Result<T, ProviderError>> {

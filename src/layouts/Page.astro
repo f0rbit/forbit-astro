@@ -14,6 +14,22 @@ interface Props {
 
 import Footer from "../components/Footer.astro";
 import TerminalWindow from "../components/TerminalWindow.astro";
+import type { PulseConfig } from "../lib/pulse";
+import { BUILD_SHA } from "../lib/build-sha";
+import {
+	PUBLIC_PULSE_INGEST_URL,
+	PUBLIC_PULSE_PROJECT_ID,
+	PUBLIC_PULSE_INGEST_KEY,
+} from "astro:env/server";
+
+const pulse_config: PulseConfig = {
+	endpoint: PUBLIC_PULSE_INGEST_URL,
+	project_id: PUBLIC_PULSE_PROJECT_ID,
+	ingest_key: PUBLIC_PULSE_INGEST_KEY,
+	release: BUILD_SHA,
+};
+const pulse_ready = Boolean(pulse_config.endpoint && pulse_config.project_id && pulse_config.ingest_key);
+const pulse_ready_config = pulse_ready ? pulse_config : null;
 
 const { title, description, keywords = [], canonical = null, ogImage = null, ogType = 'website', jsonLd = null } = Astro.props;
 import "../global.css";
@@ -52,6 +68,13 @@ import "../global.css";
 
 		<!-- JSON-LD Structured Data -->
 		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+		<script is:inline define:vars={{ pulse_ready_config }}>
+			if (pulse_ready_config) window.__PULSE_CONFIG__ = pulse_ready_config;
+		</script>
+		<script>
+			import "../lib/pulse";
+		</script>
 	</head>
 	<body>
         <div class="page-shell" style="min-height: calc(100vh - 64px); padding-block: 0 1rem;">

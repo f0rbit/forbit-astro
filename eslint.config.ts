@@ -95,6 +95,20 @@ export default define_lint_config({
 			rules: { "no-console": ["error", { allow: ["error", "warn", "log"] }] },
 		},
 		{
+			// `window.__PULSE_CONFIG__` is an SSR-injected browser global
+			// (Page.astro writes it via define:vars, src/lib/pulse.ts reads it,
+			// src/env.d.ts declares it). The double-underscore prefix is the
+			// deliberate "layout-injected global, not page code" convention —
+			// same shape devpad's apps/main uses. NOTE: oxlint covers
+			// Page.astro's usage (see .oxlintrc.json); this override must NOT
+			// list the .astro file — a .astro files pattern here makes plain
+			// eslint try to parse it without the Astro parser.
+			files: ["src/lib/pulse.ts"],
+			rules: {
+				"no-underscore-dangle": ["error", { allow: ["__PULSE_CONFIG__"] }],
+			},
+		},
+		{
 			// Ambient global declaration file (Astro/Vite convention): must use
 			// `interface` (type aliases don't support declaration merging into
 			// App.Locals/ImportMetaEnv) and inline import() type expressions

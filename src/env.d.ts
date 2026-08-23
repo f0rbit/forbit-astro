@@ -21,6 +21,12 @@ interface ImportMetaEnv {
 	readonly BUILD_SHA: string;
 }
 
+// Pulse analytics config, injected SSR-side by Page.astro before the side-effect
+// import of src/lib/pulse.ts (shape owned by that module's PulseConfig export).
+interface Window {
+	__PULSE_CONFIG__?: import("./lib/pulse").PulseConfig;
+}
+
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
 }
